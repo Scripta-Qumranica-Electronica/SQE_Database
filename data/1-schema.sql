@@ -125,7 +125,7 @@ DROP TABLE IF EXISTS `artefact`;
 CREATE TABLE `artefact` (
   `artefact_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`artefact_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10184 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Every scroll combination is made up from artefacts.  The artefact is a polygon region of an image which the editor deems to constitute a coherent piece of material (different editors may come to different conclusions on what makes up an artefact).  This may correspond to what the editors of an editio princeps have designated a “fragment”, but often may not, since the columns and fragments in those publications are often made up of joins of various types.  Joined fragments should not, as a rule, be defined as a single artefact with the SQE system.  Rather, each component of a join should be a separate artefact, and those artefacts can then be positioned properly with each other via the artefact_position table.';
+) ENGINE=InnoDB AUTO_INCREMENT=12927 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Every scroll combination is made up from artefacts.  The artefact is a polygon region of an image which the editor deems to constitute a coherent piece of material (different editors may come to different conclusions on what makes up an artefact).  This may correspond to what the editors of an editio princeps have designated a “fragment”, but often may not, since the columns and fragments in those publications are often made up of joins of various types.  Joined fragments should not, as a rule, be defined as a single artefact with the SQE system.  Rather, each component of a join should be a separate artefact, and those artefacts can then be positioned properly with each other via the artefact_position table.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -143,7 +143,7 @@ CREATE TABLE `artefact_data` (
   UNIQUE KEY `unique_artefact_id_artefact_data_name` (`artefact_id`,`name`) USING BTREE,
   KEY `fk_artefact_data_to_artefact` (`artefact_id`),
   CONSTRAINT `fk_artefact_data_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=10184 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12927 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -183,7 +183,7 @@ CREATE TABLE `artefact_position` (
   UNIQUE KEY `unique_artefact_transform_z_index` (`artefact_id`,`z_index`,`transform_matrix`) USING BTREE,
   KEY `fk_artefact_position_to_artefact` (`artefact_id`),
   CONSTRAINT `fk_artefact_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4889 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table defines the location and rotation of an artefact within the scroll.';
+) ENGINE=InnoDB AUTO_INCREMENT=7632 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table defines the location and rotation of an artefact within the scroll.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -228,7 +228,7 @@ CREATE TABLE `artefact_position_owner` (
   CONSTRAINT `fk_artefact_position_owner_to_artefact` FOREIGN KEY (`artefact_position_id`) REFERENCES `artefact_position` (`artefact_position_id`),
   CONSTRAINT `fk_artefact_position_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_artefact_position_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4889 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7632 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -259,8 +259,8 @@ DROP TABLE IF EXISTS `artefact_shape`;
 CREATE TABLE `artefact_shape` (
   `artefact_shape_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `artefact_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `sqe_image_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'This points to the master image (see SQE_image table) in which this artefact is found.',
-  `region_in_sqe_image` polygon DEFAULT NULL COMMENT 'This is the exact polygon of the artefact’s location within the master image’s coordinate system.',
+  `sqe_image_id` int(10) unsigned DEFAULT NULL COMMENT 'This points to the master image (see SQE_image table) in which this artefact is found.',
+  `region_in_sqe_image` polygon NOT NULL COMMENT 'This is the exact polygon of the artefact’s location within the master image’s coordinate system.',
   `region_in_sqe_image_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_in_sqe_image`,512)) STORED,
   PRIMARY KEY (`artefact_shape_id`) USING BTREE,
   UNIQUE KEY `unique_artefact_shape` (`artefact_id`,`sqe_image_id`,`region_in_sqe_image_hash`) USING BTREE,
@@ -268,7 +268,7 @@ CREATE TABLE `artefact_shape` (
   KEY `fk_artefact_shape_to_artefact` (`artefact_id`) USING BTREE,
   CONSTRAINT `fk_artefact_shape_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_shape_to_sqe_image` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=10184 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Every scroll combination is made up from artefacts.  The artefact is a polygon region of an image which the editor deems to constitute a coherent piece of material (different editors may come to different conclusions on what makes up an artefact).  This may correspond to what the editors of an editio princeps have designated a “fragment”, but often may not, since the columns and fragments in those publications are often made up of joins of various types.  Joined fragments should not, as a rule, be defined as a single artefact with the SQE system.  Rather, each component of a join should be a separate artefact, and those artefacts can then be positioned properly with each other via the artefact_position table.';
+) ENGINE=InnoDB AUTO_INCREMENT=12927 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Every scroll combination is made up from artefacts.  The artefact is a polygon region of an image which the editor deems to constitute a coherent piece of material (different editors may come to different conclusions on what makes up an artefact).  This may correspond to what the editors of an editio princeps have designated a “fragment”, but often may not, since the columns and fragments in those publications are often made up of joins of various types.  Joined fragments should not, as a rule, be defined as a single artefact with the SQE system.  Rather, each component of a join should be a separate artefact, and those artefacts can then be positioned properly with each other via the artefact_position table.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -332,7 +332,7 @@ CREATE TABLE `artefact_stack` (
   `layer_B` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'Gives the number of the layer in the stack to which artefact B belongs.',
   `A_is_verso` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `B_is_verso` tinyint(3) unsigned NOT NULL DEFAULT 1,
-  `reason` enum('verso-recto','found in a stack','part of wad','reconstructed stack') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reason` enum('RECTO_VERSO','FOUND_IN_A_STACK','PART_OF_A_WAD','RECONSTRUCTED_STACK') COLLATE utf8mb4_unicode_ci DEFAULT 'RECTO_VERSO',
   `shared` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'True if the given region of artefact_B represents a region which appears on the surface of artefact_A (bleeding through, ink glued to the next layer).',
   PRIMARY KEY (`artefact_stack_id`),
   UNIQUE KEY `unique_artefact_stack` (`A_is_verso`,`artefact_A_id`,`artefact_B_id`,`artefact_B_offset`(25),`B_is_verso`,`layer_A`,`layer_B`,`reason`,`shared`) USING BTREE,
@@ -1436,12 +1436,12 @@ DROP TABLE IF EXISTS `roi_position`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roi_position` (
   `roi_position_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `transform_matrix` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Transform details for placement of ROI.  This transform is carried out in the coordinate system of the linked artefact.  To get the location of the ROI in the coordinate system of the “virtual scroll”, one must multiply the transform_matrix of the attached artefact with the transform matrix of the ROI.',
+  `transform_matrix` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Transform details for placement of ROI.  This transform is carried out in the coordinate system of the linked artefact.  To get the location of the ROI in the coordinate system of the “virtual scroll”, one must multiply the transform_matrix of the attached artefact with the transform matrix of the ROI. This can by done with the UDF multiply_matrix(), which should have the ROI’s transform_matrix first and the artefact’s transform_matrix second.',
   `artefact_id` int(11) unsigned NOT NULL COMMENT 'ROI’s are linked to artefacts.  Each edition has an artefact that serves as the “virtual scroll” that is positioned at 0,0 and has a size of maxWidth and maxHeight, this artefact is used for reconstructed text.',
   PRIMARY KEY (`roi_position_id`),
   KEY `fk_roi_position_to_artefact` (`artefact_id`),
   CONSTRAINT `fk_roi_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ROI’s are linked to artefacts.  Each edition has an artefact that serves as the “virtual scroll” that is positioned at 0,0 and has a size of maxWidth and maxHeight, this artefact is used for reconstructed text. The ROI transform_matrix is carried out in the coordinate system of the linked artefact, not the abstract “virtual scroll”.  To get the location of the ROI in the coordinate system of the “virtual scroll”, one must multiply the transform_matrix of the attached artefact with the transform matrix of the ROI.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ROI’s are linked to artefacts.  Each edition has an artefact that serves as the “virtual scroll” that is positioned at 0,0 and has a size of maxWidth and maxHeight, this artefact is used for reconstructed text. The ROI transform_matrix is carried out in the coordinate system of the linked artefact, not the abstract “virtual scroll”.  To get the location of the ROI in the coordinate system of the “virtual scroll”, one must multiply the transform_matrix of the attached artefact with the transform matrix of the ROI. This can by done with the UDF multiply_matrix(), which should have the ROI’s transform_matrix first and the artefact’s transform_matrix second.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
