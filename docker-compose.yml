@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  sqe.data:
+    image: qumranica/sqe-database:latest
+    container_name: SQE_Database
+    environment:
+      - MYSQL_ROOT_PASSWORD=none
+      - MYSQL_DATABASE=SQE_DEV
+    expose:
+      - "3306"
+    ports:
+      - "3307:3306"
