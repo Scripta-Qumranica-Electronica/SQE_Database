@@ -682,7 +682,7 @@ CREATE TABLE `edition` (
   `edition_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `scroll_id` int(10) unsigned NOT NULL,
   `locked` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `copywrite_holder` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'This is the person or institution who holds copyright for the edition.',
+  `copyright_holder` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'This is the person or institution who holds copyright for the edition.',
   `collaborators` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Each edition may have a set list of collaborators.  If NULL, then the API will automatically construct a list of collaborators based on the edition_editors.',
   PRIMARY KEY (`edition_id`),
   KEY `fk_edition_to_scroll` (`scroll_id`),
