@@ -11,11 +11,11 @@ const getTables = async (pool) => {
     return new Promise(async (resolve, reject) => {
         try {
             const rows = await pool.query(`
-                SELECT table_name AS Tables_in_SQE_DEV
+                SELECT table_name AS Tables_in_SQE
                 FROM information_schema.tables
-                WHERE table_type = 'BASE TABLE' AND table_schema='SQE_DEV'
+                WHERE table_type = 'BASE TABLE' AND table_schema='SQE'
                 ORDER BY table_name ASC`)
-            resolve(rows.map(x => x['Tables_in_SQE_DEV']))
+            resolve(rows.map(x => x['Tables_in_SQE']))
         } catch(err) {
             console.log(chalk.red(`✗ The backup has failed while trying to save individual tables.`))
             reject(chalk.red('✗ Database connection error.'))
@@ -26,7 +26,7 @@ const getTables = async (pool) => {
 const backupTable = async (table) => {
     return new Promise(async (resolve, reject) => {
         console.log(chalk.blue(`Backing up ${table} to ${table}.sql.`))
-        const cmd = spawn('docker', ['exec', '-i', 'SQE_Database', '/usr/bin/mysqldump', '--skip-dump-date', '-u', 'root', '-pnone', '-h', '127.0.0.1', '-P', '3306', 'SQE_DEV', table], { encoding : 'utf8', cwd: projectBaseDir })
+        const cmd = spawn('docker', ['exec', '-i', 'SQE_Database', '/usr/bin/mysqldump', '--skip-dump-date', '-u', 'root', '-pnone', '-h', '127.0.0.1', '-P', '3306', 'SQE', table], { encoding : 'utf8', cwd: projectBaseDir })
         cmd.stdout.pipe(fs.createWriteStream(`${dataDir}/${table}.sql`))
         cmd.on('exit', async (code/*, signal*/) => {
             if (code !== 0) reject(new Error(chalk.red(`✗ Failed while backing up ${table}.`)))
@@ -40,7 +40,7 @@ const backupTable = async (table) => {
 const backupSchema = async () => {
     return new Promise( (resolve, reject) => {
         console.log(chalk.blue(`Backing up schema to schema.sql.`))
-        const cmd = spawn('docker', ['exec', '-i', 'SQE_Database', '/usr/bin/mysqldump', '--no-data', '--skip-dump-date', '--routines', '--events', '-u', 'root', '-pnone', 'SQE_DEV'], { encoding : 'utf8', cwd: projectBaseDir })
+        const cmd = spawn('docker', ['exec', '-i', 'SQE_Database', '/usr/bin/mysqldump', '--no-data', '--skip-dump-date', '--routines', '--events', '-u', 'root', '-pnone', 'SQE'], { encoding : 'utf8', cwd: projectBaseDir })
         cmd.stdout.pipe(fs.createWriteStream(`${dataDir}/1-schema.sql`))
         cmd.on('exit', async (code/*, signal*/) => {
             if (code !== 0) reject(new Error(chalk.red(`✗ Failed backing up schema.`)))
@@ -59,7 +59,7 @@ const backupDB = async () => {
         port: 3307,
         user:'root',
         password: 'none',
-        database: 'SQE_DEV',
+        database: 'SQE',
         connectionLimit: 60
     })
 

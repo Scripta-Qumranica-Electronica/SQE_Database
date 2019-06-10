@@ -24,4 +24,18 @@ Warning!  This automated script will simply package any SQE_DEV mariadb database
 
 ## User Defined Functions
 
-This repository builds two custom C user defined functions into the MariaDB datbase container.  The file affine_transform.c enables the database to apply a transform matrix to a WKT polygon.  The file multiply_matrix.c enables the database to multiply two transform matrices.  Bot funtcions were build with performance in mind, and thus provide minimal error checking. The function affine_transform(matrix, polygon) takes two arguments a transform matrix as we format them in the database "{\"matrix\":[[1,0,0],[0,1,0]]}" (in fact the only formatting the function requires is that we have 6 numbers separated by any non-number character), and a WKT polygon (in fact the only thing the function requires is a repeating sequence of two space separated numbers).  The function multiply_matrix(matrix1, matrix2) takes two arguments, noth of which are a transform matrix as we format them in the database "{\"matrix\":[[1,0,0],[0,1,0]]}" (in fact the only formatting the function requires is that we have 6 numbers separated by any non-number character).  The order of matrices in the function matters, put the matrix for the ROI first and the matrix for the artefact second.
+This repository builds two custom C user defined functions into the MariaDB datbase container.  The file affine_transform.c enables the database to apply a transform matrix to a WKT polygon.  The file multiply_matrix.c enables the database to multiply two transform matrices.  Both funtcions were build with performance in mind, and thus provide minimal error checking. 
+
+The function affine_transform(matrix, polygon) takes two arguments a transform matrix as we format them in the database "{\"matrix\":[[1,0,0],[0,1,0]]}" (in fact the only formatting the function requires is that we have 6 numbers separated by any non-number character), and a WKT polygon (in fact the only thing the function requires is a repeating sequence of two space separated numbers).  
+
+The function multiply_matrix(matrix1, matrix2) takes two arguments, noth of which are a transform matrix as we format them in the database "{\"matrix\":[[1,0,0],[0,1,0]]}" (in fact the only formatting the function requires is that we have 6 numbers separated by any non-number character).  The order of matrices in the function matters, put the matrix for the ROI first and the matrix for the artefact second.
+
+## DockerHub
+
+This code pulls data from the database build on Docker Hub and also pushes changes beck there to qumranica/sqe-database.  The container is based on the standard MariaDB docker container, and uses a two stage build process to create the SQE_Database, which contains all of our default data.  When running the qumranica/sqe-database container from Docker Hub, we use a special init script (startup.sh) in the ENTRYPOINT stage to inject the following possibilities:
+
+MYSQL_ROOT_PASSWORD (the password for the root account, if none is provided the password remains `none`)
+MYSQL_USER (the default user that will access the database)
+MYSQL_PASSWORD (the default user's password)
+
+If no MYSQL_USER and MYSQL_PASSWORD are provided, the database can only be accessed by root.

@@ -23,7 +23,7 @@ const getOwnedTables = async (pool) => {
             const rows = await pool.query(`
                 SELECT table_name AS ownedTable
                 FROM information_schema.tables    
-                WHERE table_type = 'BASE TABLE' AND table_schema='SQE_DEV' AND table_name LIKE "%_owner" 
+                WHERE table_type = 'BASE TABLE' AND table_schema='SQE' AND table_name LIKE "%_owner" 
                 ORDER BY table_name ASC`)
             resolve(rows.map(x => x.ownedTable))
         } catch(err) {
@@ -42,7 +42,7 @@ const sanitizeDB = async () => {
     port: 3307,
     user:'root', 
     password: 'none',
-    database: 'SQE_DEV',
+    database: 'SQE',
     connectionLimit: 80,
     multipleStatements: true
     })

@@ -1,6 +1,6 @@
 -- MySQL dump 10.17  Distrib 10.3.15-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: SQE_DEV
+-- Host: localhost    Database: SQE
 -- ------------------------------------------------------
 -- Server version	10.3.15-MariaDB-1:10.3.15+maria~bionic
 
@@ -194,7 +194,7 @@ CREATE TABLE `artefact_position` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `SQE_DEV`.`after_artefact_position_insert` AFTER INSERT ON `SQE_DEV`.`artefact_position` FOR EACH ROW 
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `SQE`.`after_artefact_position_insert` AFTER INSERT ON `SQE`.`artefact_position` FOR EACH ROW 
 BEGIN
 INSERT INTO artefact_positioned_shape (artefact_position_id, artefact_shape_id, positioned_shape)
 SELECT NEW.artefact_position_id, artefact_shape_id, GEOMFROMTEXT(affine_transform(
@@ -279,7 +279,7 @@ CREATE TABLE `artefact_shape` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `SQE_DEV`.`after_artefact_shape_insert` AFTER INSERT ON `SQE_DEV`.`artefact_shape` FOR EACH ROW 
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `SQE`.`after_artefact_shape_insert` AFTER INSERT ON `SQE`.`artefact_shape` FOR EACH ROW 
 BEGIN
 INSERT INTO artefact_positioned_shape (artefact_position_id, artefact_shape_id, positioned_shape)
 SELECT artefact_position_id, NEW.artefact_shape_id, GEOMFROMTEXT(affine_transform(
@@ -1956,7 +1956,7 @@ CREATE TABLE `word_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping events for database 'SQE_DEV'
+-- Dumping events for database 'SQE'
 --
 /*!50106 SET @save_time_zone= @@TIME_ZONE */ ;
 /*!50106 DROP EVENT IF EXISTS `clear_old_email_tokens` */;
@@ -1986,7 +1986,7 @@ DELIMITER ;
 /*!50106 SET TIME_ZONE= @save_time_zone */ ;
 
 --
--- Dumping routines for database 'SQE_DEV'
+-- Dumping routines for database 'SQE'
 --
 /*!50003 DROP FUNCTION IF EXISTS `set_to_json_array` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -2051,7 +2051,7 @@ BEGIN
     DECLARE stmt VARCHAR(500) DEFAULT '';
 
     DECLARE column_cursor CURSOR FOR
-    SELECT TABLE_NAME FROM `information_schema`.`tables` WHERE table_schema = 'SQE_DEV' AND table_name LIKE '%_owner';
+    SELECT TABLE_NAME FROM `information_schema`.`tables` WHERE table_schema = 'SQE' AND table_name LIKE '%_owner';
 
     DECLARE CONTINUE HANDLER
     FOR NOT FOUND SET v_finished = 1;
@@ -2066,7 +2066,7 @@ BEGIN
         LEAVE alter_tables;
         END IF;
 
-        SET @prepstmt = CONCAT('ALTER TABLE SQE_DEV','.',v_table,'  ADD COLUMN commentary LONGTEXT;');
+        SET @prepstmt = CONCAT('ALTER TABLE SQE','.',v_table,'  ADD COLUMN commentary LONGTEXT;');
   
 		PREPARE stmt FROM @prepstmt;
         EXECUTE stmt;
