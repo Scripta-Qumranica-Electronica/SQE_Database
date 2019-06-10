@@ -94,8 +94,8 @@ fi
 ## TODO: Setup a user account if MYSQL_USER and MYSQL_PASSWORD are set
 echo "Setting up initial user (if any)"
 if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
-    echo "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;" | mysql -u root -pnone -e
-    echo "GRANT ALL ON \`SQE\`.* TO '$MYSQL_USER'@'%' ;" | mysql -u root -pnone -e
+    mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;"
+    mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL ON \`SQE\`.* TO '$MYSQL_USER'@'%' ;"
 fi
 
 ## End it all
