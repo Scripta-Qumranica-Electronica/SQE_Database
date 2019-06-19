@@ -185,30 +185,6 @@ CREATE TABLE `artefact_position` (
   CONSTRAINT `fk_artefact_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table defines the location and rotation of an artefact within the scroll.';
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `SQE`.`after_artefact_position_insert` AFTER INSERT ON `SQE`.`artefact_position` FOR EACH ROW 
-BEGIN
-INSERT INTO artefact_positioned_shape (artefact_position_id, artefact_shape_id, positioned_shape)
-SELECT NEW.artefact_position_id, artefact_shape_id, GEOMFROMTEXT(affine_transform(
-    NEW.transform_matrix, 
-    ASTEXT(ENVELOPE(region_in_sqe_image))
-  ))
-FROM artefact_shape
-WHERE artefact_shape.artefact_id = NEW.artefact_id;
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `artefact_position_owner`
@@ -232,24 +208,6 @@ CREATE TABLE `artefact_position_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `artefact_positioned_shape`
---
-
-DROP TABLE IF EXISTS `artefact_positioned_shape`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `artefact_positioned_shape` (
-  `artefact_shape_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `artefact_position_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `positioned_shape` polygon DEFAULT st_geometryfromtext(''),
-  PRIMARY KEY (`artefact_shape_id`,`artefact_position_id`),
-  KEY `fk_artefact_positioned_shape_to_artefact_position_id` (`artefact_position_id`),
-  CONSTRAINT `fk_artefact_positioned_shape_to_artefact_position_id` FOREIGN KEY (`artefact_position_id`) REFERENCES `artefact_position` (`artefact_position_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_artefact_positioned_shape_to_artefact_shape_id` FOREIGN KEY (`artefact_shape_id`) REFERENCES `artefact_shape` (`artefact_shape_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This is an experimental table. It does not seem realistic to transform the artefact shape using the artefact position transform matrix in real time.  This table is caches the transformed polygons in order to use MariaDB’s GIS functionality without significant delays.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `artefact_shape`
 --
 
@@ -270,30 +228,6 @@ CREATE TABLE `artefact_shape` (
   CONSTRAINT `fk_artefact_shape_to_sqe_image` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=36466 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Every scroll combination is made up from artefacts.  The artefact is a polygon region of an image which the editor deems to constitute a coherent piece of material (different editors may come to different conclusions on what makes up an artefact).  This may correspond to what the editors of an editio princeps have designated a “fragment”, but often may not, since the columns and fragments in those publications are often made up of joins of various types.  Joined fragments should not, as a rule, be defined as a single artefact with the SQE system.  Rather, each component of a join should be a separate artefact, and those artefacts can then be positioned properly with each other via the artefact_position table.';
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8mb4 */ ;
-/*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `SQE`.`after_artefact_shape_insert` AFTER INSERT ON `SQE`.`artefact_shape` FOR EACH ROW 
-BEGIN
-INSERT INTO artefact_positioned_shape (artefact_position_id, artefact_shape_id, positioned_shape)
-SELECT artefact_position_id, NEW.artefact_shape_id, GEOMFROMTEXT(affine_transform(
-    transform_matrix, 
-    ASTEXT(ENVELOPE(NEW.region_in_sqe_image))
-  ))
-FROM artefact_position
-WHERE artefact_position.artefact_id = NEW.artefact_id;
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `artefact_shape_owner`
