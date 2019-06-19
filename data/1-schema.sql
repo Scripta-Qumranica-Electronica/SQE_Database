@@ -327,12 +327,12 @@ CREATE TABLE `artefact_stack` (
   `artefact_stack_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `artefact_A_id` int(10) unsigned NOT NULL,
   `artefact_B_id` int(10) unsigned NOT NULL,
-  `artefact_B_offset` point DEFAULT NULL COMMENT 'Gives the offset by which the artefact B must be moved to match the artefact A',
+  `artefact_B_offset` point NOT NULL DEFAULT st_geometryfromtext('POINT(0 0)') COMMENT 'Gives the offset by which the artefact B must be moved to match the artefact A',
   `layer_A` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'Gives the number of the layer in the stack to which artefact A belongs. If ',
   `layer_B` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'Gives the number of the layer in the stack to which artefact B belongs.',
   `A_is_verso` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `B_is_verso` tinyint(3) unsigned NOT NULL DEFAULT 1,
-  `reason` enum('RECTO_VERSO','FOUND_IN_A_STACK','PART_OF_A_WAD','RECONSTRUCTED_STACK') COLLATE utf8mb4_unicode_ci DEFAULT 'RECTO_VERSO',
+  `reason` enum('RECTO_VERSO','FOUND_IN_A_STACK','PART_OF_A_WAD','RECONSTRUCTED_STACK') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'RECTO_VERSO',
   `shared` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'True if the given region of artefact_B represents a region which appears on the surface of artefact_A (bleeding through, ink glued to the next layer).',
   PRIMARY KEY (`artefact_stack_id`),
   UNIQUE KEY `unique_artefact_stack` (`A_is_verso`,`artefact_A_id`,`artefact_B_id`,`artefact_B_offset`(25),`B_is_verso`,`layer_A`,`layer_B`,`reason`,`shared`) USING BTREE,
@@ -340,7 +340,7 @@ CREATE TABLE `artefact_stack` (
   KEY `fk_af_stack_B_to_artefact_idx` (`artefact_B_id`),
   CONSTRAINT `fk_af_stack_A_to_artefact` FOREIGN KEY (`artefact_A_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_af_stack_B_to_artefact` FOREIGN KEY (`artefact_B_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4756 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the relationship between artefacts which make up a stack, meaning, that the represent parallel layers in a stack. This could be:\na) Artefact A is and B represent recto/verso of one layer, than the layer_A and layer_B must be the same\nb) A and B represent parts of different layers of a already decomposed stack (reason= ‚found in a stack‘) or as part of wad (reason = ‚part of a wad‘) or as thought by the scholar to belong in the same perimeter of the scroll (reason=‚reconstructed‘).\n\nThe tables allow to create a sequence of artefacts: A = recto of layer 1 -> B = verso of layer 1 -> C = recto of recto of layer  2 -> D = verso of layer 2 … (where -> represents a record with the left as artefact_A and the right term as artefact_B)\n\nA special case is marked by shared. We could, e.g., have A as verso and B as recto and additionally a subregion of B as shared to A.';
+) ENGINE=InnoDB AUTO_INCREMENT=27724 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the relationship between artefacts which make up a stack, meaning, that the represent parallel layers in a stack. This could be:\na) Artefact A is and B represent recto/verso of one layer, than the layer_A and layer_B must be the same\nb) A and B represent parts of different layers of a already decomposed stack (reason= ‚found in a stack‘) or as part of wad (reason = ‚part of a wad‘) or as thought by the scholar to belong in the same perimeter of the scroll (reason=‚reconstructed‘).\n\nThe tables allow to create a sequence of artefacts: A = recto of layer 1 -> B = verso of layer 1 -> C = recto of recto of layer  2 -> D = verso of layer 2 … (where -> represents a record with the left as artefact_A and the right term as artefact_B)\n\nA special case is marked by shared. We could, e.g., have A as verso and B as recto and additionally a subregion of B as shared to A.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
