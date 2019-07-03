@@ -72,8 +72,6 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
 fi
 
 ## Start the database server
-
-
 echo "Starting the init database"
 exec "$@" &
 pid="$!"
@@ -85,25 +83,27 @@ do
    sleep 1
 done
 
-## Reset the password
-echo "Resetting the root password"
+## Reset the root password if MYSQL_ROOT_PASSWORD is set
 if [ "$MYSQL_ROOT_PASSWORD" ]; then
+    echo "Resetting the root password"
     mysql -u root -pnone -e "USE mysql; SET PASSWORD FOR 'root'@'%' = PASSWORD('$MYSQL_ROOT_PASSWORD'); FLUSH PRIVILEGES;"
+    mysql -u root -pnone -e "USE mysql; SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$MYSQL_ROOT_PASSWORD'); FLUSH PRIVILEGES;"
 fi
 
-## TODO: Setup a user account if MYSQL_USER and MYSQL_PASSWORD are set
-echo "Setting up initial user (if any)"
+## Setup a user account if MYSQL_USER and MYSQL_PASSWORD are set
 if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
+    echo "Setting up initial user account"
     mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;"
     mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL ON \`SQE\`.* TO '$MYSQL_USER'@'%' ;"
 fi
 
-## End it all
+## End the init sequence
 echo "Killing the init database"
 if ! kill -s TERM "$pid" || ! wait "$pid"; then
     echo >&2 'MySQL init process failed.'
     exit 1
 fi
 
+## Startup the runtime instance as specified on the command line
 echo "Starting the runtime database"
 exec "$@"

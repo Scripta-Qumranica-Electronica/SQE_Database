@@ -66,15 +66,15 @@ const sanitizeDB = async () => {
     
     DELETE roi_position
     FROM roi_position
-    JOIN sign_char_roi USING(roi_position_id)
-    JOIN sign_char_roi_owner USING(sign_char_roi_id)
+    JOIN sign_interpretation_roi USING(roi_position_id)
+    JOIN sign_interpretation_roi_owner USING(sign_interpretation_roi_id)
     JOIN edition_editor USING(edition_editor_id)
     WHERE user_id != 1;
 
     DELETE roi_shape
     FROM roi_shape
-    JOIN sign_char_roi USING(roi_shape_id)
-    JOIN sign_char_roi_owner USING(sign_char_roi_id)
+    JOIN sign_interpretation_roi USING(roi_shape_id)
+    JOIN sign_interpretation_roi_owner USING(sign_interpretation_roi_id)
     JOIN edition_editor USING(edition_editor_id)
     WHERE user_id != 1;
 
