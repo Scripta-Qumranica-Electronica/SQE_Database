@@ -38,19 +38,23 @@ char * affine_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned
 void affine_transform_deinit( UDF_INIT *initid );
 
 my_bool affine_transform_init( UDF_INIT *initid, UDF_ARGS* args, char* message ) {
+    // Initial check for proper arguments
     if ( args->arg_count == 2 
+        && args->args[0]
+        && args->args[1]
         && args->arg_type[0] == STRING_RESULT 
         && args->arg_type[1] == STRING_RESULT
-        //&& args->lengths[0] >= 9
-        //&& args->lengths[1] >= 17
+        && args->lengths[0] >= 9
+        && args->lengths[1] >= 17
         ) {
         initid->maybe_null = 0;
         initid->const_item = 1;
-        return 0;
     } else {
-        strcpy(message, "affine_transform(): Incorrect usage. Use two and only two inputs.");
+        strcpy(message, "Use two inputs: a POLYGON, POINT, or MULTIPOINT GEOM and a transform matrix.");
         return 1;
     }
+
+    return 0;
 }
 
 void affine_transform_deinit( UDF_INIT *initid ){

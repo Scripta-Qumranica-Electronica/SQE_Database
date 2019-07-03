@@ -483,13 +483,13 @@ DROP TABLE IF EXISTS `edition`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `edition` (
   `edition_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `scroll_id` int(10) unsigned NOT NULL,
+  `manuscript_id` int(10) unsigned NOT NULL,
   `locked` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `copyright_holder` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'This is the person or institution who holds copyright for the edition.',
   `collaborators` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Each edition may have a set list of collaborators.  If NULL, then the API will automatically construct a list of collaborators based on the edition_editors.',
   PRIMARY KEY (`edition_id`),
-  KEY `fk_edition_to_scroll` (`scroll_id`),
-  CONSTRAINT `fk_edition_to_scroll` FOREIGN KEY (`scroll_id`) REFERENCES `manuscript` (`manuscript_id`)
+  KEY `fk_edition_to_manuscript` (`manuscript_id`) USING BTREE,
+  CONSTRAINT `fk_edition_to_manuscript` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1646 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table provides a unique group id for scrollversions and the possibilty to lock all members of the group';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
