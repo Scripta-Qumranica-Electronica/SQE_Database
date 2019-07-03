@@ -1,8 +1,8 @@
--- MySQL dump 10.17  Distrib 10.3.15-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.17  Distrib 10.3.16-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: SQE
 -- ------------------------------------------------------
--- Server version	10.3.15-MariaDB-1:10.3.15+maria~bionic
+-- Server version	10.3.16-MariaDB-1:10.3.16+maria~bionic
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -328,7 +328,7 @@ CREATE TABLE `attribute_numeric` (
   `value` float NOT NULL DEFAULT 0,
   PRIMARY KEY (`sign_char_attribute_id`,`value`),
   KEY `value` (`value`),
-  CONSTRAINT `fk_attr_num_to_sign_char_attr` FOREIGN KEY (`sign_char_attribute_id`) REFERENCES `sign_char_attribute` (`sign_char_attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_attr_num_to_sign_char_attr` FOREIGN KEY (`sign_char_attribute_id`) REFERENCES `sign_interpretation_attribute` (`sign_interpretation_attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -475,137 +475,6 @@ CREATE TABLE `char_of_writing_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `col`
---
-
-DROP TABLE IF EXISTS `col`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `col` (
-  `col_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`col_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `col_data`
---
-
-DROP TABLE IF EXISTS `col_data`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `col_data` (
-  `col_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `col_id` int(10) unsigned NOT NULL,
-  `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation for this fragment of text (usually col. x or frg. x).',
-  PRIMARY KEY (`col_data_id`),
-  UNIQUE KEY `unique_col_id_col_name` (`col_id`,`name`) USING BTREE,
-  KEY `fk_col_data_to_col_idx` (`col_id`),
-  CONSTRAINT `fk_col_data_to_col` FOREIGN KEY (`col_id`) REFERENCES `col` (`col_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table defines the properties of a column of text within a scroll.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `col_data_owner`
---
-
-DROP TABLE IF EXISTS `col_data_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `col_data_owner` (
-  `col_data_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`col_data_id`,`edition_editor_id`),
-  UNIQUE KEY `all_idx` (`col_data_id`,`edition_id`),
-  KEY `fk_col_data_owner_to_scroll_version_idx` (`edition_editor_id`),
-  KEY `fk_col_data_to_edition` (`edition_id`),
-  CONSTRAINT `fk_col_data_owner_to_col_data` FOREIGN KEY (`col_data_id`) REFERENCES `col_data` (`col_data_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_col_data_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_col_data_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `col_sequence`
---
-
-DROP TABLE IF EXISTS `col_sequence`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `col_sequence` (
-  `col_sequence_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `col_id` int(10) unsigned NOT NULL,
-  `position` smallint(5) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`col_sequence_id`),
-  UNIQUE KEY `unique_col_id_position` (`col_id`,`position`) USING BTREE,
-  KEY `fk_cs_to_col_idx` (`col_id`),
-  CONSTRAINT `fk_cs_to_col` FOREIGN KEY (`col_id`) REFERENCES `col` (`col_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `col_sequence_owner`
---
-
-DROP TABLE IF EXISTS `col_sequence_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `col_sequence_owner` (
-  `col_sequence_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`col_sequence_id`,`edition_editor_id`),
-  UNIQUE KEY `all_idx` (`col_sequence_id`,`edition_id`),
-  KEY `fk_cso_to_scroll_version_idx` (`edition_editor_id`),
-  KEY `fk_col_sequence_to_edition` (`edition_id`),
-  CONSTRAINT `fk_col_sequence_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_col_sequence_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`),
-  CONSTRAINT `ft_cs_owner_tocs` FOREIGN KEY (`col_sequence_id`) REFERENCES `col_sequence` (`col_sequence_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `col_to_line`
---
-
-DROP TABLE IF EXISTS `col_to_line`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `col_to_line` (
-  `col_to_line_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `col_id` int(10) unsigned NOT NULL,
-  `line_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`col_to_line_id`),
-  UNIQUE KEY `col_line_idx` (`col_id`,`line_id`),
-  KEY `fk_col_to_line_to_line_idx` (`line_id`),
-  CONSTRAINT `fk_col_to_line_to_col` FOREIGN KEY (`col_id`) REFERENCES `col` (`col_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_col_to_line_to_line` FOREIGN KEY (`line_id`) REFERENCES `line` (`line_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=54448 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table links lines of a scroll to a specific column.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `col_to_line_owner`
---
-
-DROP TABLE IF EXISTS `col_to_line_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `col_to_line_owner` (
-  `col_to_line_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`col_to_line_id`,`edition_editor_id`),
-  UNIQUE KEY `all_idx` (`col_to_line_id`,`edition_id`),
-  KEY `fk_col_to_linew_owner_to_scroll_version_idx` (`edition_editor_id`),
-  KEY `fk_col_to_line_to_edition` (`edition_id`),
-  CONSTRAINT `fk_col_to_line_owner_to_col_to_line` FOREIGN KEY (`col_to_line_id`) REFERENCES `col_to_line` (`col_to_line_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_col_to_line_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_col_to_line_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `edition`
 --
 
@@ -620,7 +489,7 @@ CREATE TABLE `edition` (
   `collaborators` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Each edition may have a set list of collaborators.  If NULL, then the API will automatically construct a list of collaborators based on the edition_editors.',
   PRIMARY KEY (`edition_id`),
   KEY `fk_edition_to_scroll` (`scroll_id`),
-  CONSTRAINT `fk_edition_to_scroll` FOREIGN KEY (`scroll_id`) REFERENCES `scroll` (`scroll_id`)
+  CONSTRAINT `fk_edition_to_scroll` FOREIGN KEY (`scroll_id`) REFERENCES `manuscript` (`manuscript_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1646 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table provides a unique group id for scrollversions and the possibilty to lock all members of the group';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -740,12 +609,12 @@ CREATE TABLE `iaa_edition_catalog` (
   `edition_location_1` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'First tier identifier (usually a page number).',
   `edition_location_2` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Second tier identifier (usually a fragment/column designation).',
   `edition_side` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Side designation in editio princeps.',
-  `scroll_id` int(11) unsigned DEFAULT NULL,
+  `manuscript_id` int(11) unsigned DEFAULT NULL,
   `comment` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`iaa_edition_catalog_id`),
   UNIQUE KEY `unique_edition_entry` (`edition_location_1`,`edition_location_2`,`edition_name`,`edition_side`,`edition_volume`,`manuscript`) USING BTREE,
-  KEY `fk_edition_catalog_to_scroll_id` (`scroll_id`),
-  CONSTRAINT `fk_edition_catalog_to_scroll_id` FOREIGN KEY (`scroll_id`) REFERENCES `scroll` (`scroll_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_edition_catalog_to_manuscript_id` (`manuscript_id`) USING BTREE,
+  CONSTRAINT `fk_edition_catalog_to_manuscript_id` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=40039 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table contains the IAA data for the editio princeps reference for all of their images.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -767,40 +636,40 @@ CREATE TABLE `iaa_edition_catalog_author` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `iaa_edition_catalog_to_col`
+-- Table structure for table `iaa_edition_catalog_to_text_fragment`
 --
 
-DROP TABLE IF EXISTS `iaa_edition_catalog_to_col`;
+DROP TABLE IF EXISTS `iaa_edition_catalog_to_text_fragment`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `iaa_edition_catalog_to_col` (
-  `iaa_edition_catalog_to_col_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+CREATE TABLE `iaa_edition_catalog_to_text_fragment` (
+  `iaa_edition_catalog_to_text_fragment_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `iaa_edition_catalog_id` int(11) unsigned NOT NULL,
-  `col_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`iaa_edition_catalog_to_col_id`),
-  UNIQUE KEY `unique_edition_catalog_id_col_id` (`col_id`,`iaa_edition_catalog_id`) USING BTREE,
-  KEY `fk_edition_catalog_to_col_to_edition_catalog_id` (`iaa_edition_catalog_id`),
-  CONSTRAINT `fk_edition_catalog_to_col_to_col_id` FOREIGN KEY (`col_id`) REFERENCES `col` (`col_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_edition_catalog_to_col_to_edition_catalog_id` FOREIGN KEY (`iaa_edition_catalog_id`) REFERENCES `iaa_edition_catalog` (`iaa_edition_catalog_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  `text_fragment_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`iaa_edition_catalog_to_text_fragment_id`),
+  UNIQUE KEY `unique_edition_catalog_id_text_fragment_id` (`text_fragment_id`,`iaa_edition_catalog_id`) USING BTREE,
+  KEY `fk_edition_catalog_to_text_fragment_to_edition_catalog_id` (`iaa_edition_catalog_id`) USING BTREE,
+  CONSTRAINT `fk_edition_catalog_to_text_fragment_to_edition_catalog_id` FOREIGN KEY (`iaa_edition_catalog_id`) REFERENCES `iaa_edition_catalog` (`iaa_edition_catalog_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_edition_catalog_to_text_fragment_to_text_fragment_id` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=15543 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This is a temporary table to curate matches between the image catalog system and the SQE scroll system.  It should eventually be deprecated in favor of matches inferred by spatial overlap on the virtual scroll of a the placement of a ROI linked to text transcription and an artefact linked to an image.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `iaa_edition_catalog_to_col_confirmation`
+-- Table structure for table `iaa_edition_catalog_to_text_fragment_confirmation`
 --
 
-DROP TABLE IF EXISTS `iaa_edition_catalog_to_col_confirmation`;
+DROP TABLE IF EXISTS `iaa_edition_catalog_to_text_fragment_confirmation`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `iaa_edition_catalog_to_col_confirmation` (
-  `iaa_edition_catalog_to_col_id` int(11) unsigned NOT NULL DEFAULT 0,
+CREATE TABLE `iaa_edition_catalog_to_text_fragment_confirmation` (
+  `iaa_edition_catalog_to_text_fragment_id` int(11) unsigned NOT NULL DEFAULT 0,
   `confirmed` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean for whether the match has been confirmed (1) or rejected (0).  If this is set to 0 and the user_id is NULL, then the match has neither been confirmed nor rejected (thus it should be queued for review).',
   `user_id` int(11) unsigned DEFAULT NULL COMMENT 'user_id of the person who has confirmed or rejected the match.  If NULL, the match has neither been confirmed nor rejected.',
   `time` datetime NOT NULL DEFAULT current_timestamp(),
-  UNIQUE KEY `unique_edition_catalog_to_col_confirmation` (`iaa_edition_catalog_to_col_id`,`confirmed`,`user_id`,`time`) USING BTREE,
-  KEY `fk_iaa_edition_catalog_to_col_confirmation_to_user` (`user_id`),
-  CONSTRAINT `fk_edition_Catalog_to_col_confirmation_to_edition_catalog_to_col` FOREIGN KEY (`iaa_edition_catalog_to_col_id`) REFERENCES `iaa_edition_catalog_to_col` (`iaa_edition_catalog_to_col_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_iaa_edition_catalog_to_col_confirmation_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  UNIQUE KEY `unique_edition_catalog_to_text_fragment_confirmation` (`iaa_edition_catalog_to_text_fragment_id`,`confirmed`,`user_id`,`time`) USING BTREE,
+  KEY `fk_iaa_edition_catalog_to_text_fragment_confirmation_to_user` (`user_id`) USING BTREE,
+  CONSTRAINT `fk_aecttfc_to_iaa_edition_catalog_to_text_fragment` FOREIGN KEY (`iaa_edition_catalog_to_text_fragment_id`) REFERENCES `iaa_edition_catalog_to_text_fragment` (`iaa_edition_catalog_to_text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_iaa_edition_catalog_to_text_fragment_confirmation_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table is part of the temporary and preliminary catalog info matching system.  There are three possibilities here: 1. confirmed = 0 and user_id IS NULL (the match has neither been confirmed nor rejected); 2. confirmed = 0 and user_id IS NOT NULL (the user with user_id has rejected the match); 3. confirmed = 1 and user_id IS NOT NULL (the user with user_id has confirmed the match as valid).  The pairing confirmed = 1 and user_id IS NOT NULL is an invalid combination.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -812,7 +681,7 @@ CREATE TABLE `iaa_edition_catalog_to_col_confirmation` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `prevent_impossible_insert_to_edition_catalog_to_col_confirmation` BEFORE INSERT ON `iaa_edition_catalog_to_col_confirmation` FOR EACH ROW BEGIN
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `prevent_impossible_insert_to_edition_catalog_to_col_confirmation` BEFORE INSERT ON `iaa_edition_catalog_to_text_fragment_confirmation` FOR EACH ROW BEGIN
 
 IF new.confirmed = 1
     AND new.user_id IS NULL
@@ -836,7 +705,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `prevent_impossible_update_to_edition_catalog_to_col_confirmation` BEFORE UPDATE ON `iaa_edition_catalog_to_col_confirmation` FOR EACH ROW BEGIN
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `prevent_impossible_update_to_edition_catalog_to_col_confirmation` BEFORE UPDATE ON `iaa_edition_catalog_to_text_fragment_confirmation` FOR EACH ROW BEGIN
 
 IF new.confirmed = 1
     AND new.user_id IS NULL
@@ -1092,6 +961,98 @@ CREATE TABLE `main_action` (
   CONSTRAINT `fk_main_action_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_main_action_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table for an undo system.  This table stores the state of the action (rewound or not), the date of the change, and the version of the scroll that the action is associated with.  The table single_action links to the entries here and describe the table in which the action occurred, the id of the entry in that table that was involved, and the nature of the action (creating a connection between that entry and the scroll version of the main_action, or deleting the connection between that entry and the scroll version of the main_action).';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `manuscript`
+--
+
+DROP TABLE IF EXISTS `manuscript`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `manuscript` (
+  `manuscript_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`manuscript_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1694 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `manuscript_data`
+--
+
+DROP TABLE IF EXISTS `manuscript_data`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `manuscript_data` (
+  `manuscript_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `manuscript_id` int(10) unsigned NOT NULL,
+  `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation of the scroll.',
+  PRIMARY KEY (`manuscript_data_id`),
+  UNIQUE KEY `unique_manuscript_id_name` (`manuscript_id`,`name`) USING BTREE,
+  KEY `fk_manuscript_to_master_manuscript_idx` (`manuscript_id`) USING BTREE,
+  CONSTRAINT `fk_manuscript_to_master_manuscript` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1372 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Description of a reconstructed manuscript or combination.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `manuscript_data_owner`
+--
+
+DROP TABLE IF EXISTS `manuscript_data_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `manuscript_data_owner` (
+  `manuscript_data_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`manuscript_data_id`,`edition_editor_id`),
+  UNIQUE KEY `all_idx` (`manuscript_data_id`,`edition_id`),
+  KEY `fk_manuscript_data_to_edition` (`edition_id`) USING BTREE,
+  KEY `fk_manuscript_owner_scroll_version_idx` (`edition_editor_id`) USING BTREE,
+  CONSTRAINT `fk_manuscript_data_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_manuscript_data_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_manuscript_owner_to_scroll_data` FOREIGN KEY (`manuscript_data_id`) REFERENCES `manuscript_data` (`manuscript_data_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `manuscript_to_text_fragment`
+--
+
+DROP TABLE IF EXISTS `manuscript_to_text_fragment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `manuscript_to_text_fragment` (
+  `manuscript_to_text_fragment_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `manuscript_id` int(10) unsigned NOT NULL,
+  `text_fragment_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`manuscript_to_text_fragment_id`),
+  UNIQUE KEY `manuscript_text_fragment_idx` (`manuscript_id`,`text_fragment_id`) USING BTREE,
+  KEY `fk_manuscript_to_text_fragment_to_text_fragment_idx` (`text_fragment_id`) USING BTREE,
+  CONSTRAINT `fk_manuscript_to_text_fragment_to_scroll` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_manuscript_to_text_fragment_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Links an entry in the text_fragment table to a reconstructed manuscript.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `manuscript_to_text_fragment_owner`
+--
+
+DROP TABLE IF EXISTS `manuscript_to_text_fragment_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `manuscript_to_text_fragment_owner` (
+  `manuscript_to_text_fragment_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`manuscript_to_text_fragment_id`,`edition_editor_id`),
+  UNIQUE KEY `unique_manuscript_to_text_fragment_for_edition` (`manuscript_to_text_fragment_id`,`edition_id`) USING BTREE,
+  KEY `fk_manuscript_to_text_fragment_owner_to_edition_editor_idx` (`edition_editor_id`) USING BTREE,
+  KEY `fk_manuscript_to_text_fragment_to_edition` (`edition_id`) USING BTREE,
+  CONSTRAINT `fk_manuscript_to_text_fragment_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_manuscript_to_text_fragment_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_mttfo_to_manuscript_to_text_fragment` FOREIGN KEY (`manuscript_to_text_fragment_id`) REFERENCES `manuscript_to_text_fragment` (`manuscript_to_text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1354,7 +1315,7 @@ DROP TABLE IF EXISTS `recent_edition_catalog_to_col_confirmation`;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `recent_edition_catalog_to_col_confirmation` (
-  `iaa_edition_catalog_to_col_id` tinyint NOT NULL,
+  `iaa_edition_catalog_to_text_fragment_id` tinyint NOT NULL,
   `confirmed` tinyint NOT NULL,
   `user_id` tinyint NOT NULL,
   `MAX(``time``)` tinyint NOT NULL
@@ -1465,98 +1426,6 @@ CREATE TABLE `scribe_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `scroll`
---
-
-DROP TABLE IF EXISTS `scroll`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `scroll` (
-  `scroll_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`scroll_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1694 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `scroll_data`
---
-
-DROP TABLE IF EXISTS `scroll_data`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `scroll_data` (
-  `scroll_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `scroll_id` int(10) unsigned NOT NULL,
-  `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation of the scroll.',
-  PRIMARY KEY (`scroll_data_id`),
-  UNIQUE KEY `unique_scroll_id_name` (`scroll_id`,`name`) USING BTREE,
-  KEY `fk_scroll_to_master_scroll_idx` (`scroll_id`),
-  CONSTRAINT `fk_scroll_to_master_scroll` FOREIGN KEY (`scroll_id`) REFERENCES `scroll` (`scroll_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1372 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Description of a reconstructed scroll or combination.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `scroll_data_owner`
---
-
-DROP TABLE IF EXISTS `scroll_data_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `scroll_data_owner` (
-  `scroll_data_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`scroll_data_id`,`edition_editor_id`),
-  UNIQUE KEY `all_idx` (`scroll_data_id`,`edition_id`),
-  KEY `fk_scroll_owner_scroll_version_idx` (`edition_editor_id`),
-  KEY `fk_scroll_data_to_edition` (`edition_id`),
-  CONSTRAINT `fk_scroll_data_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_scroll_data_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`),
-  CONSTRAINT `fk_scroll_owner_to_scroll_data` FOREIGN KEY (`scroll_data_id`) REFERENCES `scroll_data` (`scroll_data_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `scroll_to_col`
---
-
-DROP TABLE IF EXISTS `scroll_to_col`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `scroll_to_col` (
-  `scroll_to_col_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `scroll_id` int(10) unsigned NOT NULL,
-  `col_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`scroll_to_col_id`),
-  UNIQUE KEY `scroll_col_idx` (`scroll_id`,`col_id`),
-  KEY `fk_scroll_to_column_to_column_idx` (`col_id`),
-  CONSTRAINT `fk_scroll_to_column_to_column` FOREIGN KEY (`col_id`) REFERENCES `col` (`col_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_scroll_to_column_to_scroll` FOREIGN KEY (`scroll_id`) REFERENCES `scroll` (`scroll_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Links an entry in the col table to a reconstructed scroll.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `scroll_to_col_owner`
---
-
-DROP TABLE IF EXISTS `scroll_to_col_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `scroll_to_col_owner` (
-  `scroll_to_col_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`scroll_to_col_id`,`edition_editor_id`),
-  UNIQUE KEY `all_idx` (`scroll_to_col_id`,`edition_id`),
-  KEY `fk_stco_toscroll_version_idx` (`edition_editor_id`),
-  KEY `fk_scroll_to_col_to_edition` (`edition_id`),
-  CONSTRAINT `fk_scroll_to_col_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_scroll_to_col_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`),
-  CONSTRAINT `fk_stco_to_scroll_to_column` FOREIGN KEY (`scroll_to_col_id`) REFERENCES `scroll_to_col` (`scroll_to_col_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `sign`
 --
 
@@ -1570,150 +1439,151 @@ CREATE TABLE `sign` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `sign_char`
+-- Table structure for table `sign_interpretation`
 --
 
-DROP TABLE IF EXISTS `sign_char`;
+DROP TABLE IF EXISTS `sign_interpretation`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `sign_char` (
-  `sign_char_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+CREATE TABLE `sign_interpretation` (
+  `sign_interpretation_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `sign_id` int(10) unsigned NOT NULL,
   `is_variant` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean set to true when current entry is a variant interpretation of a sign.',
   `sign` char(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`sign_char_id`),
+  PRIMARY KEY (`sign_interpretation_id`),
   UNIQUE KEY `unique_sign_id_is_variant_sign` (`is_variant`,`sign`,`sign_id`) USING BTREE,
-  KEY `fk_sign_char_to_sign_idx` (`sign_id`),
-  CONSTRAINT `fk_sign_char_to_sign` FOREIGN KEY (`sign_id`) REFERENCES `sign` (`sign_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1733925 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table describes signs on a manuscript.  Currently this includes both characters and spaces, it could perhaps also include other elements that one might want to define as a sign.';
+  KEY `fk_sign_interpretation_to_sign_idx` (`sign_id`) USING BTREE,
+  CONSTRAINT `fk_sign_interpretation_to_sign` FOREIGN KEY (`sign_id`) REFERENCES `sign` (`sign_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1733925 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table describes signs in a text.  Currently this includes both characters, spaces, and formatting marks, it could perhaps also include other elements that one might want to define as a sign.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `sign_char_attribute`
+-- Table structure for table `sign_interpretation_attribute`
 --
 
-DROP TABLE IF EXISTS `sign_char_attribute`;
+DROP TABLE IF EXISTS `sign_interpretation_attribute`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `sign_char_attribute` (
-  `sign_char_attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sign_char_id` int(10) unsigned NOT NULL,
+CREATE TABLE `sign_interpretation_attribute` (
+  `sign_interpretation_attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `sign_interpretation_id` int(10) unsigned NOT NULL,
   `attribute_value_id` int(10) unsigned NOT NULL,
   `sequence` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Absolute ordering of this record.  This is used to define the order of all records for the same sign_char_id.',
-  PRIMARY KEY (`sign_char_attribute_id`),
-  UNIQUE KEY `unique_sign_char_id_attribute_value_id_sequence` (`attribute_value_id`,`sequence`,`sign_char_id`) USING BTREE,
-  KEY `fk_sign_char_attr_to_sign_char_idx` (`sign_char_id`),
-  KEY `fk_sign_char_attr_to_attr_value_idx` (`attribute_value_id`),
-  CONSTRAINT `fk_sign_char_attr_to_attr_value` FOREIGN KEY (`attribute_value_id`) REFERENCES `attribute_value` (`attribute_value_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_sign_char_attr_to_sign_char` FOREIGN KEY (`sign_char_id`) REFERENCES `sign_char` (`sign_char_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  PRIMARY KEY (`sign_interpretation_attribute_id`),
+  UNIQUE KEY `unique_sign_interpretation_id_attribute_value_id_sequence` (`attribute_value_id`,`sequence`,`sign_interpretation_id`) USING BTREE,
+  KEY `fk_sign_interpretation_attr_to_attr_value_idx` (`attribute_value_id`) USING BTREE,
+  KEY `fk_sign_interpretation_attr_to_sign_interpretation_idx` (`sign_interpretation_id`) USING BTREE,
+  CONSTRAINT `fk_sign_interpretation_attr_to_attr_value` FOREIGN KEY (`attribute_value_id`) REFERENCES `attribute_value` (`attribute_value_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_sign_interpretation_attr_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=4970052 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `sign_char_attribute_owner`
+-- Table structure for table `sign_interpretation_attribute_owner`
 --
 
-DROP TABLE IF EXISTS `sign_char_attribute_owner`;
+DROP TABLE IF EXISTS `sign_interpretation_attribute_owner`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `sign_char_attribute_owner` (
-  `sign_char_attribute_id` int(10) unsigned NOT NULL,
+CREATE TABLE `sign_interpretation_attribute_owner` (
+  `sign_interpretation_attribute_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`sign_char_attribute_id`,`edition_editor_id`),
-  UNIQUE KEY `all_idx` (`sign_char_attribute_id`,`edition_id`),
-  KEY `fk_sign_attr_owenr_to_sv_idx` (`edition_editor_id`),
-  KEY `fk_sign_char_attribute_to_edition` (`edition_id`),
-  CONSTRAINT `fk_sign_char_attr_owner_to_sca` FOREIGN KEY (`sign_char_attribute_id`) REFERENCES `sign_char_attribute` (`sign_char_attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_sign_char_attribute_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_sign_char_attribute_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+  PRIMARY KEY (`sign_interpretation_attribute_id`,`edition_editor_id`),
+  UNIQUE KEY `all_idx` (`sign_interpretation_attribute_id`,`edition_id`),
+  KEY `fk_sign_attr_owner_to_edition_editor_idx` (`edition_editor_id`) USING BTREE,
+  KEY `fk_sign_interpretation_attribute_to_edition` (`edition_id`) USING BTREE,
+  CONSTRAINT `fk_sign_interpretation_attr_owner_to_sca` FOREIGN KEY (`sign_interpretation_attribute_id`) REFERENCES `sign_interpretation_attribute` (`sign_interpretation_attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_sign_interpretation_attribute_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_sign_interpretation_attribute_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_sign_interpretation_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `sign_char_commentary`
+-- Table structure for table `sign_interpretation_commentary`
 --
 
-DROP TABLE IF EXISTS `sign_char_commentary`;
+DROP TABLE IF EXISTS `sign_interpretation_commentary`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `sign_char_commentary` (
-  `sign_char_commentary_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sign_char_id` int(10) unsigned NOT NULL,
+CREATE TABLE `sign_interpretation_commentary` (
+  `sign_interpretation_commentary_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `sign_interpretation_id` int(10) unsigned NOT NULL,
   `attribute_id` int(10) unsigned DEFAULT NULL,
   `commentary` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`sign_char_commentary_id`),
-  KEY `fk_scc_to_attribute_idx` (`attribute_id`),
-  KEY `sign_char_id` (`sign_char_id`),
-  CONSTRAINT `fk_scc_to_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_scc_to_sign_char` FOREIGN KEY (`sign_char_id`) REFERENCES `sign_char` (`sign_char_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  PRIMARY KEY (`sign_interpretation_commentary_id`),
+  KEY `fk_sic_to_attribute_idx` (`attribute_id`) USING BTREE,
+  KEY `sign_interpretation_id` (`sign_interpretation_id`) USING BTREE,
+  CONSTRAINT `fk_sign_interpretation_commentary_to_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_sign_interpretation_commentary_to_sign_char` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `sign_char_commentary_owner`
+-- Table structure for table `sign_interpretation_commentary_owner`
 --
 
-DROP TABLE IF EXISTS `sign_char_commentary_owner`;
+DROP TABLE IF EXISTS `sign_interpretation_commentary_owner`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `sign_char_commentary_owner` (
-  `sign_char_commentary_id` int(10) unsigned NOT NULL,
+CREATE TABLE `sign_interpretation_commentary_owner` (
+  `sign_interpretation_commentary_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`sign_char_commentary_id`,`edition_editor_id`),
-  UNIQUE KEY `all_idx` (`sign_char_commentary_id`,`edition_id`),
-  KEY `fk_scc_owner_to_scrollversion_idx` (`edition_editor_id`),
-  KEY `fk_sign_char_commentary_to_edition` (`edition_id`),
-  CONSTRAINT `fk_scc_onwer_to_scc` FOREIGN KEY (`sign_char_commentary_id`) REFERENCES `sign_char_commentary` (`sign_char_commentary_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_sign_char_commentary_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_sign_char_commentary_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+  PRIMARY KEY (`sign_interpretation_commentary_id`,`edition_editor_id`),
+  UNIQUE KEY `all_idx` (`sign_interpretation_commentary_id`,`edition_id`),
+  KEY `fk_sic_owner_to_scrollversion_idx` (`edition_editor_id`) USING BTREE,
+  KEY `fk_sign_interpretation_commentary_to_edition` (`edition_id`) USING BTREE,
+  CONSTRAINT `fk_sign_interpretation_commentary_onwer_to_scc` FOREIGN KEY (`sign_interpretation_commentary_id`) REFERENCES `sign_interpretation_commentary` (`sign_interpretation_commentary_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_sign_interpretation_commentary_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_sign_interpretation_commentary_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `sign_char_roi`
+-- Table structure for table `sign_interpretation_roi`
 --
 
-DROP TABLE IF EXISTS `sign_char_roi`;
+DROP TABLE IF EXISTS `sign_interpretation_roi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `sign_char_roi` (
-  `sign_char_roi_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sign_char_id` int(10) unsigned NOT NULL,
+CREATE TABLE `sign_interpretation_roi` (
+  `sign_interpretation_roi_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `sign_interpretation_id` int(10) unsigned NOT NULL,
   `roi_shape_id` int(10) unsigned NOT NULL,
   `roi_position_id` int(10) unsigned NOT NULL,
   `values_set` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `exceptional` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`sign_char_roi_id`),
-  UNIQUE KEY `char_shape_position` (`sign_char_id`,`roi_shape_id`,`roi_position_id`),
-  KEY `fk_sign_area_to_sign_char_idx` (`sign_char_id`),
+  PRIMARY KEY (`sign_interpretation_roi_id`),
+  UNIQUE KEY `unique_sign_interpretation_shape_position` (`sign_interpretation_id`,`roi_shape_id`,`roi_position_id`) USING BTREE,
   KEY `fk_sign_area_to_area_idx` (`roi_shape_id`),
   KEY `fk_sign_area_to_area_position_idx` (`roi_position_id`),
+  KEY `fk_sign_area_to_sign_interpretation_idx` (`sign_interpretation_id`) USING BTREE,
   CONSTRAINT `fk_sign_area_to_roi_position` FOREIGN KEY (`roi_position_id`) REFERENCES `roi_position` (`roi_position_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sign_area_to_roi_shape` FOREIGN KEY (`roi_shape_id`) REFERENCES `roi_shape` (`roi_shape_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_sign_sign_roi_to_sign_char` FOREIGN KEY (`sign_char_id`) REFERENCES `sign_char` (`sign_char_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_sign_sign_roi_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `sign_char_roi_owner`
+-- Table structure for table `sign_interpretation_roi_owner`
 --
 
-DROP TABLE IF EXISTS `sign_char_roi_owner`;
+DROP TABLE IF EXISTS `sign_interpretation_roi_owner`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `sign_char_roi_owner` (
-  `sign_char_roi_id` int(10) unsigned NOT NULL DEFAULT 0,
+CREATE TABLE `sign_interpretation_roi_owner` (
+  `sign_interpretation_roi_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`sign_char_roi_id`,`edition_editor_id`),
-  UNIQUE KEY `all_idx` (`sign_char_roi_id`,`edition_id`),
+  PRIMARY KEY (`sign_interpretation_roi_id`,`edition_editor_id`),
+  UNIQUE KEY `unique_sign_interpretation_roi_for_edition` (`sign_interpretation_roi_id`,`edition_id`) USING BTREE,
   KEY `fk_sign_area_owner_to_sv_idx` (`edition_editor_id`),
-  KEY `fk_sign_char_roi_to_edition` (`edition_id`),
-  CONSTRAINT `fk_sign_area_owner_to_sign_area` FOREIGN KEY (`sign_char_roi_id`) REFERENCES `sign_char_roi` (`sign_char_roi_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_sign_char_roi_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_sign_char_roi_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+  KEY `fk_sign_interpretation_roi_to_edition` (`edition_id`) USING BTREE,
+  CONSTRAINT `fk_sign_area_owner_to_sign_area` FOREIGN KEY (`sign_interpretation_roi_id`) REFERENCES `sign_interpretation_roi` (`sign_interpretation_roi_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_sign_interpretation_roi_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_sign_interpretation_roi_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1753,6 +1623,137 @@ CREATE TABLE `sqe_session` (
   PRIMARY KEY (`sqe_session_id`),
   KEY `fk_sqe_sesseio_to_user_idx` (`user_id`),
   CONSTRAINT `fk_sqe_session_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `text_fragment`
+--
+
+DROP TABLE IF EXISTS `text_fragment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `text_fragment` (
+  `text_fragment_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`text_fragment_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `text_fragment_data`
+--
+
+DROP TABLE IF EXISTS `text_fragment_data`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `text_fragment_data` (
+  `text_fragment_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `text_fragment_id` int(10) unsigned NOT NULL,
+  `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation for this fragment of text (usually col. x or frg. x).',
+  PRIMARY KEY (`text_fragment_data_id`),
+  UNIQUE KEY `unique_text_fragment_id_text_fragment_name` (`text_fragment_id`,`name`) USING BTREE,
+  KEY `fk_text_fragment_data_to_text_fragment_idx` (`text_fragment_id`) USING BTREE,
+  CONSTRAINT `fk_text_fragment_data_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table defines the properties of a unified grouping of text containing one or more lines.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `text_fragment_data_owner`
+--
+
+DROP TABLE IF EXISTS `text_fragment_data_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `text_fragment_data_owner` (
+  `text_fragment_data_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`text_fragment_data_id`,`edition_editor_id`),
+  UNIQUE KEY `unique_text_fragment_for_edition` (`text_fragment_data_id`,`edition_id`) USING BTREE,
+  KEY `fk_text_fragment_data_owner_to_scroll_version_idx` (`edition_editor_id`) USING BTREE,
+  KEY `fk_text_fragment_data_to_edition` (`edition_id`) USING BTREE,
+  CONSTRAINT `fk_text_fragment_data_owner_to_text_fragment_data` FOREIGN KEY (`text_fragment_data_id`) REFERENCES `text_fragment_data` (`text_fragment_data_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `fk_text_fragment_data_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_text_fragment_data_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `text_fragment_sequence`
+--
+
+DROP TABLE IF EXISTS `text_fragment_sequence`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `text_fragment_sequence` (
+  `text_fragment_sequence_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `text_fragment_id` int(10) unsigned NOT NULL,
+  `position` smallint(5) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`text_fragment_sequence_id`),
+  UNIQUE KEY `unique_col_id_position` (`text_fragment_id`,`position`) USING BTREE,
+  KEY `fk_cs_to_col_idx` (`text_fragment_id`),
+  CONSTRAINT `fk_tfs_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This provides a user defined sequence for ordering the text fragment units in an edition.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `text_fragment_sequence_owner`
+--
+
+DROP TABLE IF EXISTS `text_fragment_sequence_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `text_fragment_sequence_owner` (
+  `text_fragment_sequence_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`text_fragment_sequence_id`,`edition_editor_id`),
+  UNIQUE KEY `unique_text_fragment_sequence_for_edition` (`text_fragment_sequence_id`,`edition_id`) USING BTREE,
+  KEY `fk_text_fragment_sequence_owner_to_edition` (`edition_id`) USING BTREE,
+  KEY `fk_tfso_to_scroll_version_idx` (`edition_editor_id`) USING BTREE,
+  CONSTRAINT `fk_text_fragment_sequence_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_text_fragment_sequence_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_tfs_owner_tocs` FOREIGN KEY (`text_fragment_sequence_id`) REFERENCES `text_fragment_sequence` (`text_fragment_sequence_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `text_fragment_to_line`
+--
+
+DROP TABLE IF EXISTS `text_fragment_to_line`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `text_fragment_to_line` (
+  `text_fragment_to_line_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `text_fragment_id` int(10) unsigned NOT NULL,
+  `line_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`text_fragment_to_line_id`),
+  UNIQUE KEY `text_fragment_line_idx` (`text_fragment_id`,`line_id`) USING BTREE,
+  KEY `fk_text_fragment_to_line_to_line_idx` (`line_id`) USING BTREE,
+  CONSTRAINT `fk_text_fragment_to_line_to_line` FOREIGN KEY (`line_id`) REFERENCES `line` (`line_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_text_fragment_to_line_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=54448 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table links lines of an edition to a specific column text fragment.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `text_fragment_to_line_owner`
+--
+
+DROP TABLE IF EXISTS `text_fragment_to_line_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `text_fragment_to_line_owner` (
+  `text_fragment_to_line_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`text_fragment_to_line_id`,`edition_editor_id`),
+  UNIQUE KEY `unique_text_fragment_to_line_for_edition` (`text_fragment_to_line_id`,`edition_id`) USING BTREE,
+  KEY `fk_text_fragment_to_line_to_edition` (`edition_id`) USING BTREE,
+  KEY `fk_text_fragment_to_linew_owner_to_scroll_version_idx` (`edition_editor_id`) USING BTREE,
+  CONSTRAINT `fk_text_fragment_to_line_owner_to_text_fragment_to_line` FOREIGN KEY (`text_fragment_to_line_id`) REFERENCES `text_fragment_to_line` (`text_fragment_to_line_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_text_fragment_to_line_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_text_fragment_to_line_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2648,7 +2649,7 @@ DELIMITER ;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `recent_edition_catalog_to_col_confirmation` AS select `iaa_edition_catalog_to_col_confirmation`.`iaa_edition_catalog_to_col_id` AS `iaa_edition_catalog_to_col_id`,`iaa_edition_catalog_to_col_confirmation`.`confirmed` AS `confirmed`,`iaa_edition_catalog_to_col_confirmation`.`user_id` AS `user_id`,max(`iaa_edition_catalog_to_col_confirmation`.`time`) AS `MAX(``time``)` from `iaa_edition_catalog_to_col_confirmation` group by `iaa_edition_catalog_to_col_confirmation`.`iaa_edition_catalog_to_col_id` */;
+/*!50001 VIEW `recent_edition_catalog_to_col_confirmation` AS select `iaa_edition_catalog_to_text_fragment_confirmation`.`iaa_edition_catalog_to_text_fragment_id` AS `iaa_edition_catalog_to_text_fragment_id`,`iaa_edition_catalog_to_text_fragment_confirmation`.`confirmed` AS `confirmed`,`iaa_edition_catalog_to_text_fragment_confirmation`.`user_id` AS `user_id`,max(`iaa_edition_catalog_to_text_fragment_confirmation`.`time`) AS `MAX(``time``)` from `iaa_edition_catalog_to_text_fragment_confirmation` group by `iaa_edition_catalog_to_text_fragment_confirmation`.`iaa_edition_catalog_to_text_fragment_id` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
