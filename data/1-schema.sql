@@ -324,11 +324,11 @@ DROP TABLE IF EXISTS `attribute_numeric`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `attribute_numeric` (
-  `sign_char_attribute_id` int(10) unsigned NOT NULL,
+  `sign_interpretation_attribute_id` int(10) unsigned NOT NULL,
   `value` float NOT NULL DEFAULT 0,
-  PRIMARY KEY (`sign_char_attribute_id`,`value`),
+  PRIMARY KEY (`sign_interpretation_attribute_id`,`value`),
   KEY `value` (`value`),
-  CONSTRAINT `fk_attr_num_to_sign_char_attr` FOREIGN KEY (`sign_char_attribute_id`) REFERENCES `sign_interpretation_attribute` (`sign_interpretation_attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_attr_num_to_sign_interpretation_attr` FOREIGN KEY (`sign_interpretation_attribute_id`) REFERENCES `sign_interpretation_attribute` (`sign_interpretation_attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
