@@ -1826,7 +1826,7 @@ CREATE TABLE `user_email_token` (
   `token` varchar(128) NOT NULL DEFAULT '''""''' COMMENT 'Secret token emailed to user when activating a new account or attempting to reset a forgotten password.',
   `type` enum('RESET_PASSWORD','ACTIVATE_ACCOUNT','DELETE_EDITION') NOT NULL DEFAULT 'RESET_PASSWORD' COMMENT 'Nature of verification request (either resetting a lost password or activating a new account).',
   `date_created` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`user_id`),
+  PRIMARY KEY (`user_id`,`token`),
   KEY `date_created_index` (`date_created`) USING BTREE,
   CONSTRAINT `fk_user_email_token_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
