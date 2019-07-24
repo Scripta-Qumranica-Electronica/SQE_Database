@@ -487,6 +487,7 @@ CREATE TABLE `edition` (
   `locked` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `copyright_holder` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'This is the person or institution who holds copyright for the edition.',
   `collaborators` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Each edition may have a set list of collaborators.  If NULL, then the API will automatically construct a list of collaborators based on the edition_editors.',
+  `public` tinyint(3) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`edition_id`),
   KEY `fk_edition_to_manuscript` (`manuscript_id`) USING BTREE,
   CONSTRAINT `fk_edition_to_manuscript` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`)
@@ -1136,16 +1137,15 @@ DROP TABLE IF EXISTS `position_in_stream`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `position_in_stream` (
-  `position_in_stream_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Uinique identifiere',
-  `sign_id` int(11) unsigned NOT NULL COMMENT 'References a sign',
-  `next_sign_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'Links to another sign in order to create a linked list.',
+  `position_in_stream_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `sign_interpretation_id` int(11) unsigned NOT NULL,
+  `next_sign_interpretation_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`position_in_stream_id`),
-  UNIQUE KEY `sign_next` (`sign_id`,`next_sign_id`),
-  KEY `position_in_stream_next_sign_id_IDX` (`sign_id`),
-  KEY `fk_next_to_sign` (`next_sign_id`),
-  CONSTRAINT `fk_next_to_sign` FOREIGN KEY (`next_sign_id`) REFERENCES `sign` (`sign_id`),
-  CONSTRAINT `fk_to_sign` FOREIGN KEY (`sign_id`) REFERENCES `sign` (`sign_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1733729 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Put signs in one-dimensional stream (≈ text)\nThe reason for this table is, that the manuscripts may contain parallel text-streams created by corrections. Sometimes also scholars put superlinear signs at different places. Thus, this is a discrete layer of interpretation between signs and words.';
+  KEY `fk_position_in_stream_to_sign_interpretation` (`sign_interpretation_id`),
+  KEY `fk_position_in_stream_to_next_sign_interpretation` (`next_sign_interpretation_id`),
+  CONSTRAINT `fk_position_in_stream_to_next_sign_interpretation` FOREIGN KEY (`next_sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`),
+  CONSTRAINT `fk_position_in_stream_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1722967 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1156,17 +1156,16 @@ DROP TABLE IF EXISTS `position_in_stream_owner`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `position_in_stream_owner` (
-  `position_in_stream_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `position_in_stream_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(11) unsigned NOT NULL,
+  `edition_editor_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`position_in_stream_id`,`edition_editor_id`),
-  UNIQUE KEY `all_idx` (`position_in_stream_id`,`edition_id`),
-  KEY `fk_position_in_stream_onwer_to_scroll_version_idx` (`edition_editor_id`),
-  KEY `fk_position_in_stream_to_edition` (`edition_id`),
-  CONSTRAINT `fk_position_in_stream_owner_to_position_in_stream` FOREIGN KEY (`position_in_stream_id`) REFERENCES `position_in_stream` (`position_in_stream_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `fk_position_in_stream_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_position_in_stream_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `fk_position_in_stream_owner_to_edition_id` (`edition_id`),
+  KEY `fk_position_in_stream_owner_to_edition_editor_id` (`edition_editor_id`),
+  CONSTRAINT `fk_position_in_stream_owner_to_edition_editor_id` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_position_in_stream_owner_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_position_in_stream_owner_to_position_in_stream` FOREIGN KEY (`position_in_stream_id`) REFERENCES `position_in_stream` (`position_in_stream_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1177,15 +1176,14 @@ DROP TABLE IF EXISTS `position_in_stream_to_word_rel`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `position_in_stream_to_word_rel` (
-  `position_in_stream_id` int(10) unsigned NOT NULL COMMENT 'References a sign in a stream',
-  `word_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `position_in_stream_id` int(11) unsigned NOT NULL,
+  `word_id` int(11) unsigned NOT NULL,
   `position_in_word` tinyint(3) unsigned DEFAULT NULL,
   PRIMARY KEY (`position_in_stream_id`,`word_id`),
-  KEY `fk_sign_stream_has_words_sign_stream1_idx` (`position_in_stream_id`),
-  KEY `fk_rel_to_word_idx` (`word_id`),
-  CONSTRAINT `fk_rel_position_in_stream` FOREIGN KEY (`position_in_stream_id`) REFERENCES `position_in_stream` (`position_in_stream_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_rel_to_word` FOREIGN KEY (`word_id`) REFERENCES `word` (`word_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Links individual signs to words, which are then linked to data in the QWB database.';
+  KEY `fk_position_in_stream_to_word_rel_to_word_id` (`word_id`),
+  CONSTRAINT `fk_position_in_stream_to_word_rel_to_position_in_stream` FOREIGN KEY (`position_in_stream_id`) REFERENCES `position_in_stream` (`position_in_stream_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_position_in_stream_to_word_rel_to_word_id` FOREIGN KEY (`word_id`) REFERENCES `word` (`word_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1449,9 +1447,9 @@ CREATE TABLE `sign_interpretation` (
   `sign_interpretation_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `sign_id` int(10) unsigned NOT NULL,
   `is_variant` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean set to true when current entry is a variant interpretation of a sign.',
-  `sign` char(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `character` char(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`sign_interpretation_id`),
-  UNIQUE KEY `unique_sign_id_is_variant_sign` (`is_variant`,`sign`,`sign_id`) USING BTREE,
+  UNIQUE KEY `unique_sign_id_is_variant_sign` (`is_variant`,`character`,`sign_id`) USING BTREE,
   KEY `fk_sign_interpretation_to_sign_idx` (`sign_id`) USING BTREE,
   CONSTRAINT `fk_sign_interpretation_to_sign` FOREIGN KEY (`sign_id`) REFERENCES `sign` (`sign_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1733925 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table describes signs in a text.  Currently this includes both characters, spaces, and formatting marks, it could perhaps also include other elements that one might want to define as a sign.';
@@ -1826,7 +1824,7 @@ DROP TABLE IF EXISTS `user_email_token`;
 CREATE TABLE `user_email_token` (
   `user_id` int(11) unsigned NOT NULL DEFAULT 0,
   `token` varchar(128) NOT NULL DEFAULT '''""''' COMMENT 'Secret token emailed to user when activating a new account or attempting to reset a forgotten password.',
-  `type` enum('RESET_PASSWORD','ACTIVATE_ACCOUNT') NOT NULL DEFAULT 'RESET_PASSWORD' COMMENT 'Nature of verification request (either resetting a lost password or activating a new account).',
+  `type` enum('RESET_PASSWORD','ACTIVATE_ACCOUNT','DELETE_EDITION') NOT NULL DEFAULT 'RESET_PASSWORD' COMMENT 'Nature of verification request (either resetting a lost password or activating a new account).',
   `date_created` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`user_id`),
   KEY `date_created_index` (`date_created`) USING BTREE,
