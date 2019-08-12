@@ -38,7 +38,7 @@ COPY --from=builder /usr/lib/mysql/plugin/multiply_matrix.so /usr/lib/mysql/plug
 COPY ./startup.sh /startup.sh
 
 ## Just inject the necessary event scheduler here (no need for a complete custom my.cnf)
-RUN echo $'event_scheduler = 1\ntransaction-isolation = READ-COMMITTED' >> /etc/mysql/mariadb.cnf
+RUN printf "event_scheduler = 1\ntransaction-isolation = READ-COMMITTED" >> /etc/mysql/mariadb.cnf
 
 ## Use our new entrypoint, which will pickup runtime password and user account settings
 ENTRYPOINT [ "/startup.sh" ]
