@@ -78,28 +78,30 @@ pid="$!"
 
 ## Wait till the server is running
 echo "Waiting for the init database to start"
-while ! mysqladmin -u root -pnone status
+while ! mysqladmin -u root -pnone status && ! mysqladmin -u root -p$MYSQL_ROOT_PASSWORD status
+#while ! lsof -i :3306
 do
    sleep 1
 done
 
 ## Reset the root password if MYSQL_ROOT_PASSWORD is set
+echo "Checking if root password should be reset"
 if [ "$MYSQL_ROOT_PASSWORD" ]; then
-    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "SELECT 1"
-    if [ $? -ne 0 ]; then
+    if ! mysql -u root -p$MYSQL_ROOT_PASSWORD -e "SELECT 1"; then
         echo "Resetting the root password"
         mysql -u root -pnone -e "USE mysql; SET PASSWORD FOR 'root'@'%' = PASSWORD('$MYSQL_ROOT_PASSWORD'); FLUSH PRIVILEGES;"
         mysql -u root -pnone -e "USE mysql; SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$MYSQL_ROOT_PASSWORD'); FLUSH PRIVILEGES;"
     fi
+else export MYSQL_ROOT_PASSWORD="none"
 fi
 
 ## Setup a user account if MYSQL_USER and MYSQL_PASSWORD are set
+echo "Checking if user + password should be added"
 if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
-    mysql -u $MYSQL_USER -p$MYSQL_PASSWORDD -e "SELECT 1"
-    if [ $? -ne 0 ]; then
+    if ! mysql -u $MYSQL_USER -p$MYSQL_PASSWORD -e "SELECT 1"; then
         echo "Setting up initial user account"
-        mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;"
-        mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL ON \`SQE\`.* TO '$MYSQL_USER'@'%' ;"
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;"
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "GRANT ALL ON \`SQE\`.* TO '$MYSQL_USER'@'%' ;"
     fi
 fi
 
