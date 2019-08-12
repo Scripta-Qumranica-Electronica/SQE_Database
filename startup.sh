@@ -85,16 +85,22 @@ done
 
 ## Reset the root password if MYSQL_ROOT_PASSWORD is set
 if [ "$MYSQL_ROOT_PASSWORD" ]; then
-    echo "Resetting the root password"
-    mysql -u root -pnone -e "USE mysql; SET PASSWORD FOR 'root'@'%' = PASSWORD('$MYSQL_ROOT_PASSWORD'); FLUSH PRIVILEGES;"
-    mysql -u root -pnone -e "USE mysql; SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$MYSQL_ROOT_PASSWORD'); FLUSH PRIVILEGES;"
+    mysql -u root -p$MYSQL_ROOT_PASSWORD -e "SELECT 1"
+    if [ $? -ne 0 ]; then
+        echo "Resetting the root password"
+        mysql -u root -pnone -e "USE mysql; SET PASSWORD FOR 'root'@'%' = PASSWORD('$MYSQL_ROOT_PASSWORD'); FLUSH PRIVILEGES;"
+        mysql -u root -pnone -e "USE mysql; SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$MYSQL_ROOT_PASSWORD'); FLUSH PRIVILEGES;"
+    fi
 fi
 
 ## Setup a user account if MYSQL_USER and MYSQL_PASSWORD are set
 if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
-    echo "Setting up initial user account"
-    mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;"
-    mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL ON \`SQE\`.* TO '$MYSQL_USER'@'%' ;"
+    mysql -u $MYSQL_USER -p$MYSQL_PASSWORDD -e "SELECT 1"
+    if [ $? -ne 0 ]; then
+        echo "Setting up initial user account"
+        mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD' ;"
+        mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL ON \`SQE\`.* TO '$MYSQL_USER'@'%' ;"
+    fi
 fi
 
 ## End the init sequence
