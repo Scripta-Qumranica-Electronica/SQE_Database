@@ -176,10 +176,13 @@ DROP TABLE IF EXISTS `artefact_position`;
 CREATE TABLE `artefact_position` (
   `artefact_position_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `artefact_id` int(10) unsigned NOT NULL,
-  `transform_matrix` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '{"matrix":[[1,0,0],[0,1,0]]}' COMMENT 'Transform matrix to position the artefact on the “virtual scroll”',
   `z_index` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'This value can move artefacts up or down in relation to other artefacts in the scroll.  That is, it sends an artefact further into the foreground or background.',
+  `scale` float unsigned DEFAULT NULL COMMENT 'Resizing to be applied to the artefact.',
+  `rotate` float unsigned DEFAULT 0 COMMENT 'Rotation to be applied to the artefact.',
+  `translate_x` int(11) unsigned DEFAULT NULL COMMENT 'Translation of the artefact on the horizontal axis.',
+  `translate_y` int(11) unsigned DEFAULT NULL COMMENT 'Translation of the artefact on the vertical axis.',
   PRIMARY KEY (`artefact_position_id`),
-  UNIQUE KEY `unique_artefact_transform_z_index` (`artefact_id`,`z_index`,`transform_matrix`) USING BTREE,
+  UNIQUE KEY `unique_artefact_transform_z_index` (`artefact_id`,`z_index`,`rotate`,`scale`,`translate_x`,`translate_y`) USING BTREE,
   KEY `fk_artefact_position_to_artefact` (`artefact_id`),
   CONSTRAINT `fk_artefact_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table defines the location, rotation, and size of an artefact within the scroll.';
@@ -218,12 +221,15 @@ CREATE TABLE `artefact_shape` (
   `sqe_image_id` int(10) unsigned DEFAULT NULL COMMENT 'This points to the master image (see SQE_image table) in which this artefact is found.',
   `region_in_sqe_image` polygon NOT NULL COMMENT 'This is the exact polygon of the artefact’s location within the master image’s coordinate system.',
   `region_in_sqe_image_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_in_sqe_image`,512)) STORED,
+  `work_status_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`artefact_shape_id`) USING BTREE,
   UNIQUE KEY `unique_artefact_shape` (`artefact_id`,`sqe_image_id`,`region_in_sqe_image_hash`) USING BTREE,
   KEY `fk_artefact_shape_to_sqe_image_idx` (`sqe_image_id`) USING BTREE,
   KEY `fk_artefact_shape_to_artefact` (`artefact_id`) USING BTREE,
+  KEY `fk_artefact_shape_to_work_status` (`work_status_id`),
   CONSTRAINT `fk_artefact_shape_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_artefact_shape_to_sqe_image` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_artefact_shape_to_sqe_image` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_artefact_shape_to_work_status` FOREIGN KEY (`work_status_id`) REFERENCES `work_status` (`work_status_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=36466 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the region of the artefact in the coordinate system of its image.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -345,7 +351,7 @@ CREATE TABLE `attribute_owner` (
   CONSTRAINT `fk_attribute_owner_to_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_attribute_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_attribute_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -402,7 +408,7 @@ CREATE TABLE `attribute_value_css_owner` (
   CONSTRAINT `fk_attribute_value_css_owner_to_attribute_value_css` FOREIGN KEY (`attribute_value_css_id`) REFERENCES `attribute_value_css` (`attribute_value_css_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_attribute_value_css_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_attribute_value_css_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -422,7 +428,7 @@ CREATE TABLE `attribute_value_owner` (
   CONSTRAINT `fk_attribute_value_owner_to_attribute_value` FOREIGN KEY (`attribute_value_id`) REFERENCES `attribute_value` (`attribute_value_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_attribute_value_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_attribute_value_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -662,7 +668,7 @@ CREATE TABLE `iaa_edition_catalog_to_text_fragment_confirmation` (
   KEY `fk_iaa_edition_catalog_to_text_fragment_confirmation_to_user` (`user_id`) USING BTREE,
   CONSTRAINT `fk_aecttfc_to_iaa_edition_catalog_to_text_fragment` FOREIGN KEY (`iaa_edition_catalog_to_text_fragment_id`) REFERENCES `iaa_edition_catalog_to_text_fragment` (`iaa_edition_catalog_to_text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_iaa_edition_catalog_to_text_fragment_confirmation_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table is part of the temporary and preliminary catalog info matching system.  There are three possibilities here: 1. confirmed = 0 and user_id IS NULL (the match has neither been confirmed nor rejected); 2. confirmed = 0 and user_id IS NOT NULL (the user with user_id has rejected the match); 3. confirmed = 1 and user_id IS NOT NULL (the user with user_id has confirmed the match as valid).  The pairing confirmed = 1 and user_id IS NOT NULL is an invalid combination.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table is part of the temporary and preliminary catalog info matching system.  There are three possibilities here: 1. confirmed = 0 and user_id IS NULL (the match has neither been confirmed nor rejected); 2. confirmed = 0 and user_id IS NOT NULL (the user with user_id has rejected the match); 3. confirmed = 1 and user_id IS NOT NULL (the user with user_id has confirmed the match as valid).  The pairing confirmed = 1 and user_id IS NOT NULL is an invalid combination.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -805,7 +811,7 @@ CREATE TABLE `image_to_image_map_author` (
   KEY `fk_image_to_image_map_author_to_image_to_user` (`user_id`),
   CONSTRAINT `fk_image_to_image_map_author_to_image_to_image_map` FOREIGN KEY (`image_to_image_map_id`) REFERENCES `image_to_image_map` (`image_to_image_map_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_image_to_image_map_author_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1131,7 +1137,7 @@ CREATE TABLE `position_in_stream` (
   KEY `fk_position_in_stream_to_next_sign_interpretation` (`next_sign_interpretation_id`),
   CONSTRAINT `fk_position_in_stream_to_next_sign_interpretation` FOREIGN KEY (`next_sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`),
   CONSTRAINT `fk_position_in_stream_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1722967 DEFAULT CHARSET=latin1 COMMENT='This table provides ordering data for the transcriptions.  It provides a DAG linking sign_interpretations to each other.';
+) ENGINE=InnoDB AUTO_INCREMENT=1722967 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table provides ordering data for the transcriptions.  It provides a DAG linking sign_interpretations to each other.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1151,7 +1157,7 @@ CREATE TABLE `position_in_stream_owner` (
   CONSTRAINT `fk_position_in_stream_owner_to_edition_editor_id` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_position_in_stream_owner_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_position_in_stream_owner_to_position_in_stream` FOREIGN KEY (`position_in_stream_id`) REFERENCES `position_in_stream` (`position_in_stream_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1169,7 +1175,7 @@ CREATE TABLE `position_in_stream_to_word_rel` (
   KEY `fk_position_in_stream_to_word_rel_to_word_id` (`word_id`),
   CONSTRAINT `fk_position_in_stream_to_word_rel_to_position_in_stream` FOREIGN KEY (`position_in_stream_id`) REFERENCES `position_in_stream` (`position_in_stream_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_position_in_stream_to_word_rel_to_word_id` FOREIGN KEY (`word_id`) REFERENCES `word` (`word_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table links sign_interpretations to the words they are part of.  This creates a bridge from the SQE data to the words stored in the QWB database.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table links sign_interpretations to the words they are part of.  This creates a bridge from the SQE data to the words stored in the QWB database.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1246,7 +1252,7 @@ CREATE TABLE `qwb_variant_owner` (
   CONSTRAINT `fk_qwb_var_owner_to_var` FOREIGN KEY (`qwb_variant_id`) REFERENCES `qwb_variant` (`qwb_variant_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_qwb_variant_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_qwb_variant_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1285,7 +1291,7 @@ CREATE TABLE `qwb_word_data_owner` (
   CONSTRAINT `fk_qwb_data_owner_to_data` FOREIGN KEY (`qwb_word_data_id`) REFERENCES `qwb_word_data` (`qwb_word_data_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_qwb_word_data_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_qwb_word_data_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1528,7 +1534,7 @@ DROP TABLE IF EXISTS `sign_interpretation_roi`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sign_interpretation_roi` (
   `sign_interpretation_roi_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sign_interpretation_id` int(10) unsigned NOT NULL,
+  `sign_interpretation_id` int(10) unsigned DEFAULT NULL,
   `roi_shape_id` int(10) unsigned NOT NULL,
   `roi_position_id` int(10) unsigned NOT NULL,
   `values_set` tinyint(3) unsigned NOT NULL DEFAULT 0,
@@ -1799,14 +1805,14 @@ DROP TABLE IF EXISTS `user_email_token`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_email_token` (
   `user_id` int(11) unsigned NOT NULL,
-  `token` varchar(128) NOT NULL COMMENT 'Unique token the user will provide to verify the requested action.',
-  `type` enum('RESET_PASSWORD','ACTIVATE_ACCOUNT','DELETE_EDITION') NOT NULL DEFAULT 'RESET_PASSWORD' COMMENT 'The type of action permitted with the specified token.',
+  `token` varchar(128) CHARACTER SET utf8mb4 NOT NULL COMMENT 'Unique token the user will provide to verify the requested action.',
+  `type` enum('RESET_PASSWORD','ACTIVATE_ACCOUNT','DELETE_EDITION') CHARACTER SET utf8mb4 NOT NULL DEFAULT 'RESET_PASSWORD' COMMENT 'The type of action permitted with the specified token.',
   `date_created` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date the token was created or updated.  This is used by an event that clears out all entries from this table that are older than 2 days.',
   PRIMARY KEY (`token`),
   KEY `date_created_index` (`date_created`) USING BTREE,
   KEY `fk_user_email_token_to_user` (`user_id`),
   CONSTRAINT `fk_user_email_token_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table holds a list of unique tokens that are sent to the user in order to confirm certain operations in the database.  These tokens are intended to expire and a scheduled event in the database clears out all entries that are over 2 days old.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds a list of unique tokens that are sent to the user in order to confirm certain operations in the database.  These tokens are intended to expire and a scheduled event in the database clears out all entries that are over 2 days old.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1862,6 +1868,21 @@ CREATE TABLE `word_owner` (
   CONSTRAINT `fk_word_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_word_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `work_status`
+--
+
+DROP TABLE IF EXISTS `work_status`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `work_status` (
+  `work_status_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `work_status_message` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '',
+  PRIMARY KEY (`work_status_id`),
+  UNIQUE KEY `unique_status_message` (`work_status_message`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores user-definable work status messages that can be applied to various data tables. They are used to indicate the current status of editor curation for the data entry.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
