@@ -1,8 +1,8 @@
--- MySQL dump 10.17  Distrib 10.3.17-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.17  Distrib 10.3.18-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: SQE
 -- ------------------------------------------------------
--- Server version	10.3.17-MariaDB-1:10.3.17+maria~bionic
+-- Server version	10.3.18-MariaDB-1:10.3.18+maria~bionic
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -221,15 +221,12 @@ CREATE TABLE `artefact_shape` (
   `sqe_image_id` int(10) unsigned DEFAULT NULL COMMENT 'This points to the master image (see SQE_image table) in which this artefact is found.',
   `region_in_sqe_image` polygon NOT NULL COMMENT 'This is the exact polygon of the artefact’s location within the master image’s coordinate system.',
   `region_in_sqe_image_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_in_sqe_image`,512)) STORED,
-  `work_status_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`artefact_shape_id`) USING BTREE,
   UNIQUE KEY `unique_artefact_shape` (`artefact_id`,`sqe_image_id`,`region_in_sqe_image_hash`) USING BTREE,
   KEY `fk_artefact_shape_to_sqe_image_idx` (`sqe_image_id`) USING BTREE,
   KEY `fk_artefact_shape_to_artefact` (`artefact_id`) USING BTREE,
-  KEY `fk_artefact_shape_to_work_status` (`work_status_id`),
   CONSTRAINT `fk_artefact_shape_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_artefact_shape_to_sqe_image` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_artefact_shape_to_work_status` FOREIGN KEY (`work_status_id`) REFERENCES `work_status` (`work_status_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_artefact_shape_to_sqe_image` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=36466 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the region of the artefact in the coordinate system of its image.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -299,6 +296,45 @@ CREATE TABLE `artefact_stack_owner` (
   CONSTRAINT `fk_artefact_stack_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_artefact_stack_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `artefact_status`
+--
+
+DROP TABLE IF EXISTS `artefact_status`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `artefact_status` (
+  `artefact_status_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `work_status_id` int(11) unsigned NOT NULL DEFAULT 1,
+  `artefact_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`artefact_status_id`),
+  UNIQUE KEY `unique_artefact_status` (`artefact_id`,`work_status_id`) USING BTREE,
+  KEY `fk_artefact_status_to_work_status_id` (`work_status_id`),
+  CONSTRAINT `fk_artefact_status_to_artefact_id` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_artefact_status_to_work_status_id` FOREIGN KEY (`work_status_id`) REFERENCES `work_status` (`work_status_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `artefact_status_owner`
+--
+
+DROP TABLE IF EXISTS `artefact_status_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `artefact_status_owner` (
+  `artefact_status_id` int(11) unsigned NOT NULL,
+  `edition_id` int(11) unsigned NOT NULL,
+  `edition_editor_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`artefact_status_id`,`edition_id`),
+  KEY `fk_artefact_status_owner_to_edition_id` (`edition_id`),
+  KEY `fk_artefact_status_owner_to_edition_editor_id` (`edition_editor_id`),
+  CONSTRAINT `fk_artefact_status_owner_to_artefact_status_id` FOREIGN KEY (`artefact_status_id`) REFERENCES `artefact_status` (`artefact_status_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_artefact_status_owner_to_edition_editor_id` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_artefact_status_owner_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1882,7 +1918,7 @@ CREATE TABLE `work_status` (
   `work_status_message` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '',
   PRIMARY KEY (`work_status_id`),
   UNIQUE KEY `unique_status_message` (`work_status_message`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores user-definable work status messages that can be applied to various data tables. They are used to indicate the current status of editor curation for the data entry.';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores user-definable work status messages that can be applied to various data tables. They are used to indicate the current status of editor curation for the data entry.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
