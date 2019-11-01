@@ -1355,8 +1355,10 @@ DROP TABLE IF EXISTS `roi_position`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roi_position` (
   `roi_position_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `transform_matrix` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Transform details for placement of ROI.  This transform is carried out in the coordinate system of the linked artefact.  To get the location of the ROI in the coordinate system of the “virtual scroll”, one must multiply the transform_matrix of the attached artefact with the transform matrix of the ROI. This can by done with the UDF multiply_matrix(), which should have the ROI’s transform_matrix first and the artefact’s transform_matrix second.',
   `artefact_id` int(11) unsigned NOT NULL COMMENT 'ROI’s are linked to artefacts.  Each edition has an artefact that serves as the “virtual scroll” that is positioned at 0,0 and has a size of maxWidth and maxHeight, this artefact is used for reconstructed text.',
+  `translate_x` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The translation on the X axis necessary to position the a ROI shape in the artefact''s coordinate system',
+  `translate_y` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The translation on the Y axis necessary to position the a ROI shape in the artefact''s coordinate system',
+  `stance_rotation` smallint(5) unsigned DEFAULT NULL COMMENT 'Any rotation that would be necessary for the sign to have the correct stance on a horizontal plane',
   PRIMARY KEY (`roi_position_id`),
   KEY `fk_roi_position_to_artefact` (`artefact_id`),
   CONSTRAINT `fk_roi_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
