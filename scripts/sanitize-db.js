@@ -22,8 +22,8 @@ const getOwnedTables = async (pool) => {
         try {
             const rows = await pool.query(`
                 SELECT table_name AS ownedTable
-                FROM information_schema.tables    
-                WHERE table_type = 'BASE TABLE' AND table_schema='SQE' AND table_name LIKE "%_owner" 
+                FROM information_schema.tables
+                WHERE table_type = 'BASE TABLE' AND table_schema='SQE' AND table_name LIKE "%_owner"
                 ORDER BY table_name ASC`)
             resolve(rows.map(x => x.ownedTable))
         } catch(err) {
@@ -40,7 +40,7 @@ const sanitizeDB = async () => {
     const pool = mariadb.createPool({
     host: 'localhost',
     port: 3307,
-    user:'root', 
+    user:'root',
     password: 'none',
     database: 'SQE',
     connectionLimit: 80,
@@ -48,7 +48,7 @@ const sanitizeDB = async () => {
     })
     console.log(chalk.green('✓ Connected to DB.'))
     let ownedTables
-    
+
     try {
         ownedTables = await getOwnedTables(pool, 0)
     } catch(err) {
@@ -58,12 +58,12 @@ const sanitizeDB = async () => {
     }
 
     let deleteFromTables = []
-    
+
     // Delete the custom ROIs
     console.log(chalk.blue('Sanitizing custom ROIs.'))
     let query = `
     SET foreign_key_checks = 0;
-    
+
     DELETE roi_position
     FROM roi_position
     JOIN sign_interpretation_roi USING(roi_position_id)
@@ -78,28 +78,28 @@ const sanitizeDB = async () => {
     JOIN edition_editor USING(edition_editor_id)
     WHERE user_id != 1;
 
-    SELECT @max := MAX(roi_position_id)+ 1 FROM roi_position; 
+    SELECT @max := MAX(roi_position_id)+ 1 FROM roi_position;
     PREPARE stmt FROM CONCAT('ALTER TABLE roi_position AUTO_INCREMENT = ', @max OR 1);
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
 
-    SELECT @max := MAX(roi_shape_id)+ 1 FROM roi_shape; 
+    SELECT @max := MAX(roi_shape_id)+ 1 FROM roi_shape;
     PREPARE stmt FROM CONCAT('ALTER TABLE roi_shape AUTO_INCREMENT = ', @max OR 1);
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
 
     SET foreign_key_checks = 1;
     `
-    
+
     deleteFromTables.push({query: pool.query(query), table: 'custom', tname: 'ROI\'s'})
-    
+
     // Spin up the delete processes
     for (table of ownedTables) {
         const tname = table.replace('_owner', '')
         console.log(chalk.blue(`Sanitizing ${table} and ${tname}.`))
         const query = `
         SET foreign_key_checks = 0;
-        
+
         DELETE ${table}
         FROM ${table}
         JOIN edition_editor USING(edition_editor_id)
@@ -110,12 +110,12 @@ const sanitizeDB = async () => {
         LEFT JOIN ${table} USING(${tname}_id)
         WHERE ${table}.edition_editor_id is null;
 
-        SELECT @max := MAX(${tname}_id)+ 1 FROM ${table}; 
+        SELECT @max := MAX(${tname}_id)+ 1 FROM ${table};
         PREPARE stmt FROM CONCAT('ALTER TABLE ${table} AUTO_INCREMENT = ', @max OR 1);
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
 
-        SELECT @max := MAX(${tname}_id)+ 1 FROM ${tname}; 
+        SELECT @max := MAX(${tname}_id)+ 1 FROM ${tname};
         PREPARE stmt FROM CONCAT('ALTER TABLE ${tname} AUTO_INCREMENT = ', @max OR 1);
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
@@ -124,27 +124,27 @@ const sanitizeDB = async () => {
         `
         deleteFromTables.push({query: pool.query(query), table: table, tname: tname})
     }
-    
+
 
     // Clean edition_editors
     console.log(chalk.blue(`Sanitizing edition_editor and related.`))
     query = `
         SET foreign_key_checks = 0;
-        
+
         DELETE edition_editor, edition
         FROM edition_editor
         JOIN edition USING(edition_id)
         WHERE edition_editor.user_id != 1;
 
-        SELECT @max := MAX(edition_editor_id) + 1 FROM edition_editor; 
+        SELECT @max := MAX(edition_editor_id) + 1 FROM edition_editor;
         PREPARE stmt FROM CONCAT('ALTER TABLE edition_editor AUTO_INCREMENT = ', @max OR 1);
         EXECUTE stmt;
 
         DEALLOCATE PREPARE stmt;
-        SELECT @max := MAX(edition_id) + 1 FROM edition; 
+        SELECT @max := MAX(edition_id) + 1 FROM edition;
         PREPARE stmt FROM CONCAT('ALTER TABLE edition AUTO_INCREMENT = ', @max OR 1);
         EXECUTE stmt;
-    
+
         SET foreign_key_checks = 1;
         `
     deleteFromTables.push({query: pool.query(query), table: 'custom', tname: 'edition_editor'})
@@ -153,12 +153,12 @@ const sanitizeDB = async () => {
     console.log(chalk.blue(`Sanitizing users.`))
     query = `
         SET foreign_key_checks = 0;
-        
+
         DELETE user
         FROM user
-        WHERE user_id != 1 AND user_id != 5;
+        WHERE email != "sqe_api" AND email != "test" AND email != "test2";
 
-        SELECT @max := MAX(user_id) + 1 FROM user; 
+        SELECT @max := MAX(user_id) + 1 FROM user;
         PREPARE stmt FROM CONCAT('ALTER TABLE user AUTO_INCREMENT = ', @max OR 1);
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
@@ -172,7 +172,7 @@ const sanitizeDB = async () => {
         console.log(chalk.blue(`Sanitizing blacklisted ${table}.`))
         const query = `
             SET foreign_key_checks = 0;
-            
+
             TRUNCATE TABLE ${table};
 
             SET foreign_key_checks = 1;
