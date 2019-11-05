@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `SQE_image`;
 CREATE TABLE `SQE_image` (
   `sqe_image_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `image_urls_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Link to image_urls table which contains the url of the iiif server that provides this image and the default suffix used to get images from that server.',
-  `filename` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Actual filename of the image as specified on the iiif server.',
+  `filename` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Actual filename of the image as specified on the iiif server.',
   `native_width` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'We store internally the pixel width of the full size image.',
   `native_height` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'We store internally the pixel height of the full size image.',
   `dpi` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'The DPI of the full size image (used to calculate relative scaling of images).',
@@ -71,7 +71,7 @@ CREATE TABLE `area_group` (
   `area_group_id` int(10) unsigned NOT NULL,
   `area_id` int(10) unsigned NOT NULL,
   `move_direction` set('x','y') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `commentary` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `z_index` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`area_group_id`)
@@ -88,7 +88,7 @@ DROP TABLE IF EXISTS `area_group_member`;
 CREATE TABLE `area_group_member` (
   `area_group_id` int(10) unsigned NOT NULL,
   `area_id` int(11) NOT NULL,
-  `area_type` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `area_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`area_group_id`,`area_id`),
   CONSTRAINT `fk_group_member_to_group` FOREIGN KEY (`area_group_id`) REFERENCES `area_group` (`area_group_id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -346,7 +346,7 @@ DROP TABLE IF EXISTS `attribute`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `attribute` (
   `attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `type` enum('BOOLEAN','NUMBER','STRING') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `description` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`attribute_id`),
@@ -419,7 +419,7 @@ DROP TABLE IF EXISTS `attribute_value_css`;
 CREATE TABLE `attribute_value_css` (
   `attribute_value_css_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `attribute_value_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `css` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `css` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`attribute_value_css_id`),
   UNIQUE KEY `unique_attribute_value_css` (`attribute_value_id`,`css`) USING BTREE,
   KEY `fk_attribute_value_css_to_attribute_value` (`attribute_value_id`),
@@ -560,7 +560,7 @@ DROP TABLE IF EXISTS `external_font`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `external_font` (
   `external_font_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `font_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `font_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`external_font_id`),
   UNIQUE KEY `font_id_idx` (`font_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -637,14 +637,14 @@ DROP TABLE IF EXISTS `iaa_edition_catalog`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `iaa_edition_catalog` (
   `iaa_edition_catalog_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `manuscript` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Standard designation of the manuscript.',
-  `edition_name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name of the publication in which the editio princeps appears.',
-  `edition_volume` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Volume of the publication in which the editio princeps appears.',
-  `edition_location_1` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'First tier identifier (usually a page number).',
-  `edition_location_2` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Second tier identifier (usually a fragment/column designation).',
+  `manuscript` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Standard designation of the manuscript.',
+  `edition_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name of the publication in which the editio princeps appears.',
+  `edition_volume` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Volume of the publication in which the editio princeps appears.',
+  `edition_location_1` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'First tier identifier (usually a page number).',
+  `edition_location_2` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Second tier identifier (usually a fragment/column designation).',
   `edition_side` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Side designation in editio princeps.',
   `manuscript_id` int(11) unsigned DEFAULT NULL,
-  `comment` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `comment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`iaa_edition_catalog_id`),
   UNIQUE KEY `unique_edition_entry` (`edition_location_1`,`edition_location_2`,`edition_name`,`edition_side`,`edition_volume`,`manuscript`) USING BTREE,
   KEY `fk_edition_catalog_to_manuscript_id` (`manuscript_id`) USING BTREE,
@@ -764,9 +764,9 @@ DROP TABLE IF EXISTS `image_catalog`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `image_catalog` (
   `image_catalog_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `institution` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name of the institution providing the images.',
-  `catalog_number_1` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'First tier object identifier',
-  `catalog_number_2` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Second tier object identifier (if available)',
+  `institution` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name of the institution providing the images.',
+  `catalog_number_1` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'First tier object identifier',
+  `catalog_number_2` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Second tier object identifier (if available)',
   `catalog_side` tinyint(1) unsigned DEFAULT 0 COMMENT 'Side reference designation.',
   `object_id` varchar(255) GENERATED ALWAYS AS (concat(`institution`,'-',`catalog_number_1`,'-',`catalog_number_2`)) STORED,
   PRIMARY KEY (`image_catalog_id`),
@@ -821,7 +821,7 @@ CREATE TABLE `image_to_image_map` (
   `image2_id` int(10) unsigned NOT NULL DEFAULT 0,
   `region_on_image1` polygon NOT NULL COMMENT 'Region on image 1 that can be found in image 2.',
   `region_on_image2` polygon NOT NULL COMMENT 'Region in image 2 that can be found in image 1.',
-  `transform_matrix` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '{"matrix":[[1,0,0],[0,1,0]]}' COMMENT 'Linear transform to apply to image 2 in order to align it with image 1.',
+  `transform_matrix` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '{"matrix":[[1,0,0],[0,1,0]]}' COMMENT 'Linear transform to apply to image 2 in order to align it with image 1.',
   `region1_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_on_image1`,512)) STORED,
   `region2_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_on_image2`,512)) STORED,
   PRIMARY KEY (`image_to_image_map_id`),
@@ -859,9 +859,9 @@ DROP TABLE IF EXISTS `image_urls`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `image_urls` (
   `image_urls_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `url` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'URL prefix of the iiif server.',
-  `suffix` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Special suffux for file name (if applicable).  Usually default.jpg.',
-  `proxy` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Specify a proxy address if it is necessary to use a proxy for CORS compliance.',
+  `url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'URL prefix of the iiif server.',
+  `suffix` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Special suffux for file name (if applicable).  Usually default.jpg.',
+  `proxy` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Specify a proxy address if it is necessary to use a proxy for CORS compliance.',
   `license` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'License for this iiif servers resources.',
   PRIMARY KEY (`image_urls_id`,`url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='URL’s for the iiif image servers providing our images.';
@@ -906,7 +906,7 @@ DROP TABLE IF EXISTS `line_data`;
 CREATE TABLE `line_data` (
   `line_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `line_id` int(10) unsigned NOT NULL,
-  `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation for this line.',
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation for this line.',
   PRIMARY KEY (`line_data_id`),
   UNIQUE KEY `unique_line_id_name` (`line_id`,`name`) USING BTREE,
   KEY `fk_line_data_to_line_idx` (`line_id`),
@@ -1018,7 +1018,7 @@ DROP TABLE IF EXISTS `manuscript_data`;
 CREATE TABLE `manuscript_data` (
   `manuscript_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `manuscript_id` int(10) unsigned NOT NULL,
-  `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation of the scroll.',
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation of the scroll.',
   PRIMARY KEY (`manuscript_data_id`),
   UNIQUE KEY `unique_manuscript_id_name` (`manuscript_id`,`name`) USING BTREE,
   KEY `fk_manuscript_to_master_manuscript_idx` (`manuscript_id`) USING BTREE,
@@ -1388,7 +1388,7 @@ DROP TABLE IF EXISTS `scribal_font_type`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `scribal_font_type` (
   `scribal_font_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Provides metadata for „Fonts“ used by scribes .\n\nToDo: Define the ontology (fromal …) which should be used',
-  `font_name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `font_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`scribal_font_type_id`),
   UNIQUE KEY `style_name_idx` (`font_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1423,7 +1423,7 @@ DROP TABLE IF EXISTS `scribe`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `scribe` (
   `scribe_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `description` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `commetary` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`scribe_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1619,7 +1619,7 @@ CREATE TABLE `single_action` (
   `single_action_id` bigint(19) unsigned NOT NULL AUTO_INCREMENT,
   `main_action_id` int(10) unsigned NOT NULL,
   `action` enum('add','delete') COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The nature of the action applied.  A link to an edition was either added or deleted.',
-  `table` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Table containing the entry that was either added to or deleted from the edition.',
+  `table` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Table containing the entry that was either added to or deleted from the edition.',
   `id_in_table` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Id of the record that was added to or deleted from the edition (of the linked main_action) in the “table”_to_owner table.',
   PRIMARY KEY (`single_action_id`),
   KEY `fk_single_action_to_main_idx` (`main_action_id`),
@@ -1670,7 +1670,7 @@ DROP TABLE IF EXISTS `text_fragment_data`;
 CREATE TABLE `text_fragment_data` (
   `text_fragment_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `text_fragment_id` int(10) unsigned NOT NULL,
-  `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation for this fragment of text (usually col. x or frg. x).',
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation for this fragment of text (usually col. x or frg. x).',
   PRIMARY KEY (`text_fragment_data_id`),
   UNIQUE KEY `unique_text_fragment_id_text_fragment_name` (`text_fragment_id`,`name`) USING BTREE,
   KEY `fk_text_fragment_data_to_text_fragment_idx` (`text_fragment_id`) USING BTREE,
@@ -1784,18 +1784,18 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `user_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `email` varchar(126) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The user account email is used as the unique identifier for the account.  Users authenticate with a correct email + password.',
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'The user account email is used as the unique identifier for the account.  Users authenticate with a correct email + password.',
   `pw` char(56) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'A hashed password',
-  `forename` varchar(62) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The user''s forename, may be null.  Neither forename or surname are unique (separately or combined)',
-  `surname` varchar(62) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The user''s surname, may be null.  Neither forename or surname are unique (separately or combined)',
-  `organization` varchar(62) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The user''s current organization, may be null.',
+  `forename` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The user''s forename, may be null.  Neither forename or surname are unique (separately or combined)',
+  `surname` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The user''s surname, may be null.  Neither forename or surname are unique (separately or combined)',
+  `organization` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The user''s current organization, may be null.',
   `registration_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `settings` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `last_scroll_version_id` int(11) unsigned NOT NULL DEFAULT 1,
   `activated` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean for whether a user has authenticaed registration via the emailed token.',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `unique_user` (`email`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the data of all registered users,\nCreated by Martin 17/03/03\n\nThe email is the unique identifier for each user (i.d., the username).';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the data of all registered users,\nCreated by Martin 17/03/03\n\nThe email is the unique identifier for each user (i.d., the username).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
