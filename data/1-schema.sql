@@ -406,7 +406,7 @@ CREATE TABLE `attribute_value` (
   UNIQUE KEY `unique_attribute_and_value` (`attribute_id`,`string_value`) USING BTREE,
   KEY `fk_att_val_to_att_idx` (`attribute_id`),
   CONSTRAINT `fk_att_val_to_att` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The specific string value associated with an attribute to describe some aspect of a sign_interpretation.';
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The specific string value associated with an attribute to describe some aspect of a sign_interpretation.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1215,6 +1215,45 @@ CREATE TABLE `position_in_stream_to_word_rel` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `position_in_text_fragment_stream`
+--
+
+DROP TABLE IF EXISTS `position_in_text_fragment_stream`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `position_in_text_fragment_stream` (
+  `position_in_text_fragment_stream_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `text_fragment_id` int(10) unsigned NOT NULL,
+  `next_text_fragment_id` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`position_in_text_fragment_stream_id`),
+  KEY `fk_pitfs_next_to_text_fragment` (`next_text_fragment_id`),
+  KEY `fk_pitfs_to_text_fragment` (`text_fragment_id`),
+  CONSTRAINT `fk_pitfs_next_to_text_fragment` FOREIGN KEY (`next_text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`),
+  CONSTRAINT `fk_pitfs_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16715 DEFAULT CHARSET=latin1 COMMENT='Gives a stream of fragments in a scroll in the right order';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `position_in_text_fragment_stream_owner`
+--
+
+DROP TABLE IF EXISTS `position_in_text_fragment_stream_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `position_in_text_fragment_stream_owner` (
+  `position_in_text_fragment_stream_id` int(10) unsigned NOT NULL,
+  `edition_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`position_in_text_fragment_stream_id`,`edition_id`),
+  KEY `fk_pitfs_owner_to_edition` (`edition_id`),
+  KEY `fk_pitfs_owner_to_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_pitfs_owner_pitfs` FOREIGN KEY (`position_in_text_fragment_stream_id`) REFERENCES `position_in_text_fragment_stream` (`position_in_text_fragment_stream_id`),
+  CONSTRAINT `fk_pitfs_owner_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_pitfs_owner_to_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `qwb_biblio`
 --
 
@@ -1231,22 +1270,6 @@ CREATE TABLE `qwb_biblio` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `qwb_ref`
---
-
-DROP TABLE IF EXISTS `qwb_ref`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `qwb_ref` (
-  `qwb_ref_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ref_text` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `book_position` smallint(5) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`qwb_ref_id`),
-  UNIQUE KEY `ref_text` (`ref_text`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `qwb_variant`
 --
 
@@ -1255,7 +1278,7 @@ DROP TABLE IF EXISTS `qwb_variant`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `qwb_variant` (
   `qwb_variant_id` int(10) unsigned NOT NULL,
-  `qwd_word_data_id` int(10) unsigned NOT NULL,
+  `qwb_word_id` int(10) unsigned NOT NULL,
   `text` varchar(83) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `lemma` varchar(35) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `grammar` varchar(33) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -1264,70 +1287,29 @@ CREATE TABLE `qwb_variant` (
   `commentary` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `qwb_biblio_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`qwb_variant_id`),
-  KEY `fk_qwb_var_to_qwb_data_idx` (`qwd_word_data_id`),
+  KEY `fk_qwb_var_to_qwb_data_idx` (`qwb_word_id`),
   KEY `fk_qwb_var_to_qwb_biblio_idx` (`qwb_biblio_id`),
-  CONSTRAINT `fk_qwb_var_to_qwb_biblio` FOREIGN KEY (`qwb_biblio_id`) REFERENCES `qwb_biblio` (`qwb_biblio_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_qwb_var_to_qwb_data` FOREIGN KEY (`qwd_word_data_id`) REFERENCES `qwb_word_data` (`qwb_word_data_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_qwb_var_to_qwb` FOREIGN KEY (`qwb_word_id`) REFERENCES `qwb_word` (`qwb_word_id`),
+  CONSTRAINT `fk_qwb_var_to_qwb_biblio` FOREIGN KEY (`qwb_biblio_id`) REFERENCES `qwb_biblio` (`qwb_biblio_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `qwb_variant_owner`
+-- Table structure for table `qwb_word`
 --
 
-DROP TABLE IF EXISTS `qwb_variant_owner`;
+DROP TABLE IF EXISTS `qwb_word`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `qwb_variant_owner` (
-  `qwb_variant_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`qwb_variant_id`,`edition_id`),
-  KEY `fk_qwb_var_owner_to_sc_idx` (`edition_editor_id`),
-  KEY `fk_qwb_variant_to_edition` (`edition_id`),
-  CONSTRAINT `fk_qwb_var_owner_to_var` FOREIGN KEY (`qwb_variant_id`) REFERENCES `qwb_variant` (`qwb_variant_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_qwb_variant_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_qwb_variant_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `qwb_word_data`
---
-
-DROP TABLE IF EXISTS `qwb_word_data`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `qwb_word_data` (
-  `qwb_word_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+CREATE TABLE `qwb_word` (
+  `word_id` int(10) unsigned NOT NULL,
   `qwb_word_id` int(10) unsigned NOT NULL,
-  `text` varchar(33) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `position` mediumint(8) unsigned NOT NULL DEFAULT 0,
-  `qwb_ref_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`qwb_word_data_id`),
-  KEY `fk_qwb_word_data_to_ref_idx` (`qwb_ref_id`),
-  CONSTRAINT `fk_qwb_word_data_to_ref` FOREIGN KEY (`qwb_ref_id`) REFERENCES `qwb_ref` (`qwb_ref_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `qwb_word_data_owner`
---
-
-DROP TABLE IF EXISTS `qwb_word_data_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `qwb_word_data_owner` (
-  `qwb_word_data_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`qwb_word_data_id`,`edition_id`),
-  KEY `fk_qwb_data_owner_to_sc_idx` (`edition_editor_id`),
-  KEY `fk_qwb_word_data_to_edition` (`edition_id`),
-  CONSTRAINT `fk_qwb_data_owner_to_data` FOREIGN KEY (`qwb_word_data_id`) REFERENCES `qwb_word_data` (`qwb_word_data_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_qwb_word_data_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_qwb_word_data_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `qwb_last_change` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
+  `processing` tinyint(4) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`word_id`,`qwb_word_id`),
+  UNIQUE KEY `qwb_word_id_uindex` (`qwb_word_id`),
+  CONSTRAINT `fk_qwb_word_to_word` FOREIGN KEY (`word_id`) REFERENCES `word` (`word_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1699,44 +1681,6 @@ CREATE TABLE `text_fragment_data_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `text_fragment_sequence`
---
-
-DROP TABLE IF EXISTS `text_fragment_sequence`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `text_fragment_sequence` (
-  `text_fragment_sequence_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `text_fragment_id` int(10) unsigned NOT NULL,
-  `position` smallint(5) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`text_fragment_sequence_id`),
-  UNIQUE KEY `unique_col_id_position` (`text_fragment_id`,`position`) USING BTREE,
-  KEY `fk_cs_to_col_idx` (`text_fragment_id`),
-  CONSTRAINT `fk_tfs_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This provides a user defined sequence for ordering the text fragment units in an edition.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `text_fragment_sequence_owner`
---
-
-DROP TABLE IF EXISTS `text_fragment_sequence_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `text_fragment_sequence_owner` (
-  `text_fragment_sequence_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`text_fragment_sequence_id`,`edition_id`),
-  KEY `fk_text_fragment_sequence_owner_to_edition` (`edition_id`) USING BTREE,
-  KEY `fk_tfso_to_scroll_version_idx` (`edition_editor_id`) USING BTREE,
-  CONSTRAINT `fk_text_fragment_sequence_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_text_fragment_sequence_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`),
-  CONSTRAINT `fk_tfs_owner_tocs` FOREIGN KEY (`text_fragment_sequence_id`) REFERENCES `text_fragment_sequence` (`text_fragment_sequence_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `text_fragment_to_line`
 --
 
@@ -1883,8 +1827,7 @@ CREATE TABLE `word` (
   `qwb_word_id` int(11) unsigned DEFAULT NULL COMMENT 'Old word identifier from QWB.',
   `commentary` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`word_id`),
-  KEY `old_word_idx` (`qwb_word_id`),
-  CONSTRAINT `fk_word_to_qwb_word_data` FOREIGN KEY (`qwb_word_id`) REFERENCES `qwb_word_data` (`qwb_word_data_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `old_word_idx` (`qwb_word_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=380474 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='A collection of signs from a stream. Maintains link to original QWB word id.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
