@@ -1,8 +1,8 @@
--- MySQL dump 10.17  Distrib 10.3.18-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.17  Distrib 10.3.21-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: SQE
 -- ------------------------------------------------------
--- Server version	10.3.18-MariaDB-1:10.3.18+maria~bionic
+-- Server version	10.3.21-MariaDB-1:10.3.21+maria~bionic
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -352,22 +352,6 @@ CREATE TABLE `attribute` (
   PRIMARY KEY (`attribute_id`),
   UNIQUE KEY `unique_name_type` (`name`,`type`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores attributes that can be used to describe a sign_interpretation.  They are used in conjunction with a string value in the attribute_value table or with a numeric value in attribute_numeric.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `attribute_numeric`
---
-
-DROP TABLE IF EXISTS `attribute_numeric`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `attribute_numeric` (
-  `sign_interpretation_attribute_id` int(10) unsigned NOT NULL,
-  `value` float NOT NULL DEFAULT 0,
-  PRIMARY KEY (`sign_interpretation_attribute_id`,`value`),
-  KEY `value` (`value`),
-  CONSTRAINT `fk_attr_num_to_sign_interpretation_attr` FOREIGN KEY (`sign_interpretation_attribute_id`) REFERENCES `sign_interpretation_attribute` (`sign_interpretation_attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The specific numeric value associated with an attribute to describe some aspect of a sign_interpretation.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1474,7 +1458,8 @@ CREATE TABLE `sign_interpretation_attribute` (
   `sign_interpretation_attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `sign_interpretation_id` int(10) unsigned NOT NULL,
   `attribute_value_id` int(10) unsigned NOT NULL,
-  `sequence` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'Absolute ordering of this record.  This is used to define the order of all records for the same sign_char_id.',
+  `sequence` tinyint(4) DEFAULT NULL COMMENT 'Absolute ordering of this record.  This is used to define the order of all records for the same sign_char_id.',
+  `numeric_value` float DEFAULT NULL COMMENT 'Contains the width of a character (normally 1), space (dto.), or vacat (normally > 1) or the level of probability.',
   PRIMARY KEY (`sign_interpretation_attribute_id`),
   UNIQUE KEY `unique_sign_interpretation_id_attribute_value_id_sequence` (`attribute_value_id`,`sequence`,`sign_interpretation_id`) USING BTREE,
   KEY `fk_sign_interpretation_attr_to_attr_value_idx` (`attribute_value_id`) USING BTREE,
