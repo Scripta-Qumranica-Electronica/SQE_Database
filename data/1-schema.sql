@@ -1,8 +1,8 @@
--- MySQL dump 10.17  Distrib 10.3.21-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.17  Distrib 10.3.22-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: SQE
 -- ------------------------------------------------------
--- Server version	10.3.21-MariaDB-1:10.3.21+maria~bionic
+-- Server version	10.3.22-MariaDB-1:10.3.22+maria~bionic
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -520,7 +520,7 @@ DROP TABLE IF EXISTS `edition_editor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `edition_editor` (
-  `edition_editor_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `edition_editor_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Id of the editor invited to the',
   `user_id` int(11) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the version that will be found in all the x_to_owner tables .for this particular version of a scroll.',
   `may_write` tinyint(3) unsigned NOT NULL DEFAULT 0,
@@ -533,6 +533,33 @@ CREATE TABLE `edition_editor` (
   CONSTRAINT `fk_edition_editor_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_edition_editor_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1646 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Each edition has one or more edition editors, which are the individual users working on that edition.  Each edition editor has individual access rights that are specified here.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `edition_editor_request`
+--
+
+DROP TABLE IF EXISTS `edition_editor_request`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `edition_editor_request` (
+  `token` char(36) CHARACTER SET utf8mb4 NOT NULL COMMENT 'Unique token the user will provide to verify the requested action.',
+  `admin_user_id` int(12) unsigned NOT NULL COMMENT 'User id of the admin who requested the editor.',
+  `editor_user_id` int(12) unsigned NOT NULL COMMENT 'User id of the editor who was invited to join the edition.',
+  `edition_id` int(12) unsigned NOT NULL COMMENT 'The id of the edition to be shared',
+  `is_admin` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Offering admin rights',
+  `may_lock` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Offering locking rights',
+  `may_write` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Offering write rights',
+  `date` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date the editor request was sent',
+  PRIMARY KEY (`editor_user_id`,`edition_id`),
+  KEY `edition_editor_request_to_admin_user_id` (`admin_user_id`),
+  KEY `edition_editor_request_to_edition_id` (`edition_id`),
+  KEY `edition_editor_request_to_token` (`token`),
+  CONSTRAINT `edition_editor_request_to_admin_user_id` FOREIGN KEY (`admin_user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `edition_editor_request_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `edition_editor_request_to_editor_user_id` FOREIGN KEY (`editor_user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `edition_editor_request_to_token` FOREIGN KEY (`token`) REFERENCES `user_email_token` (`token`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the data for an edition editor request.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -849,6 +876,23 @@ CREATE TABLE `image_urls` (
   `license` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'License for this iiif servers resources.',
   PRIMARY KEY (`image_urls_id`,`url`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='URL’s for the iiif image servers providing our images.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `invitation_blacklist`
+--
+
+DROP TABLE IF EXISTS `invitation_blacklist`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `invitation_blacklist` (
+  `requesting_user_id` int(12) unsigned NOT NULL COMMENT 'User id of the person making the edition editor request.',
+  `requested_user_id` int(12) unsigned NOT NULL COMMENT 'User Id of the person receiving edition editor requests.',
+  PRIMARY KEY (`requesting_user_id`,`requested_user_id`),
+  KEY `invitation_blacklist_to_requested_user_id` (`requested_user_id`),
+  CONSTRAINT `invitation_blacklist_to_requested_user_id` FOREIGN KEY (`requested_user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `invitation_blacklist_to_requesting_user_id` FOREIGN KEY (`requesting_user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table contains a list of user id pairs, this can serve as a blacklist so that one user can prevent another user from sending edition editor requests.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1772,8 +1816,8 @@ DROP TABLE IF EXISTS `user_email_token`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_email_token` (
   `user_id` int(11) unsigned NOT NULL,
-  `token` varchar(128) CHARACTER SET utf8mb4 NOT NULL COMMENT 'Unique token the user will provide to verify the requested action.',
-  `type` enum('RESET_PASSWORD','ACTIVATE_ACCOUNT','DELETE_EDITION') CHARACTER SET utf8mb4 NOT NULL DEFAULT 'RESET_PASSWORD' COMMENT 'The type of action permitted with the specified token.',
+  `token` char(36) CHARACTER SET utf8mb4 NOT NULL COMMENT 'Unique token the user will provide to verify the requested action.',
+  `type` enum('RESET_PASSWORD','ACTIVATE_ACCOUNT','DELETE_EDITION','EDITOR_INVITE') CHARACTER SET utf8mb4 NOT NULL DEFAULT 'RESET_PASSWORD' COMMENT 'The type of action permitted with the specified token.',
   `date_created` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date the token was created or updated.  This is used by an event that clears out all entries from this table that are older than 2 days.',
   PRIMARY KEY (`token`),
   KEY `date_created_index` (`date_created`) USING BTREE,
