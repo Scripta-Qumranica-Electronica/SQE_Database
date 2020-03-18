@@ -879,23 +879,6 @@ CREATE TABLE `image_urls` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `invitation_blacklist`
---
-
-DROP TABLE IF EXISTS `invitation_blacklist`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `invitation_blacklist` (
-  `requesting_user_id` int(12) unsigned NOT NULL COMMENT 'User id of the person making the edition editor request.',
-  `requested_user_id` int(12) unsigned NOT NULL COMMENT 'User Id of the person receiving edition editor requests.',
-  PRIMARY KEY (`requesting_user_id`,`requested_user_id`),
-  KEY `invitation_blacklist_to_requested_user_id` (`requested_user_id`),
-  CONSTRAINT `invitation_blacklist_to_requested_user_id` FOREIGN KEY (`requested_user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `invitation_blacklist_to_requesting_user_id` FOREIGN KEY (`requesting_user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table contains a list of user id pairs, this can serve as a blacklist so that one user can prevent another user from sending edition editor requests.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `kerning_of_char`
 --
 
@@ -1215,6 +1198,7 @@ CREATE TABLE `position_in_stream_owner` (
   `position_in_stream_id` int(11) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(11) unsigned NOT NULL,
   `edition_editor_id` int(11) unsigned NOT NULL,
+  `preferred_edge` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'A boolean indicating whether this edge connecting two signs is the preferred path (as opposed to any other possible paths)',
   PRIMARY KEY (`position_in_stream_id`,`edition_id`),
   KEY `fk_position_in_stream_owner_to_edition_id` (`edition_id`),
   KEY `fk_position_in_stream_owner_to_edition_editor_id` (`edition_editor_id`),
