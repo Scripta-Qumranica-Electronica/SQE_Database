@@ -22,6 +22,8 @@ Then, to push those changes up to Github, just run `yarn deploy -t 'your-new-ver
 
 Warning!  This automated script will simply package any SQE_DEV mariadb database accessible at localhost:3307, make sure you have the intended Docker instance of the database running before you run `yarn deploy -t 'your-new-version-name' -m 'your github commit message'`.  If a mistake is made, however, we can always roll back to an earlier version tag.
 
+We have begun a new policy for changes to the database in order to make it simpler to synchronize any current production database with changes made here.  All changes should be made by means of scripts (SQL or otherwise), and those scripts should be stored in the `Changes` folder under the corresponding version along with any necessary data. The addition of a changelog would be nice as well (see, e.g., `Changes/0.17.0`).
+
 ## User Defined Functions
 
 This repository builds two custom C user defined functions into the MariaDB datbase container.  The file affine_transform.c enables the database to apply a transform matrix to a WKT polygon.  The file multiply_matrix.c enables the database to multiply two transform matrices.  Both functions were build with performance in mind, and thus provide minimal error checking.

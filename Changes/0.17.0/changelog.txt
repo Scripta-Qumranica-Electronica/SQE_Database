@@ -1,0 +1,8 @@
+1.  Updated the artefact_position table so that scale and rotate are decimal types and not nullable.
+    Added generated columns for translate_x and for translate_y that ensure that entries with null
+    translate_x or translate_y remain unique.
+    Changed z_index to signed int type.
+    See db-updates-0.17.0.sql for further details
+
+2.  Updated the neming scheme for artefacts in artefact_data.
+    See db-updates-0.17.0.sql for further details
