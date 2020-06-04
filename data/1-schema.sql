@@ -176,13 +176,15 @@ DROP TABLE IF EXISTS `artefact_position`;
 CREATE TABLE `artefact_position` (
   `artefact_position_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `artefact_id` int(10) unsigned NOT NULL,
-  `z_index` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'This value can move artefacts up or down in relation to other artefacts in the scroll.  That is, it sends an artefact further into the foreground or background.',
-  `scale` float unsigned DEFAULT NULL COMMENT 'Resizing to be applied to the artefact.',
-  `rotate` float unsigned DEFAULT 0 COMMENT 'Rotation to be applied to the artefact.',
+  `z_index` int(11) NOT NULL DEFAULT 0 COMMENT 'This value can move artefacts up or down in relation to other artefacts in the scroll.  That is, it sends an artefact further into the foreground or background.',
+  `scale` decimal(6,4) unsigned NOT NULL DEFAULT 1.0000 COMMENT 'Resizing to be applied to the artefact.',
+  `rotate` decimal(6,2) unsigned NOT NULL DEFAULT 0.00 COMMENT 'Rotation to be applied to the artefact.',
   `translate_x` int(11) unsigned DEFAULT NULL COMMENT 'Translation of the artefact on the horizontal axis.',
   `translate_y` int(11) unsigned DEFAULT NULL COMMENT 'Translation of the artefact on the vertical axis.',
+  `translate_x_non_null` int(11) unsigned GENERATED ALWAYS AS (coalesce(`translate_x`,4294967295)) VIRTUAL COMMENT 'This is a generated column for the sake of uniqueness constraints.  It reads the highest possible value of an int instead of NULL, since that value is basically never going to be used (no scroll or manuscript has pages of such a length).',
+  `translate_y_non_null` int(11) unsigned GENERATED ALWAYS AS (coalesce(`translate_y`,4294967295)) VIRTUAL COMMENT 'This is a generated column for the sake of uniqueness constraints.  I reads the highest possible value of an int instead of NULL, since that value is basically never going to be used (no scroll or manuscript has pages of such a length).',
   PRIMARY KEY (`artefact_position_id`),
-  UNIQUE KEY `unique_artefact_transform_z_index` (`artefact_id`,`z_index`,`rotate`,`scale`,`translate_x`,`translate_y`) USING BTREE,
+  UNIQUE KEY `fk_unique_artefact_position` (`artefact_id`,`rotate`,`scale`,`translate_x_non_null`,`translate_y_non_null`,`z_index`) USING BTREE,
   KEY `fk_artefact_position_to_artefact` (`artefact_id`),
   CONSTRAINT `fk_artefact_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table defines the location, rotation, and size of an artefact within the scroll.';
