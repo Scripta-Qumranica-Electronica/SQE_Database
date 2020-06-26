@@ -1,0 +1,11 @@
+1.  Integrated new C UDFs for performing transforms on POLYGON/POINT/MULTIPOLYGON/MULTIPOINT geometries.
+        a.  geom_transform takes 5 or 7 arguments: geom_transform(geometry [native POLYGON, etc.], scale [decimal/double], rotation [decimal, double], translate_x [int], translate_y[int], transform_origin_x [double], transform_origin_y [double])
+            This function will perform an affine transformation (scale, rotate, translate).  If a transform_origin is specified, the geometry will rotate and scale around that point, rather than the default 0,0.
+
+        b.  nested_geom_transform takes 7 or 9 arguments: geom_transform(geometry [native POLYGON, etc.], scale [decimal/double], rotation [decimal, double], translate_x [int], translate_y[int], pre_translate_x [int], pre_translate_y [int], transform_origin_x [double], transform_origin_y [double])
+            This function will perform an affine transformation (scale, rotate, translate), but enables a separate translate operation (pre_translate_x/pre_translate_y) to be carried out on the geometry before the affine transformation.  If a transform_origin is specified, the geometry will rotate and scale around that point, rather than the default 0,0.
+
+2.  Added two views for convenient access to artefacts and ROIs in their proper positioning on the virtual manuscript.
+        a.  artefact_in_manuscript applies an artefact's positioning data and returns the shape of an artefact within the virtual manuscript coordinates.  This includes the artefact_id and edition_id.
+
+        b.  roi_in_manuscript applies the ROIs positioning data to situate it in the coordinate system of its artefact and then applies the position data of its artefact to situate it in the coordinate system of the virtual manuscript (the operation is actually carried out in a single process with the nested_geom_transform function). This includes the sign_interpretation_id, the artefact_id, and the edition_id.

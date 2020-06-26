@@ -1,8 +1,8 @@
--- MySQL dump 10.17  Distrib 10.3.22-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.17  Distrib 10.3.23-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: SQE
 -- ------------------------------------------------------
--- Server version	10.3.22-MariaDB-1:10.3.22+maria~bionic
+-- Server version	10.3.23-MariaDB-1:10.3.23+maria~bionic
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -165,6 +165,21 @@ CREATE TABLE `artefact_data_owner` (
   CONSTRAINT `fk_artefact_data_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary table structure for view `artefact_in_manuscript`
+--
+
+DROP TABLE IF EXISTS `artefact_in_manuscript`;
+/*!50001 DROP VIEW IF EXISTS `artefact_in_manuscript`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `artefact_in_manuscript` (
+  `artefact_id` tinyint NOT NULL,
+  `edition_id` tinyint NOT NULL,
+  `shape` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `artefact_position`
@@ -1357,6 +1372,22 @@ SET character_set_client = utf8;
   `confirmed` tinyint NOT NULL,
   `user_id` tinyint NOT NULL,
   `MAX(``time``)` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary table structure for view `roi_in_manuscript`
+--
+
+DROP TABLE IF EXISTS `roi_in_manuscript`;
+/*!50001 DROP VIEW IF EXISTS `roi_in_manuscript`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `roi_in_manuscript` (
+  `sign_interpretation_id` tinyint NOT NULL,
+  `artefact_id` tinyint NOT NULL,
+  `edition_id` tinyint NOT NULL,
+  `shape` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
@@ -2645,6 +2676,25 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Final view structure for view `artefact_in_manuscript`
+--
+
+/*!50001 DROP TABLE IF EXISTS `artefact_in_manuscript`*/;
+/*!50001 DROP VIEW IF EXISTS `artefact_in_manuscript`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `artefact_in_manuscript` AS select `artefact_shape`.`artefact_id` AS `artefact_id`,`artefact_shape_owner`.`edition_id` AS `edition_id`,st_astext(geom_transform(`artefact_shape`.`region_in_sqe_image` AS `region_in_sqe_image`,`artefact_position`.`scale` AS `scale`,`artefact_position`.`rotate` AS `rotate`,`artefact_position`.`translate_x` AS `translate_x`,`artefact_position`.`translate_y` AS `translate_y`,st_x(st_centroid(st_envelope(`artefact_shape`.`region_in_sqe_image`))) AS `center_x`,st_y(st_centroid(st_envelope(`artefact_shape`.`region_in_sqe_image`))) AS `center_y`)) AS `shape` from (((`artefact_shape` join `artefact_shape_owner` on(`artefact_shape`.`artefact_shape_id` = `artefact_shape_owner`.`artefact_shape_id`)) join `artefact_position` on(`artefact_shape`.`artefact_id` = `artefact_position`.`artefact_id`)) join `artefact_position_owner` on(`artefact_position_owner`.`artefact_position_id` = `artefact_position`.`artefact_position_id` and `artefact_position_owner`.`edition_id` = `artefact_shape_owner`.`edition_id`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
 -- Final view structure for view `recent_edition_catalog_to_col_confirmation`
 --
 
@@ -2659,6 +2709,25 @@ DELIMITER ;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `recent_edition_catalog_to_col_confirmation` AS select `iaa_edition_catalog_to_text_fragment_confirmation`.`iaa_edition_catalog_to_text_fragment_id` AS `iaa_edition_catalog_to_text_fragment_id`,`iaa_edition_catalog_to_text_fragment_confirmation`.`confirmed` AS `confirmed`,`iaa_edition_catalog_to_text_fragment_confirmation`.`user_id` AS `user_id`,max(`iaa_edition_catalog_to_text_fragment_confirmation`.`time`) AS `MAX(``time``)` from `iaa_edition_catalog_to_text_fragment_confirmation` group by `iaa_edition_catalog_to_text_fragment_confirmation`.`iaa_edition_catalog_to_text_fragment_id` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `roi_in_manuscript`
+--
+
+/*!50001 DROP TABLE IF EXISTS `roi_in_manuscript`*/;
+/*!50001 DROP VIEW IF EXISTS `roi_in_manuscript`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `roi_in_manuscript` AS select `sign_interpretation_roi`.`sign_interpretation_id` AS `sign_interpretation_id`,`roi_position`.`artefact_id` AS `artefact_id`,`sign_interpretation_roi_owner`.`edition_id` AS `edition_id`,nested_geom_transform(`roi_shape`.`path` AS `path`,`artefact_position`.`scale` AS `scale`,`artefact_position`.`rotate` AS `rotate`,`artefact_position`.`translate_x` AS `translate_x`,`artefact_position`.`translate_y` AS `translate_y`,`roi_position`.`translate_x` AS `translate_x`,`roi_position`.`translate_y` AS `translate_y`,st_x(st_centroid(st_envelope(`artefact_shape`.`region_in_sqe_image`))) AS `center_x`,st_y(st_centroid(st_envelope(`artefact_shape`.`region_in_sqe_image`))) AS `center_y`) AS `shape` from (((((((`sign_interpretation_roi_owner` join `sign_interpretation_roi` on(`sign_interpretation_roi_owner`.`sign_interpretation_roi_id` = `sign_interpretation_roi`.`sign_interpretation_roi_id`)) join `roi_shape` on(`sign_interpretation_roi`.`roi_shape_id` = `roi_shape`.`roi_shape_id`)) join `roi_position` on(`sign_interpretation_roi`.`roi_position_id` = `roi_position`.`roi_position_id`)) join `artefact_position` on(`roi_position`.`artefact_id` = `artefact_position`.`artefact_id`)) join `artefact_position_owner` on(`artefact_position_owner`.`edition_id` = `sign_interpretation_roi_owner`.`edition_id` and `artefact_position_owner`.`artefact_position_id` = `artefact_position`.`artefact_position_id`)) join `artefact_shape` on(`roi_position`.`artefact_id` = `artefact_shape`.`artefact_id`)) join `artefact_shape_owner` on(`artefact_shape_owner`.`edition_id` = `sign_interpretation_roi_owner`.`edition_id` and `artefact_shape_owner`.`artefact_shape_id` = `artefact_shape`.`artefact_shape_id`)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
