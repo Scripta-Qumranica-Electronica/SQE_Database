@@ -1,0 +1,9 @@
+This update involves some minor corrections and updates related to the artefact and roi geometries.
+
+1.  The C UDF functions have been updated to use endian.h in conjunction with reading the endian bit signifier in the MariaDB geometry binary representation.  This means that compilation will fail on systems that lack endian.h (see the notes in the files geom_transform.c and nested_geom_transform.c if greater portability is needed).  This is preferred to silently accepted undefined behavior, which was the default for the previous versions.
+
+2.  The view artefact_in_manuscript has been update to return a binary geometry representation as `shape`, rather than the WKT representation.
+
+3.  A new convenience view has been created, roi_in_artefact, which will return any ROI in the coordinate system of its artefact. 
+
+4.  The git push system, `deploy`, has been updated to use the new C UDF functions.

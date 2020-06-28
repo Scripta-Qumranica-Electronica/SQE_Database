@@ -4,13 +4,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#ifdef __WIN__
-typedef unsigned __int64 ulonglong;     /* Microsoft's 64 bit types */
-typedef __int64 longlong;
-#else
+// #ifdef __WIN__
+// typedef unsigned __int64 ulonglong;     /* Microsoft's 64 bit types */
+// typedef __int64 longlong;
+// #else
 typedef unsigned long long ulonglong;
 typedef long long longlong;
-#endif /*__WIN__*/
+// #endif /*__WIN__*/
 #else
 #include <my_global.h>
 #include <my_sys.h>
@@ -18,6 +18,10 @@ typedef long long longlong;
 #include <mysql.h>
 #include <ctype.h>
 #include <stdint.h>
+
+// endian.h is not portable. I preferred this here to undefined behavior.
+// If a more portable solution is needed, see e.g.: https://gist.github.com/panzi/6856583
+#include <endian.h>
 
 #define MARIADB_ST_LEAD 4
 #define SRID_BYTE_SIZE 4
@@ -29,21 +33,8 @@ typedef long long longlong;
 #define POINT_BYTE_SIZE 8
 #define PI 3.14159265358979323846
 
-#define U32BIT_LE_DATA(ptr) (*(ptr)<<0) | (*(ptr + 1)<<8) | (*(ptr + 2)<<16) | (*(ptr + 3)<<24)
-#define U32BIT_BE_DATA(ptr) (*(ptr + 3)<<0) | (*(ptr + 2)<<8) | (*(ptr + 1)<<16) | (*(ptr)<<24)
-#define DOUBLE_FROM_PTR(ptr, var) memcpy(&var, ptr, sizeof(double)) // Unlike the above functions, this is not endian agnostic
-// We could always use a loop to go over the doubles (either forward or reverse depending on the binary's endianness), 
-// but I think we would need to know the endianness of the machine running this function. See https://stackoverflow.com/questions/62577683/reading-double-in-c-from-binary-unsigned-char-with-specified-endianness.
-// uint8_t data[sizeof(double)];
-// for(i=0; i<8; i++)
-// {
-//     data[sizeof(double)-i-1] = *(cc + i);
-// }
-// double var;
-// memcpy(&var, ptr, sizeof(double));
-
-#define CALC_X(x, y, scale, sine, cosine, origin_x, origin_y, translate_x) (((x - origin_x) * scale * cosine) + ((y - origin_y) * scale * sine * -1)) + origin_x + translate_x 
-#define CALC_Y(x, y, scale, sine, cosine, origin_x, origin_y, translate_y) (((y - origin_y) * scale * cosine) + ((x - origin_x) * scale * sine)) + origin_y + translate_y 
+#define CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x) (((x - origin_x) * scaledCosine) + ((y - origin_y) * scaledSine * -1)) + translate_x 
+#define CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y) (((y - origin_y) * scaledCosine) + ((x - origin_x) * scaledSine)) + translate_y 
 
 static pthread_mutex_t LOCK_hostname;
 
@@ -144,17 +135,17 @@ char *nested_geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsi
     // Calculate the transform matrix
     double origin_x = args->arg_count == 9 ? *((double*) args->args[7]) : 0.0;
     double origin_y = args->arg_count == 9 ? *((double*) args->args[8]) : 0.0;
-    longlong translate_x = *((longlong*) args->args[3]);
-    longlong translate_y = *((longlong*) args->args[4]);
+    longlong translate_x = *((longlong*) args->args[3]) + origin_x;
+    longlong translate_y = *((longlong*) args->args[4]) + origin_y;
     longlong first_translate_x = *((longlong*) args->args[5]);
     longlong first_translate_y = *((longlong*) args->args[6]);
     double scale = *((double*) args->args[1]);
     double theta = *((double*) args->args[2]) * (PI / 180);
-    double cosine = cos(theta);
-    double sine = sin(theta);
+    double scaledCosine = cos(theta) * scale;
+    double scaledSine = sin(theta) * scale;
 
     // Check the endianness
-    char binaryEndian = (*((char*) transform)); // binaryEndian == 0 for big endian, binaryEndian == 1 for little endian
+    char binaryEndian = (*((char*) transform)); // binaryEndian == 1 for big endian, binaryEndian == 0 for little endian
 
     // Copy the MariaDB Leader, srid, and endian byte
     int initial_offset = SRID_BYTE_SIZE + ENDIAN_BYTE_SIZE;
@@ -162,71 +153,17 @@ char *nested_geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsi
     transform += initial_offset;
     writePtr += initial_offset;
 
-    // Get the geometry type
-    uint32_t geom_type = U32BIT_LE_DATA(transform);
-    memcpy(writePtr, transform, GEOMTYPE_BYTE_SIZE);
-    transform += GEOMTYPE_BYTE_SIZE;
-    writePtr += GEOMTYPE_BYTE_SIZE;
+    if (binaryEndian == 1)
+    {
+        // Get the geometry type
+        uint32_t geom_type = be32toh(*((uint32_t*) transform));
+        memcpy(writePtr, transform, GEOMTYPE_BYTE_SIZE);
+        transform += GEOMTYPE_BYTE_SIZE;
+        writePtr += GEOMTYPE_BYTE_SIZE;
 
-    if (geom_type == 3){ // This is a WKB POLYGON
-        // Get the number of rings 
-        uint32_t num_of_rings = U32BIT_LE_DATA(transform);
-        memcpy(writePtr, transform, RING_NUMS_BYTE_SIZE);
-        transform += RING_NUMS_BYTE_SIZE;
-        writePtr += RING_NUMS_BYTE_SIZE;
-
-        for (int ring = 0; ring < num_of_rings; ++ring)
-        {
-            // Get the number of points in this rings
-            uint32_t num_of_points = U32BIT_LE_DATA(transform);
-            memcpy(writePtr, transform, POINT_NUMS_BYTE_SIZE);
-            transform += POINT_NUMS_BYTE_SIZE;
-            writePtr += POINT_NUMS_BYTE_SIZE;
-
-            for (int point = 0; point < num_of_points; ++point)
-            {
-                // Get the values of each coordinate
-                unsigned char* points = transform;
-                double x = (*((double*)points)) + first_translate_x;
-                points += POINT_BYTE_SIZE;
-                double y = (*((double*)points)) + first_translate_y;
-
-                // Modify and write point1
-                double num1  = CALC_X(x, y, scale, sine, cosine, origin_x, origin_y, translate_x);  //(double)((x * matrix[0]) + (y * matrix[1]) + matrix[2]);
-                uint8_t *array1 = (uint8_t*)(&num1);
-
-                for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
-                    *writePtr = array1[i];
-                    transform += 1;
-                    writePtr += 1;
-                }
-
-                // Modify and write point2
-                double num2 = CALC_Y(x, y, scale, sine, cosine, origin_x, origin_y, translate_y); //(double)((x * matrix[3]) + (y * matrix[4]) + matrix[5]);
-                uint8_t *array2 = (uint8_t*)(&num2);
-
-                for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
-                    *writePtr = array2[i];
-                    transform += 1;
-                    writePtr += 1;
-                }
-            }
-        }
-    } else if (geom_type == 6){ // This is a WKB MULTIPOLYGON
-        uint32_t num_polys = U32BIT_LE_DATA(transform);
-        memcpy(writePtr, transform, POLY_NUMS_BYTE_SIZE);
-        transform += POLY_NUMS_BYTE_SIZE;
-        writePtr += POLY_NUMS_BYTE_SIZE;
-
-        for (int poly = 0; poly < num_polys; ++poly)
-        {
-            // Copy the redundant type signature, we know this is a Polygon and we know the endianness
-            memcpy(writePtr, transform, ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE);
-            transform += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
-            writePtr += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
-
+        if (geom_type == 3){ // This is a WKB POLYGON
             // Get the number of rings 
-            uint32_t num_of_rings = U32BIT_LE_DATA(transform);
+            uint32_t num_of_rings = be32toh(*((uint32_t*) transform));
             memcpy(writePtr, transform, RING_NUMS_BYTE_SIZE);
             transform += RING_NUMS_BYTE_SIZE;
             writePtr += RING_NUMS_BYTE_SIZE;
@@ -234,7 +171,7 @@ char *nested_geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsi
             for (int ring = 0; ring < num_of_rings; ++ring)
             {
                 // Get the number of points in this rings
-                uint32_t num_of_points = U32BIT_LE_DATA(transform);
+                uint32_t num_of_points = be32toh(*((uint32_t*) transform));
                 memcpy(writePtr, transform, POINT_NUMS_BYTE_SIZE);
                 transform += POINT_NUMS_BYTE_SIZE;
                 writePtr += POINT_NUMS_BYTE_SIZE;
@@ -243,12 +180,14 @@ char *nested_geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsi
                 {
                     // Get the values of each coordinate
                     unsigned char* points = transform;
-                    double x = (*((double*)points)) + first_translate_x;
+                    ulonglong intX = be64toh(*((ulonglong*) points));
+                    double x = *((double*) &intX ) + first_translate_x;
                     points += POINT_BYTE_SIZE;
-                    double y = (*((double*)points)) + first_translate_y;
+                    ulonglong intY = be64toh(*((ulonglong*) points));
+                    double y = *((double*) &intY ) + first_translate_y;
 
                     // Modify and write point1
-                    double num1  = CALC_X(x, y, scale, sine, cosine, origin_x, origin_y, translate_x); //(double)((x * matrix[0]) + (y * matrix[1]) + matrix[2]);
+                    double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
                     uint8_t *array1 = (uint8_t*)(&num1);
 
                     for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
@@ -258,7 +197,7 @@ char *nested_geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsi
                     }
 
                     // Modify and write point2
-                    double num2 = CALC_Y(x, y, scale, sine, cosine, origin_x, origin_y, translate_y); //(double)((x * matrix[3]) + (y * matrix[4]) + matrix[5]);
+                    double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
                     uint8_t *array2 = (uint8_t*)(&num2);
 
                     for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
@@ -268,55 +207,76 @@ char *nested_geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsi
                     }
                 }
             }
-        }
-    } else if (geom_type == 1) { // this is a WKB POINT
-        // Get the values of each coordinate
-        unsigned char* points = transform;
-        double x = (*((double*)points)) + first_translate_x;
-        points += POINT_BYTE_SIZE;
-        double y = (*((double*)points)) + first_translate_y;
+        } else if (geom_type == 6){ // This is a WKB MULTIPOLYGON
+            uint32_t num_polys = be32toh(*((uint32_t*) transform));
+            memcpy(writePtr, transform, POLY_NUMS_BYTE_SIZE);
+            transform += POLY_NUMS_BYTE_SIZE;
+            writePtr += POLY_NUMS_BYTE_SIZE;
 
-        // Modify and write x
-        double num1  = CALC_X(x, y, scale, sine, cosine, origin_x, origin_y, translate_x); //(double)((x * matrix[0]) + (y * matrix[1]) + matrix[2]);
-        uint8_t *array1 = (uint8_t*)(&num1);
+            for (int poly = 0; poly < num_polys; ++poly)
+            {
+                // Copy the redundant type signature, we know this is a Polygon and we know the endianness
+                memcpy(writePtr, transform, ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE);
+                transform += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
+                writePtr += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
 
-        for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
-            *writePtr = array1[i];
-            transform += 1;
-            writePtr += 1;
-        }
+                // Get the number of rings 
+                uint32_t num_of_rings = be32toh(*((uint32_t*) transform));
+                memcpy(writePtr, transform, RING_NUMS_BYTE_SIZE);
+                transform += RING_NUMS_BYTE_SIZE;
+                writePtr += RING_NUMS_BYTE_SIZE;
 
-        // Modify and write y
-        double num2 = CALC_Y(x, y, scale, sine, cosine, origin_x, origin_y, translate_y); //(double)((x * matrix[3]) + (y * matrix[4]) + matrix[5]);
-        uint8_t *array2 = (uint8_t*)(&num2);
+                for (int ring = 0; ring < num_of_rings; ++ring)
+                {
+                    // Get the number of points in this rings
+                    uint32_t num_of_points = be32toh(*((uint32_t*) transform));
+                    memcpy(writePtr, transform, POINT_NUMS_BYTE_SIZE);
+                    transform += POINT_NUMS_BYTE_SIZE;
+                    writePtr += POINT_NUMS_BYTE_SIZE;
 
-        for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
-            *writePtr = array2[i];
-            transform += 1;
-            writePtr += 1;
-        }
-    } else if (geom_type == 4){ // This is a WKB MULTIPOINT
-        // Get the number of points in this rings
-        uint32_t num_of_points = U32BIT_LE_DATA(transform);
-        memcpy(writePtr, transform, POINT_NUMS_BYTE_SIZE);
-        transform += POINT_NUMS_BYTE_SIZE;
-        writePtr += POINT_NUMS_BYTE_SIZE;
+                    for (int point = 0; point < num_of_points; ++point)
+                    {
+                        // Get the values of each coordinate
+                        unsigned char* points = transform;
+                        ulonglong intX = be64toh(*((ulonglong*) points));
+                        double x = *((double*) &intX ) + first_translate_x;
+                        points += POINT_BYTE_SIZE;
+                        ulonglong intY = be64toh(*((ulonglong*) points));
+                        double y = *((double*) &intY ) + first_translate_y;
 
-        for (int point = 0; point < num_of_points; ++point)
-        {
-            // Copy the redundant type signature, we know this is a POINT and we know the endianness
-            memcpy(writePtr, transform, ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE);
-            transform += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
-            writePtr += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
+                        // Modify and write point1
+                        double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
+                        uint8_t *array1 = (uint8_t*)(&num1);
 
+                        for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                            *writePtr = array1[i];
+                            transform += 1;
+                            writePtr += 1;
+                        }
+
+                        // Modify and write point2
+                        double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
+                        uint8_t *array2 = (uint8_t*)(&num2);
+
+                        for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                            *writePtr = array2[i];
+                            transform += 1;
+                            writePtr += 1;
+                        }
+                    }
+                }
+            }
+        } else if (geom_type == 1) { // this is a WKB POINT
             // Get the values of each coordinate
             unsigned char* points = transform;
-            double x = (*((double*)points)) + first_translate_x;
+            ulonglong intX = be64toh(*((ulonglong*) points));
+            double x = *((double*) &intX ) + first_translate_x;
             points += POINT_BYTE_SIZE;
-            double y = (*((double*)points)) + first_translate_y;
+            ulonglong intY = be64toh(*((ulonglong*) points));
+            double y = *((double*) &intY ) + first_translate_y;
 
-            // Modify and write point1
-            double num1  = CALC_X(x, y, scale, sine, cosine, origin_x, origin_y, translate_x); //(double)((x * matrix[0]) + (y * matrix[1]) + matrix[2]);
+            // Modify and write x
+            double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
             uint8_t *array1 = (uint8_t*)(&num1);
 
             for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
@@ -325,8 +285,8 @@ char *nested_geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsi
                 writePtr += 1;
             }
 
-            // Modify and write point2
-            double num2 = CALC_Y(x, y, scale, sine, cosine, origin_x, origin_y, translate_y); //(double)((x * matrix[3]) + (y * matrix[4]) + matrix[5]);
+            // Modify and write y
+            double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
             uint8_t *array2 = (uint8_t*)(&num2);
 
             for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
@@ -334,12 +294,242 @@ char *nested_geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsi
                 transform += 1;
                 writePtr += 1;
             }
-        }
-    } else {
-        memcpy(error, "This function requires POLYGON, POINT, or MULTIPOINT geometry type.", 67);
-        *length = 54;
-        return error;
-    }
+        } else if (geom_type == 4){ // This is a WKB MULTIPOINT
+            // Get the number of points in this rings
+            uint32_t num_of_points = be32toh(*((uint32_t*) transform));
+            memcpy(writePtr, transform, POINT_NUMS_BYTE_SIZE);
+            transform += POINT_NUMS_BYTE_SIZE;
+            writePtr += POINT_NUMS_BYTE_SIZE;
 
+            for (int point = 0; point < num_of_points; ++point)
+            {
+                // Copy the redundant type signature, we know this is a POINT and we know the endianness
+                memcpy(writePtr, transform, ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE);
+                transform += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
+                writePtr += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
+
+                // Get the values of each coordinate
+                unsigned char* points = transform;
+                ulonglong intX = be64toh(*((ulonglong*) points));
+                double x = *((double*) &intX ) + first_translate_x;
+                points += POINT_BYTE_SIZE;
+                ulonglong intY = be64toh(*((ulonglong*) points));
+                double y = *((double*) &intY ) + first_translate_y;
+
+                // Modify and write point1
+                double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
+                uint8_t *array1 = (uint8_t*)(&num1);
+
+                for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                    *writePtr = array1[i];
+                    transform += 1;
+                    writePtr += 1;
+                }
+
+                // Modify and write point2
+                double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
+                uint8_t *array2 = (uint8_t*)(&num2);
+
+                for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                    *writePtr = array2[i];
+                    transform += 1;
+                    writePtr += 1;
+                }
+            }
+        } else {
+            memcpy(error, "This function requires POLYGON, POINT, or MULTIPOINT geometry type.", 67);
+            *length = 54;
+            return error;
+        }
+    }
+    else
+    {
+        // Get the geometry type
+        uint32_t geom_type = le32toh(*((uint32_t*) transform));
+        memcpy(writePtr, transform, GEOMTYPE_BYTE_SIZE);
+        transform += GEOMTYPE_BYTE_SIZE;
+        writePtr += GEOMTYPE_BYTE_SIZE;
+
+        if (geom_type == 3){ // This is a WKB POLYGON
+            // Get the number of rings 
+            uint32_t num_of_rings = le32toh(*((uint32_t*) transform));
+            memcpy(writePtr, transform, RING_NUMS_BYTE_SIZE);
+            transform += RING_NUMS_BYTE_SIZE;
+            writePtr += RING_NUMS_BYTE_SIZE;
+
+            for (int ring = 0; ring < num_of_rings; ++ring)
+            {
+                // Get the number of points in this rings
+                uint32_t num_of_points = le32toh(*((uint32_t*) transform));
+                memcpy(writePtr, transform, POINT_NUMS_BYTE_SIZE);
+                transform += POINT_NUMS_BYTE_SIZE;
+                writePtr += POINT_NUMS_BYTE_SIZE;
+
+                for (int point = 0; point < num_of_points; ++point)
+                {
+                    // Get the values of each coordinate
+                    unsigned char* points = transform;
+                    ulonglong intX = le64toh(*((ulonglong*) points));
+                    double x = *((double*) &intX ) + first_translate_x;
+                    points += POINT_BYTE_SIZE;
+                    ulonglong intY = le64toh(*((ulonglong*) points));
+                    double y = *((double*) &intY ) + first_translate_y;
+
+                    // Modify and write point1
+                    double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
+                    uint8_t *array1 = (uint8_t*)(&num1);
+
+                    for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                        *writePtr = array1[i];
+                        transform += 1;
+                        writePtr += 1;
+                    }
+
+                    // Modify and write point2
+                    double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
+                    uint8_t *array2 = (uint8_t*)(&num2);
+
+                    for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                        *writePtr = array2[i];
+                        transform += 1;
+                        writePtr += 1;
+                    }
+                }
+            }
+        } else if (geom_type == 6){ // This is a WKB MULTIPOLYGON
+            uint32_t num_polys = le32toh(*((uint32_t*) transform));
+            memcpy(writePtr, transform, POLY_NUMS_BYTE_SIZE);
+            transform += POLY_NUMS_BYTE_SIZE;
+            writePtr += POLY_NUMS_BYTE_SIZE;
+
+            for (int poly = 0; poly < num_polys; ++poly)
+            {
+                // Copy the redundant type signature, we know this is a Polygon and we know the endianness
+                memcpy(writePtr, transform, ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE);
+                transform += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
+                writePtr += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
+
+                // Get the number of rings 
+                uint32_t num_of_rings = le32toh(*((uint32_t*) transform));
+                memcpy(writePtr, transform, RING_NUMS_BYTE_SIZE);
+                transform += RING_NUMS_BYTE_SIZE;
+                writePtr += RING_NUMS_BYTE_SIZE;
+
+                for (int ring = 0; ring < num_of_rings; ++ring)
+                {
+                    // Get the number of points in this rings
+                    uint32_t num_of_points = le32toh(*((uint32_t*) transform));
+                    memcpy(writePtr, transform, POINT_NUMS_BYTE_SIZE);
+                    transform += POINT_NUMS_BYTE_SIZE;
+                    writePtr += POINT_NUMS_BYTE_SIZE;
+
+                    for (int point = 0; point < num_of_points; ++point)
+                    {
+                        // Get the values of each coordinate
+                        unsigned char* points = transform;
+                        ulonglong intX = le64toh(*((ulonglong*) points));
+                        double x = *((double*) &intX ) + first_translate_x;
+                        points += POINT_BYTE_SIZE;
+                        ulonglong intY = le64toh(*((ulonglong*) points));
+                        double y = *((double*) &intY ) + first_translate_y;
+
+                        // Modify and write point1
+                        double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
+                        uint8_t *array1 = (uint8_t*)(&num1);
+
+                        for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                            *writePtr = array1[i];
+                            transform += 1;
+                            writePtr += 1;
+                        }
+
+                        // Modify and write point2
+                        double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
+                        uint8_t *array2 = (uint8_t*)(&num2);
+
+                        for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                            *writePtr = array2[i];
+                            transform += 1;
+                            writePtr += 1;
+                        }
+                    }
+                }
+            }
+        } else if (geom_type == 1) { // this is a WKB POINT
+            // Get the values of each coordinate
+            unsigned char* points = transform;
+            ulonglong intX = le64toh(*((ulonglong*) points));
+            double x = *((double*) &intX ) + first_translate_x;
+            points += POINT_BYTE_SIZE;
+            ulonglong intY = le64toh(*((ulonglong*) points));
+            double y = *((double*) &intY ) + first_translate_y;
+
+            // Modify and write x
+            double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
+            uint8_t *array1 = (uint8_t*)(&num1);
+
+            for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                *writePtr = array1[i];
+                transform += 1;
+                writePtr += 1;
+            }
+
+            // Modify and write y
+            double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
+            uint8_t *array2 = (uint8_t*)(&num2);
+
+            for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                *writePtr = array2[i];
+                transform += 1;
+                writePtr += 1;
+            }
+        } else if (geom_type == 4){ // This is a WKB MULTIPOINT
+            // Get the number of points in this rings
+            uint32_t num_of_points = le32toh(*((uint32_t*) transform));
+            memcpy(writePtr, transform, POINT_NUMS_BYTE_SIZE);
+            transform += POINT_NUMS_BYTE_SIZE;
+            writePtr += POINT_NUMS_BYTE_SIZE;
+
+            for (int point = 0; point < num_of_points; ++point)
+            {
+                // Copy the redundant type signature, we know this is a POINT and we know the endianness
+                memcpy(writePtr, transform, ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE);
+                transform += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
+                writePtr += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
+
+                // Get the values of each coordinate
+                unsigned char* points = transform;
+                ulonglong intX = le64toh(*((ulonglong*) points));
+                double x = *((double*) &intX ) + first_translate_x;
+                points += POINT_BYTE_SIZE;
+                ulonglong intY = le64toh(*((ulonglong*) points));
+                double y = *((double*) &intY ) + first_translate_y;
+
+                // Modify and write point1
+                double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
+                uint8_t *array1 = (uint8_t*)(&num1);
+
+                for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                    *writePtr = array1[i];
+                    transform += 1;
+                    writePtr += 1;
+                }
+
+                // Modify and write point2
+                double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
+                uint8_t *array2 = (uint8_t*)(&num2);
+
+                for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
+                    *writePtr = array2[i];
+                    transform += 1;
+                    writePtr += 1;
+                }
+            }
+        } else {
+            memcpy(error, "This function requires POLYGON, POINT, or MULTIPOINT geometry type.", 67);
+            *length = 54;
+            return error;
+        }
+    }
     return initid->ptr;
 }

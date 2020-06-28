@@ -10,7 +10,7 @@ const clearDataDir = async () => {
     try {
         const readdir = promisify(fs.readdir)
         const items = await readdir(dataDir)
-        const whitelistFiles = ['1-schema.sql', 'affine_transform.sql', 'multiply_matrix.sql']
+        const whitelistFiles = ['1-schema.sql', '1-affine_transform.sql']
         const deleteFiles = items.filter(x => whitelistFiles.indexOf(x) === -1)
         await Promise.all(deleteFiles.map(async x => {
             console.log(chalk.yellow('Removing: ' + x))
