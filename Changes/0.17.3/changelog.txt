@@ -1,0 +1,5 @@
+1.  The main update in this version involves the artefact grouping system.  Artefact groups are now simplified to include a name for the group and a then a table with the artefacts belonging to a group.
+
+2.  This update also adds the manuscript metric tables, which allow setting of several variables related to the measurements of a manuscript.
+
+3.  This update also drops the views artefact_in_manuscript, roi_in_manuscript, and roi_in_artefact, the usage of transforms to create the views is not able to perform sufficiently within reaasonable CPU and memory constraints even with a relatively small data-set.  This also contains a small bugfix for geom_transform and nested_geom_transform.

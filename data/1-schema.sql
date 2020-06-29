@@ -61,61 +61,6 @@ CREATE TABLE `SQE_image_author` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `area_group`
---
-
-DROP TABLE IF EXISTS `area_group`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `area_group` (
-  `area_group_id` int(10) unsigned NOT NULL,
-  `area_id` int(10) unsigned NOT NULL,
-  `move_direction` set('x','y') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `commentary` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `z_index` tinyint(4) DEFAULT NULL,
-  PRIMARY KEY (`area_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `area_group_member`
---
-
-DROP TABLE IF EXISTS `area_group_member`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `area_group_member` (
-  `area_group_id` int(10) unsigned NOT NULL,
-  `area_id` int(11) NOT NULL,
-  `area_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`area_group_id`,`area_id`),
-  CONSTRAINT `fk_group_member_to_group` FOREIGN KEY (`area_group_id`) REFERENCES `area_group` (`area_group_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `area_group_owner`
---
-
-DROP TABLE IF EXISTS `area_group_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `area_group_owner` (
-  `area_group_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`area_group_id`,`edition_editor_id`),
-  UNIQUE KEY `all_idx` (`area_group_id`,`edition_id`),
-  KEY `fk_area_group_owner_to_scroll_version_idx` (`edition_editor_id`),
-  KEY `fk_area_group_to_edition` (`edition_id`),
-  CONSTRAINT `fk_area_group_owner_to_area_group` FOREIGN KEY (`area_group_id`) REFERENCES `area_group` (`area_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_area_group_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_area_group_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `artefact`
 --
 
@@ -167,19 +112,93 @@ CREATE TABLE `artefact_data_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Temporary table structure for view `artefact_in_manuscript`
+-- Table structure for table `artefact_group`
 --
 
-DROP TABLE IF EXISTS `artefact_in_manuscript`;
-/*!50001 DROP VIEW IF EXISTS `artefact_in_manuscript`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE TABLE `artefact_in_manuscript` (
-  `artefact_id` tinyint NOT NULL,
-  `edition_id` tinyint NOT NULL,
-  `shape` tinyint NOT NULL
-) ENGINE=MyISAM */;
-SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `artefact_group`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `artefact_group` (
+  `artefact_group_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`artefact_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='This table holds the abstract IDs for the artefact group.  An artefact group consists of a name (see artefact_group_name) and a list of members (see artefact_group_member).  It is up to the user to determine what an artefact group is meant to do functionally.  Typically we assume that when one member of a group is transformed, all members of the group will also be transformed accordingly.  The responsibility for such operations, however, lies downstream from the database (i.e., there are no database triggers involved with artefact groups).';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `artefact_group_data`
+--
+
+DROP TABLE IF EXISTS `artefact_group_data`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `artefact_group_data` (
+  `artefact_group_data_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `artefact_group_id` int(11) unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`artefact_group_data_id`),
+  KEY `artefact_group_data_to_artefact_group` (`artefact_group_id`),
+  CONSTRAINT `artefact_group_data_to_artefact_group` FOREIGN KEY (`artefact_group_id`) REFERENCES `artefact_group` (`artefact_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='This table stores data pertaining to an artefact group, specifically its name.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `artefact_group_data_owner`
+--
+
+DROP TABLE IF EXISTS `artefact_group_data_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `artefact_group_data_owner` (
+  `artefact_group_data_id` int(11) unsigned NOT NULL,
+  `edition_id` int(11) unsigned NOT NULL,
+  `edition_editor_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`artefact_group_data_id`,`edition_id`),
+  KEY `artefact_group_data_owner_to_edition` (`edition_id`),
+  KEY `artefact_group_data_owner_to_edition_editor` (`edition_editor_id`),
+  CONSTRAINT `artefact_group_data_owner_to_artefact_group_data` FOREIGN KEY (`artefact_group_data_id`) REFERENCES `artefact_group_data` (`artefact_group_data_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `artefact_group_data_owner_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `artefact_group_data_owner_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `artefact_group_member`
+--
+
+DROP TABLE IF EXISTS `artefact_group_member`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `artefact_group_member` (
+  `artefact_group_member_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `artefact_group_id` int(11) unsigned NOT NULL COMMENT 'The id of the artefact group to which the artefact belongs.',
+  `artefact_id` int(11) unsigned NOT NULL COMMENT 'The id of the artefact to add to the artefact group.',
+  PRIMARY KEY (`artefact_group_member_id`),
+  KEY `artefact_group_member_to_artefact` (`artefact_id`),
+  KEY `artefact_group_member_to_artefact_group` (`artefact_group_id`),
+  CONSTRAINT `artefact_group_member_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `artefact_group_member_to_artefact_group` FOREIGN KEY (`artefact_group_id`) REFERENCES `artefact_group` (`artefact_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='This table is used to aggregate artefacts into groups.  An artefact group consists of a name (see artefact_group_name) and a list of members (see artefact_group_member).  It is up to the user to determine what an artefact group is meant to do functionally.  Typically we assume that when one member of a group is transformed, all members of the group will also be transformed accordingly.  The responsibility for such operations, however, lies downstream from the database (i.e., there are no database triggers involved with artefact groups).';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `artefact_group_member_owner`
+--
+
+DROP TABLE IF EXISTS `artefact_group_member_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `artefact_group_member_owner` (
+  `artefact_group_member_id` int(11) unsigned NOT NULL,
+  `edition_id` int(11) unsigned NOT NULL,
+  `edition_editor_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`artefact_group_member_id`,`edition_id`),
+  KEY `artefact_group_member_owner_to_edition` (`edition_id`),
+  KEY `artefact_group_member_owner_to_edition_editor` (`edition_editor_id`),
+  CONSTRAINT `artefact_group_member_owner_to_artefact_group_member` FOREIGN KEY (`artefact_group_member_id`) REFERENCES `artefact_group_member` (`artefact_group_member_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `artefact_group_member_owner_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `artefact_group_member_owner_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `artefact_position`
@@ -1092,6 +1111,48 @@ CREATE TABLE `manuscript_data_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `manuscript_metrics`
+--
+
+DROP TABLE IF EXISTS `manuscript_metrics`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `manuscript_metrics` (
+  `manuscript_metrics_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `manuscript_id` int(11) unsigned NOT NULL,
+  `x_origin` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the x value of the starting point of the manuscript.  The coordinate system begins top left, positive values increase while moving downward on the y-axis and while moving rightward on the x-axis.',
+  `y_origin` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the y value of the starting point of the manuscript.  The coordinate system begins top left, positive values increase while moving downward on the y-axis and while moving rightward on the x-axis.',
+  `width` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the width of the manucsript in millimeters.',
+  `height` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the height of the manucsript in millimeters.',
+  `pixels_per_inch` int(11) unsigned NOT NULL DEFAULT 1215 COMMENT 'This is the pixels per inch for the manuscript.  At the outset we have decided to set all manuscripts at 1215 PPI, which is the resolution of most images being used.  All images should be scaled to this resolution before creating artefacts and ROIs that are placed upon the virtual manuscript.  We have no plans to use varying PPI settings for different manuscripts, which would slightly complicate GIS calcularions across multiple manuscripts.',
+  PRIMARY KEY (`manuscript_metrics_id`),
+  UNIQUE KEY `unique_manuscript_metrics` (`manuscript_id`,`height`,`pixels_per_inch`,`width`,`x_origin`,`y_origin`) USING BTREE,
+  KEY `manuscript_metrics_to_manuscript` (`manuscript_id`),
+  CONSTRAINT `manuscript_metrics_to_manuscript` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=1372 DEFAULT CHARSET=utf8mb4 COMMENT='This table stores basic information about the gross metrics of a manuscript.  The user is able to specify an  x/y-origin point for the start of the manuscript along with its proposed height and width in millimeters.  The coordinate system begins top left, positive values increase while moving downward on the y-axis and while moving rightward on the x-axis.  The PPI is currently fixed ad 1215 PPI to facilitate comparison of GIS data between manuscripts.  All images should be scaled to this resolution before creating artefacts and ROIs that are placed upon the virtual manuscript.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `manuscript_metrics_owner`
+--
+
+DROP TABLE IF EXISTS `manuscript_metrics_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `manuscript_metrics_owner` (
+  `manuscript_metrics_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(11) unsigned NOT NULL,
+  `edition_editor_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`manuscript_metrics_id`,`edition_id`),
+  KEY `manuscript_metrics_owner_to_edition_id` (`edition_id`),
+  KEY `manuscript_metrics_owner_to_edition_editor` (`edition_editor_id`),
+  CONSTRAINT `manuscript_metrics_owner_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `manuscript_metrics_owner_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `manuscript_metrics_owner_to_manuscript_metrics` FOREIGN KEY (`manuscript_metrics_id`) REFERENCES `manuscript_metrics` (`manuscript_metrics_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `manuscript_to_text_fragment`
 --
 
@@ -1372,37 +1433,6 @@ SET character_set_client = utf8;
   `confirmed` tinyint NOT NULL,
   `user_id` tinyint NOT NULL,
   `MAX(``time``)` tinyint NOT NULL
-) ENGINE=MyISAM */;
-SET character_set_client = @saved_cs_client;
-
---
--- Temporary table structure for view `roi_in_artefact`
---
-
-DROP TABLE IF EXISTS `roi_in_artefact`;
-/*!50001 DROP VIEW IF EXISTS `roi_in_artefact`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE TABLE `roi_in_artefact` (
-  `edition_id` tinyint NOT NULL,
-  `artefact_id` tinyint NOT NULL,
-  `shape` tinyint NOT NULL
-) ENGINE=MyISAM */;
-SET character_set_client = @saved_cs_client;
-
---
--- Temporary table structure for view `roi_in_manuscript`
---
-
-DROP TABLE IF EXISTS `roi_in_manuscript`;
-/*!50001 DROP VIEW IF EXISTS `roi_in_manuscript`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE TABLE `roi_in_manuscript` (
-  `sign_interpretation_id` tinyint NOT NULL,
-  `artefact_id` tinyint NOT NULL,
-  `edition_id` tinyint NOT NULL,
-  `shape` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
@@ -2691,25 +2721,6 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Final view structure for view `artefact_in_manuscript`
---
-
-/*!50001 DROP TABLE IF EXISTS `artefact_in_manuscript`*/;
-/*!50001 DROP VIEW IF EXISTS `artefact_in_manuscript`*/;
-/*!50001 SET @saved_cs_client          = @@character_set_client */;
-/*!50001 SET @saved_cs_results         = @@character_set_results */;
-/*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8mb4 */;
-/*!50001 SET character_set_results     = utf8mb4 */;
-/*!50001 SET collation_connection      = utf8mb4_general_ci */;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `artefact_in_manuscript` AS select `artefact_shape`.`artefact_id` AS `artefact_id`,`artefact_shape_owner`.`edition_id` AS `edition_id`,geom_transform(`artefact_shape`.`region_in_sqe_image` AS `region_in_sqe_image`,`artefact_position`.`scale` AS `scale`,`artefact_position`.`rotate` AS `rotate`,`artefact_position`.`translate_x` AS `translate_x`,`artefact_position`.`translate_y` AS `translate_y`,st_x(st_centroid(st_envelope(`artefact_shape`.`region_in_sqe_image`))) AS `center_x`,st_y(st_centroid(st_envelope(`artefact_shape`.`region_in_sqe_image`))) AS `center_y`) AS `shape` from (((`artefact_shape` join `artefact_shape_owner` on(`artefact_shape`.`artefact_shape_id` = `artefact_shape_owner`.`artefact_shape_id`)) join `artefact_position` on(`artefact_shape`.`artefact_id` = `artefact_position`.`artefact_id`)) join `artefact_position_owner` on(`artefact_position_owner`.`artefact_position_id` = `artefact_position`.`artefact_position_id` and `artefact_position_owner`.`edition_id` = `artefact_shape_owner`.`edition_id`)) */;
-/*!50001 SET character_set_client      = @saved_cs_client */;
-/*!50001 SET character_set_results     = @saved_cs_results */;
-/*!50001 SET collation_connection      = @saved_col_connection */;
-
---
 -- Final view structure for view `recent_edition_catalog_to_col_confirmation`
 --
 
@@ -2724,44 +2735,6 @@ DELIMITER ;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `recent_edition_catalog_to_col_confirmation` AS select `iaa_edition_catalog_to_text_fragment_confirmation`.`iaa_edition_catalog_to_text_fragment_id` AS `iaa_edition_catalog_to_text_fragment_id`,`iaa_edition_catalog_to_text_fragment_confirmation`.`confirmed` AS `confirmed`,`iaa_edition_catalog_to_text_fragment_confirmation`.`user_id` AS `user_id`,max(`iaa_edition_catalog_to_text_fragment_confirmation`.`time`) AS `MAX(``time``)` from `iaa_edition_catalog_to_text_fragment_confirmation` group by `iaa_edition_catalog_to_text_fragment_confirmation`.`iaa_edition_catalog_to_text_fragment_id` */;
-/*!50001 SET character_set_client      = @saved_cs_client */;
-/*!50001 SET character_set_results     = @saved_cs_results */;
-/*!50001 SET collation_connection      = @saved_col_connection */;
-
---
--- Final view structure for view `roi_in_artefact`
---
-
-/*!50001 DROP TABLE IF EXISTS `roi_in_artefact`*/;
-/*!50001 DROP VIEW IF EXISTS `roi_in_artefact`*/;
-/*!50001 SET @saved_cs_client          = @@character_set_client */;
-/*!50001 SET @saved_cs_results         = @@character_set_results */;
-/*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8mb4 */;
-/*!50001 SET character_set_results     = utf8mb4 */;
-/*!50001 SET collation_connection      = utf8mb4_general_ci */;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `roi_in_artefact` AS select `sign_interpretation_roi_owner`.`edition_id` AS `edition_id`,`roi_position`.`artefact_id` AS `artefact_id`,geom_transform(`roi_shape`.`path` AS `path`,1.0 AS `1.0`,0.0 AS `0.0`,`roi_position`.`translate_x` AS `translate_x`,`roi_position`.`translate_y` AS `translate_y`) AS `shape` from (((`sign_interpretation_roi_owner` join `sign_interpretation_roi` on(`sign_interpretation_roi_owner`.`sign_interpretation_roi_id` = `sign_interpretation_roi`.`sign_interpretation_roi_id`)) join `roi_position` on(`sign_interpretation_roi`.`roi_position_id` = `roi_position`.`roi_position_id`)) join `roi_shape` on(`sign_interpretation_roi`.`roi_shape_id` = `roi_shape`.`roi_shape_id`)) */;
-/*!50001 SET character_set_client      = @saved_cs_client */;
-/*!50001 SET character_set_results     = @saved_cs_results */;
-/*!50001 SET collation_connection      = @saved_col_connection */;
-
---
--- Final view structure for view `roi_in_manuscript`
---
-
-/*!50001 DROP TABLE IF EXISTS `roi_in_manuscript`*/;
-/*!50001 DROP VIEW IF EXISTS `roi_in_manuscript`*/;
-/*!50001 SET @saved_cs_client          = @@character_set_client */;
-/*!50001 SET @saved_cs_results         = @@character_set_results */;
-/*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8mb4 */;
-/*!50001 SET character_set_results     = utf8mb4 */;
-/*!50001 SET collation_connection      = utf8mb4_general_ci */;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `roi_in_manuscript` AS select `sign_interpretation_roi`.`sign_interpretation_id` AS `sign_interpretation_id`,`roi_position`.`artefact_id` AS `artefact_id`,`sign_interpretation_roi_owner`.`edition_id` AS `edition_id`,nested_geom_transform(`roi_shape`.`path` AS `path`,`artefact_position`.`scale` AS `scale`,`artefact_position`.`rotate` AS `rotate`,`artefact_position`.`translate_x` AS `translate_x`,`artefact_position`.`translate_y` AS `translate_y`,`roi_position`.`translate_x` AS `translate_x`,`roi_position`.`translate_y` AS `translate_y`,st_x(st_centroid(st_envelope(`artefact_shape`.`region_in_sqe_image`))) AS `center_x`,st_y(st_centroid(st_envelope(`artefact_shape`.`region_in_sqe_image`))) AS `center_y`) AS `shape` from (((((((`sign_interpretation_roi_owner` join `sign_interpretation_roi` on(`sign_interpretation_roi_owner`.`sign_interpretation_roi_id` = `sign_interpretation_roi`.`sign_interpretation_roi_id`)) join `roi_shape` on(`sign_interpretation_roi`.`roi_shape_id` = `roi_shape`.`roi_shape_id`)) join `roi_position` on(`sign_interpretation_roi`.`roi_position_id` = `roi_position`.`roi_position_id`)) join `artefact_position` on(`roi_position`.`artefact_id` = `artefact_position`.`artefact_id`)) join `artefact_position_owner` on(`artefact_position_owner`.`edition_id` = `sign_interpretation_roi_owner`.`edition_id` and `artefact_position_owner`.`artefact_position_id` = `artefact_position`.`artefact_position_id`)) join `artefact_shape` on(`roi_position`.`artefact_id` = `artefact_shape`.`artefact_id`)) join `artefact_shape_owner` on(`artefact_shape_owner`.`edition_id` = `sign_interpretation_roi_owner`.`edition_id` and `artefact_shape_owner`.`artefact_shape_id` = `artefact_shape`.`artefact_shape_id`)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
