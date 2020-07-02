@@ -1,0 +1,3 @@
+1.  x,y positions have been changed to signed ints to relieve pressure on the database should an object need to move further left of or above 0,0 (which would require a shift of all other spatial objects when using unsigned ints).
+
+2.  Added schemaspy.properties settings for HTML documentation generation with schemaspy. Note: it requires a large amount of memory to generate the documentation.
