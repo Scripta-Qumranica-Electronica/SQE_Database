@@ -1,0 +1,4 @@
+Added the data for 1Q7 (images and artefacts).
+
+!!! Do not run db-updates-0.17.5.sql on the production server  !!!
+The images and artefacts have already been created on the production server and running this again will have no good effect.  It should not corrupt the production database, but is should have the effect of obscuring the source of the artefact data, which is undesirable.
