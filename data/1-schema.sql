@@ -25,16 +25,16 @@ DROP TABLE IF EXISTS `SQE_image`;
 CREATE TABLE `SQE_image` (
   `sqe_image_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `image_urls_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Link to image_urls table which contains the url of the iiif server that provides this image and the default suffix used to get images from that server.',
-  `filename` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Actual filename of the image as specified on the iiif server.',
+  `filename` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Actual filename of the image as specified on the iiif server.  This may often look more like a URI, or a partial URI.',
   `native_width` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'We store internally the pixel width of the full size image.',
   `native_height` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'We store internally the pixel height of the full size image.',
-  `dpi` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'The DPI of the full size image (used to calculate relative scaling of images).',
-  `type` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Two values:\nColor = 0\nGrayscale = 1\nPerhaps remove in favor of “wavelength_start" and “wavelength_end”.',
+  `dpi` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'The DPI of the full size image (used to calculate relative scaling of images). This should be calculated as optimally as possible and should not rely on EXIF data.',
+  `type` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Four values:\nColor = 0\nGrayscale = 1\nRaking light right = 2\nRaking light left = 4\nPerhaps remove in favor of “wavelength_start" and “wavelength_end”.',
   `wavelength_start` smallint(5) unsigned NOT NULL DEFAULT 445 COMMENT 'Starting wavelength of image in nanometers.',
   `wavelength_end` smallint(5) unsigned NOT NULL DEFAULT 704 COMMENT 'Ending wavelength of image in nanometers.',
   `is_master` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Boolean determining if the image is a “master image”.  Since we have multiple images of each fragment, one image is designated as the master (generally the full color image), all others are non master images and will have a corresponding entry in “image_to_image_map” which provides and transforms (translate, scale, rotate) necessary to line the two images up with each other.',
-  `image_catalog_id` int(11) unsigned DEFAULT 0,
-  `is_recto` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT 'Notes wether the original image is thought to show rect (1) or verso (0) of the fragment. This can be taken as default value for recto/verso-relation in artefact_stack',
+  `image_catalog_id` int(11) unsigned DEFAULT 0 COMMENT 'Id of the image in the image catalogue.',
+  `is_recto` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT 'Notes wether the original image is thought to show rect0 (1) or verso (0) of the fragment. This can be taken as default value for recto/verso-relation in artefact_stack',
   PRIMARY KEY (`sqe_image_id`),
   UNIQUE KEY `url_UNIQUE` (`image_urls_id`,`filename`) USING BTREE,
   KEY `fk_image_to_catalog` (`image_catalog_id`),
@@ -70,7 +70,7 @@ DROP TABLE IF EXISTS `artefact`;
 CREATE TABLE `artefact` (
   `artefact_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`artefact_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26821 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Every scroll combination is made up from artefacts.  The artefact is a polygon region of an image which the editor deems to constitute a coherent piece of material (different editors may come to different conclusions on what makes up an artefact).  This may correspond to what the editors of an editio princeps have designated a “fragment”, but often may not, since the columns and fragments in those publications are often made up of joins of various types.  Joined fragments should not, as a rule, be defined as a single artefact with the SQE system.  Rather, each component of a join should be a separate artefact, and those artefacts can then be positioned properly with each other via the artefact_position table.';
+) ENGINE=InnoDB AUTO_INCREMENT=26821 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Every virtual manuscript is made up from artefacts.  The artefact is a polygon region of an image which the editor deems to constitute a coherent piece of material (different editors may come to different conclusions on what makes up an artefact).  This may correspond to what the editors of an editio princeps have designated a “fragment”, but often may not, since the columns and fragments in those publications are often made up of joins of various types.  Joined fragments should not, as a rule, be defined as a single artefact within the SQE system.  Rather, each component of a join should be a separate artefact, and those artefacts can then be positioned properly with each other via the artefact_position table.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,7 +83,7 @@ DROP TABLE IF EXISTS `artefact_data`;
 CREATE TABLE `artefact_data` (
   `artefact_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `artefact_id` int(10) unsigned NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'This is a human readable designation for the artefact. Multiple artefacts are allowed to share the same name, even in a single manuscript, though this is not advised.  The artefact as a distinct entity is made unique by its artefact_id.',
   PRIMARY KEY (`artefact_data_id`),
   UNIQUE KEY `unique_artefact_id_artefact_data_name` (`artefact_id`,`name`) USING BTREE,
   KEY `fk_artefact_data_to_artefact` (`artefact_id`),
@@ -134,7 +134,7 @@ DROP TABLE IF EXISTS `artefact_group_data`;
 CREATE TABLE `artefact_group_data` (
   `artefact_group_data_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `artefact_group_id` int(11) unsigned NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL COMMENT 'This is a human readable designation for the artefact group. Multiple artefact groups are allowed to share the same name, even in a single manuscript, though this is not advised.  The artefact group as a distinct entity is made unique by its artefact_group_id.',
   PRIMARY KEY (`artefact_group_data_id`),
   KEY `artefact_group_data_to_artefact_group` (`artefact_group_id`),
   CONSTRAINT `artefact_group_data_to_artefact_group` FOREIGN KEY (`artefact_group_id`) REFERENCES `artefact_group` (`artefact_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -209,7 +209,7 @@ DROP TABLE IF EXISTS `artefact_position`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `artefact_position` (
   `artefact_position_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `artefact_id` int(10) unsigned NOT NULL,
+  `artefact_id` int(10) unsigned NOT NULL COMMENT 'The id of the artefact to be positioned on the virtual manuscript.',
   `z_index` int(11) NOT NULL DEFAULT 0 COMMENT 'This value can move artefacts up or down in relation to other artefacts in the scroll.  That is, it sends an artefact further into the foreground or background.',
   `scale` decimal(6,4) unsigned NOT NULL DEFAULT 1.0000 COMMENT 'Resizing to be applied to the artefact.',
   `rotate` decimal(6,2) unsigned NOT NULL DEFAULT 0.00 COMMENT 'Rotation to be applied to the artefact.',
@@ -221,7 +221,7 @@ CREATE TABLE `artefact_position` (
   UNIQUE KEY `fk_unique_artefact_position` (`artefact_id`,`rotate`,`scale`,`translate_x_non_null`,`translate_y_non_null`,`z_index`) USING BTREE,
   KEY `fk_artefact_position_to_artefact` (`artefact_id`),
   CONSTRAINT `fk_artefact_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table defines the location, rotation, and size of an artefact within the scroll.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -253,17 +253,17 @@ DROP TABLE IF EXISTS `artefact_shape`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `artefact_shape` (
   `artefact_shape_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `artefact_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `artefact_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The id of the artefact to which this shape belongs.',
   `sqe_image_id` int(10) unsigned DEFAULT NULL COMMENT 'This points to the master image (see SQE_image table) in which this artefact is found.',
-  `region_in_sqe_image` polygon NOT NULL COMMENT 'This is the exact polygon of the artefact’s location within the master image’s coordinate system.',
-  `region_in_sqe_image_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_in_sqe_image`,512)) STORED,
+  `region_in_sqe_image` geometry NOT NULL COMMENT 'This is the exact polygon of the artefact’s location within the master image’s coordinate system, but alwaya at a resolution of 1215 PPI. If the master image is not 1215 PPI it should be scaled to that resolution before the srtefact is drawn upon it.',
+  `region_in_sqe_image_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_in_sqe_image`,512)) STORED COMMENT 'This is a quick hash of the region_in_sqe_image polygon for the purpose of uniqueness constraints.',
   PRIMARY KEY (`artefact_shape_id`) USING BTREE,
   UNIQUE KEY `unique_artefact_shape` (`artefact_id`,`sqe_image_id`,`region_in_sqe_image_hash`) USING BTREE,
   KEY `fk_artefact_shape_to_sqe_image_idx` (`sqe_image_id`) USING BTREE,
   KEY `fk_artefact_shape_to_artefact` (`artefact_id`) USING BTREE,
   CONSTRAINT `fk_artefact_shape_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_shape_to_sqe_image` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=36482 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the region of the artefact in the coordinate system of its image.';
+) ENGINE=InnoDB AUTO_INCREMENT=36482 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the region of the artefact in the coordinate system of its image. The image must first be scaled to the PPI defined in manuscript_metrics (1215 PPI by default).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -295,13 +295,13 @@ DROP TABLE IF EXISTS `artefact_stack`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `artefact_stack` (
   `artefact_stack_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `artefact_A_id` int(10) unsigned NOT NULL,
-  `artefact_B_id` int(10) unsigned NOT NULL,
-  `artefact_B_offset` point NOT NULL DEFAULT st_geometryfromtext('POINT(0 0)') COMMENT 'Gives the offset by which the artefact B must be moved to match the artefact A',
-  `layer_A` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'Gives the number of the layer in the stack to which artefact A belongs. If ',
-  `layer_B` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'Gives the number of the layer in the stack to which artefact B belongs.',
-  `A_is_verso` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `B_is_verso` tinyint(3) unsigned NOT NULL DEFAULT 1,
+  `artefact_A_id` int(10) unsigned NOT NULL COMMENT 'The first artefact in the stack.',
+  `artefact_B_id` int(10) unsigned NOT NULL COMMENT 'The second artefact in the stack.',
+  `artefact_B_offset` geometry NOT NULL DEFAULT st_geometryfromtext('POINT(0 0)') COMMENT 'Gives the offset by which the artefact B must be moved to match the artefact A.  The offset is a POINT geometry.',
+  `layer_A` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'Gives the number of the layer in the stack to which artefact A belongs. In the case of a recto/verso match, this would be 0. In the case of a wad, a higher number should indicate a layer that is closer to the outside of the scroll, or the front of the codex.',
+  `layer_B` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'Gives the number of the layer in the stack to which artefact B belongs. In the case of a recto/verso match, this would be 0. In the case of a wad, a higher number should indicate a layer that is closer to the outside of the scroll, or the front of the codex.',
+  `A_is_verso` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean whether srtefact A is recto=0 or verso=1.',
+  `B_is_verso` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'Boolean whether srtefact B is recto=0 or verso=1.',
   `reason` enum('RECTO_VERSO','FOUND_IN_A_STACK','PART_OF_A_WAD','RECONSTRUCTED_STACK') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'RECTO_VERSO',
   `shared` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'True if the given region of artefact_B represents a region which appears on the surface of artefact_A (bleeding through, ink glued to the next layer).',
   PRIMARY KEY (`artefact_stack_id`),
@@ -310,7 +310,7 @@ CREATE TABLE `artefact_stack` (
   KEY `fk_af_stack_B_to_artefact_idx` (`artefact_B_id`),
   CONSTRAINT `fk_af_stack_A_to_artefact` FOREIGN KEY (`artefact_A_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_af_stack_B_to_artefact` FOREIGN KEY (`artefact_B_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=27724 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the relationship between artefacts which make up a stack, meaning, that the represent parallel layers in a stack. This could be:\na) Artefact A is and B represent recto/verso of one layer, than the layer_A and layer_B must be the same\nb) A and B represent parts of different layers of a already decomposed stack (reason= ‚found in a stack‘) or as part of wad (reason = ‚part of a wad‘) or as thought by the scholar to belong in the same perimeter of the scroll (reason=‚reconstructed‘).\n\nThe tables allow to create a sequence of artefacts: A = recto of layer 1 -> B = verso of layer 1 -> C = recto of recto of layer  2 -> D = verso of layer 2 … (where -> represents a record with the left as artefact_A and the right term as artefact_B)\n\nA special case is marked by shared. We could, e.g., have A as verso and B as recto and additionally a subregion of B as shared to A.';
+) ENGINE=InnoDB AUTO_INCREMENT=27724 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the relationship between artefacts which make up a stack, meaning that they represent parallel layers in a stack. This could be:\na) Artefact A is and B represent recto/verso of one layer (artefact), then the layer_A and layer_B must be the same\nb) A and B represent parts of different layers of a already decomposed stack (reason= ‚found in a stack‘) or as part of wad (reason = ‚part of a wad‘) or as thought by the scholar to belong in the same perimeter of the manuscript (reason=‚reconstructed‘).\n\nThe tables allow the creation of a sequence of artefacts: A = recto of layer 1 -> B = verso of layer 1 -> C = recto of recto of layer  2 -> D = verso of layer 2 … (where -> represents a record with the left as artefact_A and the right term as artefact_B)\n\nA special case is marked by shared. We could, e.g., have A as verso and B as recto and additionally a subregion of B as shared to A.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -350,7 +350,7 @@ CREATE TABLE `artefact_status` (
   KEY `fk_artefact_status_to_work_status_id` (`work_status_id`),
   CONSTRAINT `fk_artefact_status_to_artefact_id` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_status_to_work_status_id` FOREIGN KEY (`work_status_id`) REFERENCES `work_status` (`work_status_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='The artefact status is a user definable placeholder to store information about how state of work on defining the artefact.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -382,12 +382,12 @@ DROP TABLE IF EXISTS `attribute`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `attribute` (
   `attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` enum('BOOLEAN','NUMBER','STRING') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Designation of the attribute.',
+  `type` enum('BOOLEAN','NUMBER','STRING') COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Attributes my be either a boolean, and number, or a string.',
+  `description` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'A concise description of the nature of the attribute.',
   PRIMARY KEY (`attribute_id`),
   UNIQUE KEY `unique_name_type` (`name`,`type`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores attributes that can be used to describe a sign_interpretation.  They are used in conjunction with a string value in the attribute_value table or with a numeric value in attribute_numeric.';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores attributes that can be used to describe a sign_interpretation.  They are used in conjunction with a string value in the attribute_value, and any related numeric value can be added in the numeric_value column of the sign_interpretation_attribute table.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -419,9 +419,9 @@ DROP TABLE IF EXISTS `attribute_value`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `attribute_value` (
   `attribute_value_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `attribute_id` int(10) unsigned NOT NULL,
-  `string_value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attribute_id` int(10) unsigned NOT NULL COMMENT 'The id of the attribute to which a string value is to be assigned.',
+  `string_value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'A unique string value that can be applied as an attribute to a sign interpretation.',
+  `description` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'A concise description of the attribute value.',
   PRIMARY KEY (`attribute_value_id`),
   UNIQUE KEY `unique_attribute_and_value` (`attribute_id`,`string_value`) USING BTREE,
   KEY `fk_att_val_to_att_idx` (`attribute_id`),
@@ -438,8 +438,8 @@ DROP TABLE IF EXISTS `attribute_value_css`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `attribute_value_css` (
   `attribute_value_css_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `attribute_value_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `css` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attribute_value_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'The attribute value to be formatted with this CSS code.',
+  `css` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The CSS descriptor(s) to apply to sign interpretations with the linked attribute value.',
   PRIMARY KEY (`attribute_value_css_id`),
   UNIQUE KEY `unique_attribute_value_css` (`attribute_value_id`,`css`) USING BTREE,
   KEY `fk_attribute_value_css_to_attribute_value` (`attribute_value_id`),
@@ -536,12 +536,12 @@ DROP TABLE IF EXISTS `edition`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `edition` (
-  `edition_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `manuscript_id` int(10) unsigned NOT NULL,
-  `locked` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique id of the edition.',
+  `manuscript_id` int(10) unsigned NOT NULL COMMENT 'Id of the manuscript treated in this edition.',
+  `locked` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'A boolean wheather this edition is locked. If an edition is locked, the SQE_API will not allow any changes to be made to it.',
   `copyright_holder` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'This is the person or institution who holds copyright for the edition.',
   `collaborators` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Each edition may have a set list of collaborators.  If NULL, then the API will automatically construct a list of collaborators based on the edition_editors.',
-  `public` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `public` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'A boolean signalling whether this edition has been made publicly viewable or not. Public relates only to viewing rights, not to write or admin. As the system is currently constructed all public editions should also be locked.',
   PRIMARY KEY (`edition_id`),
   KEY `fk_edition_to_manuscript` (`manuscript_id`) USING BTREE,
   CONSTRAINT `fk_edition_to_manuscript` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`)
@@ -556,13 +556,13 @@ DROP TABLE IF EXISTS `edition_editor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `edition_editor` (
-  `edition_editor_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Id of the editor invited to the',
-  `user_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the version that will be found in all the x_to_owner tables .for this particular version of a scroll.',
-  `may_write` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `may_lock` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `may_read` tinyint(3) unsigned NOT NULL DEFAULT 1,
-  `is_admin` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `edition_editor_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Id of the editor, who is working on a particular edition.',
+  `user_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'Link to the editor’s user account.',
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the id of the edition on which this editor is working.',
+  `may_write` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean whether this editor has permission to write to the edition. An editor must have read permissions to have write permissions.',
+  `may_lock` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean whether the editor is allowed to lock the edition.',
+  `may_read` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'Boolean whether the editor is allowed to read the edition. No editors may ever be deleted from an edition, but revoking read access to an editor is the SQE equivalent to fully removing the editor from work on an edition.',
+  `is_admin` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean whether an editor is an admin. An admin must have read permission. Only an admin may change the permissions of other editors, including revoking admin status (including for herself). Each edition must have at least one admin. Only an admin may publish or delete an edition.',
   PRIMARY KEY (`edition_editor_id`),
   UNIQUE KEY `edition_user_idx` (`edition_id`,`user_id`),
   KEY `fk_edition_editor_to_user` (`user_id`),
@@ -582,11 +582,11 @@ CREATE TABLE `edition_editor_request` (
   `token` char(36) CHARACTER SET utf8mb4 NOT NULL COMMENT 'Unique token the user will provide to verify the requested action.',
   `admin_user_id` int(12) unsigned NOT NULL COMMENT 'User id of the admin who requested the editor.',
   `editor_user_id` int(12) unsigned NOT NULL COMMENT 'User id of the editor who was invited to join the edition.',
-  `edition_id` int(12) unsigned NOT NULL COMMENT 'The id of the edition to be shared',
-  `is_admin` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Offering admin rights',
-  `may_lock` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Offering locking rights',
-  `may_write` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Offering write rights',
-  `date` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date the editor request was sent',
+  `edition_id` int(12) unsigned NOT NULL COMMENT 'The id of the edition to be shared.',
+  `is_admin` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Offering admin rights.',
+  `may_lock` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Offering locking rights.',
+  `may_write` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Offering write rights.',
+  `date` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date the editor request was sent.',
   PRIMARY KEY (`editor_user_id`,`edition_id`),
   KEY `edition_editor_request_to_admin_user_id` (`admin_user_id`),
   KEY `edition_editor_request_to_edition_id` (`edition_id`),
@@ -595,7 +595,7 @@ CREATE TABLE `edition_editor_request` (
   CONSTRAINT `edition_editor_request_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `edition_editor_request_to_editor_user_id` FOREIGN KEY (`editor_user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `edition_editor_request_to_token` FOREIGN KEY (`token`) REFERENCES `user_email_token` (`token`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the data for an edition editor request.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the data for a request for a user to become an editor of an edition. It contains details about the permissions associated with the request.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -690,8 +690,8 @@ CREATE TABLE `iaa_edition_catalog` (
   `edition_location_1` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'First tier identifier (usually a page number).',
   `edition_location_2` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Second tier identifier (usually a fragment/column designation).',
   `edition_side` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Side designation in editio princeps.',
-  `manuscript_id` int(11) unsigned DEFAULT NULL,
-  `comment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `manuscript_id` int(11) unsigned DEFAULT NULL COMMENT 'Id of the manuscript within the SQE database.',
+  `comment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Extra comments.',
   PRIMARY KEY (`iaa_edition_catalog_id`),
   UNIQUE KEY `unique_edition_entry` (`edition_location_1`,`edition_location_2`,`edition_name`,`edition_side`,`edition_volume`,`manuscript`) USING BTREE,
   KEY `fk_edition_catalog_to_manuscript_id` (`manuscript_id`) USING BTREE,
@@ -732,7 +732,7 @@ CREATE TABLE `iaa_edition_catalog_to_text_fragment` (
   KEY `fk_edition_catalog_to_text_fragment_to_edition_catalog_id` (`iaa_edition_catalog_id`) USING BTREE,
   CONSTRAINT `fk_edition_catalog_to_text_fragment_to_edition_catalog_id` FOREIGN KEY (`iaa_edition_catalog_id`) REFERENCES `iaa_edition_catalog` (`iaa_edition_catalog_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_edition_catalog_to_text_fragment_to_text_fragment_id` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=15543 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This is a temporary table to curate matches between the image catalog system and the SQE scroll system.  It should eventually be deprecated in favor of matches inferred by spatial overlap on the virtual scroll of a the placement of a ROI linked to text transcription and an artefact linked to an image.';
+) ENGINE=InnoDB AUTO_INCREMENT=15543 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This is a temporary table to curate matches between the image catalog system and the SQE text fragments in a manuscript.  It should eventually be deprecated in favor of matches inferred by spatial overlap on the virtual scroll of a the placement of a ROI linked to text transcription and an artefact linked to an image.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -811,11 +811,11 @@ DROP TABLE IF EXISTS `image_catalog`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `image_catalog` (
   `image_catalog_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `institution` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name of the institution providing the images.',
-  `catalog_number_1` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'First tier object identifier',
-  `catalog_number_2` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Second tier object identifier (if available)',
-  `catalog_side` tinyint(1) unsigned DEFAULT 0 COMMENT 'Side reference designation.',
-  `object_id` varchar(255) GENERATED ALWAYS AS (concat(`institution`,'-',`catalog_number_1`,'-',`catalog_number_2`)) STORED,
+  `institution` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name of the institution providing the image.',
+  `catalog_number_1` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'First tier object identifier (perhaps a plate or accession number).',
+  `catalog_number_2` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Second tier object identifier (if available). Perhaps a fragment number on a plate, or some subdesignation of an accession number.',
+  `catalog_side` tinyint(1) unsigned DEFAULT 0 COMMENT 'Side reference designation, recto = 0, verso = 1.',
+  `object_id` varchar(255) GENERATED ALWAYS AS (concat(`institution`,'-',`catalog_number_1`,'-',`catalog_number_2`)) STORED COMMENT 'An autogenerated human readable object identifier based on the institution and catalogue numbers.',
   PRIMARY KEY (`image_catalog_id`),
   UNIQUE KEY `unique_catalog_entry` (`catalog_number_1`,`catalog_number_2`,`catalog_side`,`institution`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=43481 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The referencing system of the institution providing the images.';
@@ -864,20 +864,20 @@ DROP TABLE IF EXISTS `image_to_image_map`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `image_to_image_map` (
   `image_to_image_map_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `image1_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `image2_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `image1_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Id of the first SQE_image to be mapped.',
+  `image2_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Id of the second SQE_image to be mapped.',
   `region_on_image1` polygon NOT NULL COMMENT 'Region on image 1 that can be found in image 2.',
   `region_on_image2` polygon NOT NULL COMMENT 'Region in image 2 that can be found in image 1.',
-  `transform_matrix` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '{"matrix":[[1,0,0],[0,1,0]]}' COMMENT 'Linear transform to apply to image 2 in order to align it with image 1.',
-  `region1_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_on_image1`,512)) STORED,
-  `region2_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_on_image2`,512)) STORED,
+  `transform_matrix` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '{"matrix":[[1,0,0],[0,1,0]]}' COMMENT 'Linear affine transform to apply to image 2 in order to align it with image 1.  The format is: “{“matrix”: [[sx cosθ, -sy sinθ, tx],[sx sinθ, sy cosθ, ty]]}”.',
+  `region1_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_on_image1`,512)) STORED COMMENT 'θ',
+  `region2_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_on_image2`,512)) STORED COMMENT 'Polygon hash for uniqueness constraints.',
   PRIMARY KEY (`image_to_image_map_id`),
   UNIQUE KEY `unique_image_to_image_map` (`image1_id`,`image2_id`,`region1_hash`,`region2_hash`,`transform_matrix`) USING BTREE,
   KEY `fk_image1_to_image_id` (`image1_id`),
   KEY `fk_image2_to_image_id` (`image2_id`),
   CONSTRAINT `fk_image1_to_image_id` FOREIGN KEY (`image1_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_image2_to_image_id` FOREIGN KEY (`image2_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=71728 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table contains the mapping information to correlate images of the same object.';
+) ENGINE=InnoDB AUTO_INCREMENT=71728 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table contains the mapping information to correlate images of the same object via linear affine transformations. The mapping may only invlove a portion of either image as defined in the region_on_imageX columns.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -915,23 +915,6 @@ CREATE TABLE `image_urls` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `invitation_blacklist`
---
-
-DROP TABLE IF EXISTS `invitation_blacklist`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `invitation_blacklist` (
-  `requesting_user_id` int(12) unsigned NOT NULL COMMENT 'User id of the person making the edition editor request.',
-  `requested_user_id` int(12) unsigned NOT NULL COMMENT 'User Id of the person receiving edition editor requests.',
-  PRIMARY KEY (`requesting_user_id`,`requested_user_id`),
-  KEY `invitation_blacklist_to_requested_user_id` (`requested_user_id`),
-  CONSTRAINT `invitation_blacklist_to_requested_user_id` FOREIGN KEY (`requested_user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `invitation_blacklist_to_requesting_user_id` FOREIGN KEY (`requesting_user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table contains a list of user id pairs, this can serve as a blacklist so that one user can prevent another user from sending edition editor requests.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `kerning_of_char`
 --
 
@@ -957,7 +940,7 @@ DROP TABLE IF EXISTS `line`;
 CREATE TABLE `line` (
   `line_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`line_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=54448 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54448 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The line is an abstract placeholder which can receive definition via the line_data table.  It must be nested in a text fragment (text_fragment_to_line) and will contain signs (line_to_sign)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1046,17 +1029,17 @@ DROP TABLE IF EXISTS `main_action`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `main_action` (
   `main_action_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `time` datetime(6) DEFAULT current_timestamp(6) COMMENT 'The time that the execution was performed.',
+  `time` datetime(6) DEFAULT current_timestamp(6) COMMENT 'The time that the database action was performed.',
   `rewinded` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean relaying whether the particular action has been rewound or not.',
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Id of the editor who performed the action.',
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Id of the edition in which the action was performed.',
   PRIMARY KEY (`main_action_id`),
   UNIQUE KEY `all_idx` (`main_action_id`,`edition_id`,`edition_editor_id`),
   KEY `main_action_to_scroll_version_idx` (`edition_editor_id`),
   KEY `fk_main_action_to_edition` (`edition_id`),
   CONSTRAINT `fk_main_action_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_main_action_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table recording mutation actions (it can be used for infinite undo).  This table stores the state of the action (rewound or not), the date of the change, and the version of the scroll that the action is associated with.  The table single_action links to the entries here and describe the table in which the action occurred, the id of the entry in that table that was involved, and the nature of the action (creating a connection between that entry and the scroll version of the main_action, or deleting the connection between that entry and the scroll version of the main_action).';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table recording mutation actions (it can be used for infinite undo).  This table stores the state of the action (rewound or not), the date of the change, and the edition that the action is associated with.  The table single_action links to the entries here and describes the table in which the action occurred, the id of the entry in that table that was involved, and the nature of the action (creating a connection between that entry and the edition of the main_action, or deleting the connection between that entry and the edition of the main_action).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1069,7 +1052,7 @@ DROP TABLE IF EXISTS `manuscript`;
 CREATE TABLE `manuscript` (
   `manuscript_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`manuscript_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1694 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1694 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The manuscript is an abstract placeholder that is given metadata via the manuscript_data table. This allows multiple editions of the same manuscript to be created, regardless of the naming scheme used. A manuscript will contain one or more text fragments (manuscript_to_text_fragment)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1082,7 +1065,7 @@ DROP TABLE IF EXISTS `manuscript_data`;
 CREATE TABLE `manuscript_data` (
   `manuscript_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `manuscript_id` int(10) unsigned NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation of the scroll.',
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation of the manuscript.',
   PRIMARY KEY (`manuscript_data_id`),
   UNIQUE KEY `unique_manuscript_id_name` (`manuscript_id`,`name`) USING BTREE,
   KEY `fk_manuscript_to_master_manuscript_idx` (`manuscript_id`) USING BTREE,
@@ -1124,7 +1107,7 @@ CREATE TABLE `manuscript_metrics` (
   `y_origin` int(11) NOT NULL DEFAULT 0 COMMENT 'This is the y value of the starting point of the manuscript.  The coordinate system begins top left, positive values increase while moving downward on the y-axis and while moving rightward on the x-axis.',
   `width` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the width of the manucsript in millimeters.',
   `height` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the height of the manucsript in millimeters.',
-  `pixels_per_inch` int(11) unsigned NOT NULL DEFAULT 1215 COMMENT 'This is the pixels per inch for the manuscript.  At the outset we have decided to set all manuscripts at 1215 PPI, which is the resolution of most images being used.  All images should be scaled to this resolution before creating artefacts and ROIs that are placed upon the virtual manuscript.  We have no plans to use varying PPI settings for different manuscripts, which would slightly complicate GIS calcularions across multiple manuscripts.',
+  `pixels_per_inch` int(11) unsigned NOT NULL DEFAULT 1215 COMMENT 'This is the pixels per inch for the manuscript.  At the outset we have decided to set all manuscripts at 1215 PPI, which is the resolution of most images being used.  All images should be scaled to this resolution before creating artefacts and ROIs that are placed upon the virtual manuscript.  We have no plans to use varying PPI settings for different manuscripts, which would slightly complicate GIS calculations across multiple manuscripts.',
   PRIMARY KEY (`manuscript_metrics_id`),
   UNIQUE KEY `unique_manuscript_metrics` (`manuscript_id`,`height`,`pixels_per_inch`,`width`,`x_origin`,`y_origin`) USING BTREE,
   KEY `manuscript_metrics_to_manuscript` (`manuscript_id`),
@@ -1445,14 +1428,14 @@ DROP TABLE IF EXISTS `roi_position`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roi_position` (
   `roi_position_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `artefact_id` int(11) unsigned NOT NULL COMMENT 'ROI’s are linked to artefacts.  Each edition has an artefact that serves as the “virtual scroll” that is positioned at 0,0 and has a size of maxWidth and maxHeight, this artefact is used for reconstructed text.',
-  `translate_x` int(11) NOT NULL DEFAULT 0 COMMENT 'The translation on the X axis necessary to position the a ROI shape in the artefact''s coordinate system',
-  `translate_y` int(11) NOT NULL DEFAULT 0 COMMENT 'The translation on the Y axis necessary to position the a ROI shape in the artefact''s coordinate system',
-  `stance_rotation` smallint(5) unsigned DEFAULT NULL COMMENT 'Any rotation that would be necessary for the sign to have the correct stance on a horizontal plane',
+  `artefact_id` int(11) unsigned NOT NULL COMMENT 'ROI’s are linked to artefacts.  Those artefacts may be real (i.e., linked to an image) or virtual (i.e., not linked to an image). A virtual manuscript is the sum total of all the artefacts positioned in it.',
+  `translate_x` int(11) NOT NULL DEFAULT 0 COMMENT 'The translation on the X axis necessary to position the a ROI shape in the artefact''s coordinate system. The artefact coordinate system is the same as the “master imafe” to which it is linked, but always scaled to a resolution of 1215 PPI.',
+  `translate_y` int(11) NOT NULL DEFAULT 0 COMMENT 'The translation on the Y axis necessary to position the a ROI shape in the artefact''s coordinate system. The artefact coordinate system is the same as the “master imafe” to which it is linked, but always scaled to a resolution of 1215 PPI.',
+  `stance_rotation` smallint(5) unsigned DEFAULT NULL COMMENT 'Any rotation that would be necessary for the sign to have the correct stance on a horizontal plane. This is to be applied whent creating fonts and analyzing the expected script orientation in relation to its actual orientation on an artefact.',
   PRIMARY KEY (`roi_position_id`),
   KEY `fk_roi_position_to_artefact` (`artefact_id`),
   CONSTRAINT `fk_roi_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ROI’s are linked to artefacts.  Each edition has an artefact that serves as the “virtual scroll” that is positioned at 0,0 and has a size of maxWidth and maxHeight, this artefact is used for reconstructed text. The ROI transform_matrix is carried out in the coordinate system of the linked artefact, not the abstract “virtual scroll”.  To get the location of the ROI in the coordinate system of the “virtual scroll”, one must multiply the transform_matrix of the attached artefact with the transform matrix of the ROI. This can by done with the UDF multiply_matrix(), which should have the ROI’s transform_matrix first and the artefact’s transform_matrix second.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ROI’s are linked to artefacts.  To get the location of the ROI in the coordinate system of the “virtual manuscript, one must first apply the roi_position and then the position of the linked artefact. This can by done via the UDF nested_geom_transform.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1464,7 +1447,7 @@ DROP TABLE IF EXISTS `roi_shape`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roi_shape` (
   `roi_shape_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `path` polygon DEFAULT NULL,
+  `path` geometry DEFAULT NULL COMMENT 'This is a POLYGON geometry describing the shape of the ROI. It is its own 0,0 coordinate system and is correlated with a location in an artefact via a translation (without scale or rotation) in the roi_position table. Its resolution is the same as the artefact, 1215 PPI.',
   PRIMARY KEY (`roi_shape_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the ROI in its own coordinate system. The roi_position table situates the polygon in the coordinate system of the artefact.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1549,7 +1532,7 @@ DROP TABLE IF EXISTS `sign`;
 CREATE TABLE `sign` (
   `sign_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`sign_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1733943 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1733943 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This is an abstract placeholder allowing a multiplicity of interpretations to be related to each other by linking to the same sign_id.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1561,9 +1544,9 @@ DROP TABLE IF EXISTS `sign_interpretation`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sign_interpretation` (
   `sign_interpretation_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sign_id` int(10) unsigned NOT NULL,
+  `sign_id` int(10) unsigned NOT NULL COMMENT 'Id of the sign being described.',
   `is_variant` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean set to true when current entry is a variant interpretation of a sign.',
-  `character` char(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `character` char(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'This may be left null for signs that are not interpreted as characters (e.g., control signs like line start/line end or material features of any sort), otherwise it is a single letter.',
   PRIMARY KEY (`sign_interpretation_id`),
   UNIQUE KEY `unique_sign_id_is_variant_sign` (`is_variant`,`character`,`sign_id`) USING BTREE,
   KEY `fk_sign_interpretation_to_sign_idx` (`sign_id`) USING BTREE,
@@ -1580,8 +1563,8 @@ DROP TABLE IF EXISTS `sign_interpretation_attribute`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sign_interpretation_attribute` (
   `sign_interpretation_attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sign_interpretation_id` int(10) unsigned NOT NULL,
-  `attribute_value_id` int(10) unsigned NOT NULL,
+  `sign_interpretation_id` int(10) unsigned NOT NULL COMMENT 'Id of the sign interpretation being descibed.',
+  `attribute_value_id` int(10) unsigned NOT NULL COMMENT 'Id of the attribute to apply to this sign interpretation.',
   `sequence` tinyint(4) DEFAULT NULL COMMENT 'Absolute ordering of this record.  This is used to define the order of all records for the same sign_char_id.',
   `numeric_value` float DEFAULT NULL COMMENT 'Contains the width of a character (normally 1), space (dto.), or vacat (normally > 1) or the level of probability.',
   PRIMARY KEY (`sign_interpretation_attribute_id`),
@@ -1623,15 +1606,15 @@ DROP TABLE IF EXISTS `sign_interpretation_commentary`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sign_interpretation_commentary` (
   `sign_interpretation_commentary_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sign_interpretation_id` int(10) unsigned NOT NULL,
-  `attribute_id` int(10) unsigned DEFAULT NULL,
-  `commentary` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sign_interpretation_id` int(10) unsigned NOT NULL COMMENT 'Id of the sign interpretation being commented on.',
+  `attribute_id` int(10) unsigned DEFAULT NULL COMMENT 'Id of the attrivute describing the aspect of this sign interpretation being commented on.',
+  `commentary` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Editorial comments.',
   PRIMARY KEY (`sign_interpretation_commentary_id`),
   KEY `fk_sic_to_attribute_idx` (`attribute_id`) USING BTREE,
   KEY `sign_interpretation_id` (`sign_interpretation_id`) USING BTREE,
   CONSTRAINT `fk_sign_interpretation_commentary_to_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sign_interpretation_commentary_to_sign_char` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table allows editors to attach commentary to a specific attribute of a sign interpretation.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1663,11 +1646,11 @@ DROP TABLE IF EXISTS `sign_interpretation_roi`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sign_interpretation_roi` (
   `sign_interpretation_roi_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `sign_interpretation_id` int(10) unsigned DEFAULT NULL,
-  `roi_shape_id` int(10) unsigned NOT NULL,
-  `roi_position_id` int(10) unsigned NOT NULL,
+  `sign_interpretation_id` int(10) unsigned DEFAULT NULL COMMENT 'Id of the sign interpretation being marked in an artefact.',
+  `roi_shape_id` int(10) unsigned NOT NULL COMMENT 'Id of the shape for this ROI.',
+  `roi_position_id` int(10) unsigned NOT NULL COMMENT 'Id for the position of this ROI in its artefact.',
   `values_set` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `exceptional` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `exceptional` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean whether this ROI is exceptional (and thus should be excluded from some statistical analyses).',
   PRIMARY KEY (`sign_interpretation_roi_id`),
   UNIQUE KEY `unique_sign_interpretation_shape_position` (`sign_interpretation_id`,`roi_shape_id`,`roi_position_id`) USING BTREE,
   KEY `fk_sign_area_to_area_idx` (`roi_shape_id`),
@@ -1708,10 +1691,10 @@ DROP TABLE IF EXISTS `single_action`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `single_action` (
   `single_action_id` bigint(19) unsigned NOT NULL AUTO_INCREMENT,
-  `main_action_id` int(10) unsigned NOT NULL,
+  `main_action_id` int(10) unsigned NOT NULL COMMENT 'Id of the main action that this single action belongs to.',
   `action` enum('add','delete') COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The nature of the action applied.  A link to an edition was either added or deleted.',
   `table` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Table containing the entry that was either added to or deleted from the edition.',
-  `id_in_table` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Id of the record that was added to or deleted from the edition (of the linked main_action) in the “table”_to_owner table.',
+  `id_in_table` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Id of the record that was added to or deleted from the edition (of the linked main_action) in the “table”_owner table.',
   PRIMARY KEY (`single_action_id`),
   KEY `fk_single_action_to_main_idx` (`main_action_id`),
   CONSTRAINT `fk_single_action_to_main` FOREIGN KEY (`main_action_id`) REFERENCES `main_action` (`main_action_id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -1748,7 +1731,7 @@ DROP TABLE IF EXISTS `text_fragment`;
 CREATE TABLE `text_fragment` (
   `text_fragment_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`text_fragment_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The text_fragment is an abstract placeholder that can be named via text_fragment_data, subsumed in a manuscript (manuscript_to_text_fragment), and joined with the lines that contitute it (text_fragment_to_line).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1969,7 +1952,7 @@ DROP TABLE IF EXISTS `work_status`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `work_status` (
   `work_status_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `work_status_message` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '',
+  `work_status_message` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT 'A status message on the ccurrent state of work.',
   PRIMARY KEY (`work_status_id`),
   UNIQUE KEY `unique_status_message` (`work_status_message`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores user-definable work status messages that can be applied to various data tables. They are used to indicate the current status of editor curation for the data entry.';
