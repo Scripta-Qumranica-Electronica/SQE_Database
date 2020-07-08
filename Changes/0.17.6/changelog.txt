@@ -1,0 +1,3 @@
+This update completely updates the database documentation to be internally consistent and more useful in its descriptiveness.
+
+It includes one substantive change to the database; it drops the table invitation_blacklist, which we have now decided not to use.
