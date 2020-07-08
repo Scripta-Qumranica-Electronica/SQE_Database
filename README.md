@@ -14,7 +14,7 @@ Most of this is standard tooling.
 
 ## Usage
 
-Things are pretty simple here.  Make sure you have all the prerequisites.  Clone this repository `git clone https://github.com/Scripta-Qumranica-Electronica/SQE_Database.git`, go into the folder `cd Database`, and run `yarn`.  Now you can start up the database with `docker-compose up -d` (make sure you don't have any other instances of the SQE_database running on your system).
+Things are pretty simple here.  Make sure you have all the prerequisites.  Clone this repository `git clone https://github.com/Scripta-Qumranica-Electronica/SQE_Database.git`, go into the folder `cd SQE_Database`, and run `yarn`.  Now you can start up the database with `docker-compose up -d` (make sure you don't have any other instances of the SQE_database running on your system).
 
 When the docker container is running, you can access the database at `localhost` port `3307` with the user `root` and password `none`.  Make any changes you want to the database using your favorite tools.
 
