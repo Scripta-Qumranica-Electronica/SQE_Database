@@ -8,7 +8,7 @@ const mariadb = require('mariadb')
 const chalk = require('chalk')
 
 // Default settings
-const tableBlackList = ['user_sessions', 'sqe_session', 'single_action', 'main_action', 'user_email_token']
+const tableBlackList = ['single_action', 'main_action', 'user_email_token']
 //const superTables = ['artefact', 'col', 'line', 'sign', 'scroll']
 
 /**

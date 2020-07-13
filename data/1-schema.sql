@@ -383,10 +383,9 @@ DROP TABLE IF EXISTS `attribute`;
 CREATE TABLE `attribute` (
   `attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Designation of the attribute.',
-  `type` enum('BOOLEAN','NUMBER','STRING') COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Attributes my be either a boolean, and number, or a string.',
   `description` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'A concise description of the nature of the attribute.',
   PRIMARY KEY (`attribute_id`),
-  UNIQUE KEY `unique_name_type` (`name`,`type`) USING BTREE
+  UNIQUE KEY `attribute_name_index` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores attributes that can be used to describe a sign_interpretation.  They are used in conjunction with a string value in the attribute_value, and any related numeric value can be added in the numeric_value column of the sign_interpretation_attribute table.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -488,47 +487,6 @@ CREATE TABLE `attribute_value_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `char_of_writing`
---
-
-DROP TABLE IF EXISTS `char_of_writing`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `char_of_writing` (
-  `char_of_writing_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `form_of_writing_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `unicode_char` char(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `line_offset` smallint(6) NOT NULL DEFAULT 0,
-  `commentary` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`char_of_writing_id`,`form_of_writing_id`),
-  UNIQUE KEY `form_char` (`form_of_writing_id`,`unicode_char`),
-  KEY `form_of_writing` (`form_of_writing_id`),
-  KEY `char` (`unicode_char`),
-  CONSTRAINT `fk_to_form_of_writing` FOREIGN KEY (`form_of_writing_id`) REFERENCES `form_of_writing` (`form_of_writing_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores info about the characters of a particular scribal hand.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `char_of_writing_owner`
---
-
-DROP TABLE IF EXISTS `char_of_writing_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `char_of_writing_owner` (
-  `char_of_writing_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`char_of_writing_id`,`edition_id`),
-  KEY `cow_owner_to_scrollversion_idx` (`edition_editor_id`),
-  KEY `fk_char_of_writing_to_edition` (`edition_id`),
-  CONSTRAINT `cow_owner_to_cow` FOREIGN KEY (`char_of_writing_id`) REFERENCES `char_of_writing` (`char_of_writing_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_char_of_writing_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_char_of_writing_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `edition`
 --
 
@@ -599,79 +557,40 @@ CREATE TABLE `edition_editor_request` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `external_font`
+-- Table structure for table `font_file`
 --
 
-DROP TABLE IF EXISTS `external_font`;
+DROP TABLE IF EXISTS `font_file`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `external_font` (
-  `external_font_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `font_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`external_font_id`),
-  UNIQUE KEY `font_id_idx` (`font_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `font_file` (
+  `font_file_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `font_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'A human readable name',
+  `is_public` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Flag to mark whether the file may be used also by others',
+  `font_binary_data` longblob DEFAULT NULL COMMENT 'The font data to be sent as file to the front end',
+  `font_format` enum('woff','woff2','ttf','otf','svg') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'woff' COMMENT 'The font-format of the font_binary_data',
+  PRIMARY KEY (`font_file_id`),
+  UNIQUE KEY `font_name_idx` (`font_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains a font file to be used for reconstructed text or overlays';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `external_font_glyph`
+-- Table structure for table `font_file_owner`
 --
 
-DROP TABLE IF EXISTS `external_font_glyph`;
+DROP TABLE IF EXISTS `font_file_owner`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `external_font_glyph` (
-  `external_font_glyph_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `external_font_id` int(10) unsigned NOT NULL,
-  `unicode_char` varbinary(4) NOT NULL,
-  `path` multipolygon DEFAULT NULL,
-  `width` smallint(6) unsigned DEFAULT NULL,
-  `height` smallint(5) unsigned DEFAULT NULL,
-  PRIMARY KEY (`external_font_glyph_id`) USING BTREE,
-  UNIQUE KEY `char_idx` (`unicode_char`) USING BTREE,
-  KEY `fk_efg_to_external_font_idx` (`external_font_id`) USING BTREE,
-  CONSTRAINT `fk_efg_to_external_font` FOREIGN KEY (`external_font_id`) REFERENCES `external_font` (`external_font_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2371 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `form_of_writing`
---
-
-DROP TABLE IF EXISTS `form_of_writing`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `form_of_writing` (
-  `form_of_writing_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `scribes_scribe_id` int(10) unsigned NOT NULL,
-  `pen` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `ink` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  `scribal_font_type_id` int(10) unsigned DEFAULT NULL,
-  PRIMARY KEY (`form_of_writing_id`),
-  KEY `fk_form_to_scribe_idx` (`scribes_scribe_id`),
-  KEY `fk_form_to_char_style_idx` (`scribal_font_type_id`),
-  CONSTRAINT `fk_form_to_char_style` FOREIGN KEY (`scribal_font_type_id`) REFERENCES `scribal_font_type` (`scribal_font_type_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_form_to_scribe` FOREIGN KEY (`scribes_scribe_id`) REFERENCES `scribe` (`scribe_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Defines the actual scribe of of sign. As actual scribe the scribe as person using at the very moment a special „font“ caused by the mood the scribe is in (conecentrated, sloppy, fast and furious) and the used equipment. Thus even change of quills or the status of a quill (fresh filled, new, old) could be distinguished. ';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `form_of_writing_owner`
---
-
-DROP TABLE IF EXISTS `form_of_writing_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `form_of_writing_owner` (
-  `form_of_writing_id` int(10) unsigned NOT NULL,
+CREATE TABLE `font_file_owner` (
+  `font_file_id` int(11) unsigned NOT NULL DEFAULT 0,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`form_of_writing_id`,`edition_id`),
-  KEY `fk_form_of_writing_to_scrollversion_idx` (`edition_editor_id`),
-  KEY `fk_form_of_writing_to_edition` (`edition_id`),
-  CONSTRAINT `fk_form_of_writing_owner_to_scribe` FOREIGN KEY (`form_of_writing_id`) REFERENCES `form_of_writing` (`form_of_writing_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_form_of_writing_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_form_of_writing_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+  PRIMARY KEY (`font_file_id`,`edition_id`),
+  KEY `fk_font_file_to_edition` (`edition_id`),
+  KEY `fk_ont_file_to_scroll_version` (`edition_editor_id`),
+  CONSTRAINT `fk_font_file_owner_to_font_file` FOREIGN KEY (`font_file_id`) REFERENCES `font_file` (`font_file_id`),
+  CONSTRAINT `fk_font_file_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_font_file_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -915,22 +834,6 @@ CREATE TABLE `image_urls` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `kerning_of_char`
---
-
-DROP TABLE IF EXISTS `kerning_of_char`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `kerning_of_char` (
-  `kerning` smallint(6) NOT NULL DEFAULT 0 COMMENT 'Kerning in mm',
-  `previous_char` char(1) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `chars_of_writing_char_of_writing_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`chars_of_writing_char_of_writing_id`,`previous_char`),
-  CONSTRAINT `fk_to_chars_of_writing` FOREIGN KEY (`chars_of_writing_char_of_writing_id`) REFERENCES `char_of_writing` (`char_of_writing_id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Describes character to character kerning relationships.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `line`
 --
 
@@ -1108,10 +1011,13 @@ CREATE TABLE `manuscript_metrics` (
   `width` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the width of the manucsript in millimeters.',
   `height` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the height of the manucsript in millimeters.',
   `pixels_per_inch` int(11) unsigned NOT NULL DEFAULT 1215 COMMENT 'This is the pixels per inch for the manuscript.  At the outset we have decided to set all manuscripts at 1215 PPI, which is the resolution of most images being used.  All images should be scaled to this resolution before creating artefacts and ROIs that are placed upon the virtual manuscript.  We have no plans to use varying PPI settings for different manuscripts, which would slightly complicate GIS calculations across multiple manuscripts.',
+  `scribal_font_id` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`manuscript_metrics_id`),
   UNIQUE KEY `unique_manuscript_metrics` (`manuscript_id`,`height`,`pixels_per_inch`,`width`,`x_origin`,`y_origin`) USING BTREE,
   KEY `manuscript_metrics_to_manuscript` (`manuscript_id`),
-  CONSTRAINT `manuscript_metrics_to_manuscript` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `manuscript_metrics_to_scribal_font_fk` (`scribal_font_id`),
+  CONSTRAINT `manuscript_metrics_to_manuscript` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `manuscript_metrics_to_scribal_font_fk` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1372 DEFAULT CHARSET=utf8mb4 COMMENT='This table stores basic information about the gross metrics of a manuscript.  The user is able to specify an  x/y-origin point for the start of the manuscript along with its proposed height and width in millimeters.  The coordinate system begins top left, positive values increase while moving downward on the y-axis and while moving rightward on the x-axis.  The PPI is currently fixed ad 1215 PPI to facilitate comparison of GIS data between manuscripts.  All images should be scaled to this resolution before creating artefacts and ROIs that are placed upon the virtual manuscript.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1203,7 +1109,7 @@ CREATE TABLE `parallel_word` (
   UNIQUE KEY `unique_word_id_parallel_group_id_sup_group` (`parallel_group_id`,`sub_group`,`word_id`) USING BTREE,
   KEY `fk_par_word_to_group_idx` (`parallel_group_id`),
   KEY `fk_par_owrd_to_word_idx` (`word_id`),
-  CONSTRAINT `fk_par_owrd_to_word` FOREIGN KEY (`word_id`) REFERENCES `word` (`word_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_par_owrd_to_word` FOREIGN KEY (`word_id`) REFERENCES `sign_stream_section` (`sign_stream_section_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_par_word_to_group` FOREIGN KEY (`parallel_group_id`) REFERENCES `parallel_group` (`parallel_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table enables a connection to be made between parallel words in two different manuscripts.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1287,20 +1193,19 @@ CREATE TABLE `position_in_stream_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `position_in_stream_to_word_rel`
+-- Table structure for table `position_in_stream_to_section_rel`
 --
 
-DROP TABLE IF EXISTS `position_in_stream_to_word_rel`;
+DROP TABLE IF EXISTS `position_in_stream_to_section_rel`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `position_in_stream_to_word_rel` (
+CREATE TABLE `position_in_stream_to_section_rel` (
   `position_in_stream_id` int(11) unsigned NOT NULL,
-  `word_id` int(11) unsigned NOT NULL,
-  `position_in_word` tinyint(3) unsigned DEFAULT NULL,
-  PRIMARY KEY (`position_in_stream_id`,`word_id`),
-  KEY `fk_position_in_stream_to_word_rel_to_word_id` (`word_id`),
-  CONSTRAINT `fk_position_in_stream_to_word_rel_to_position_in_stream` FOREIGN KEY (`position_in_stream_id`) REFERENCES `position_in_stream` (`position_in_stream_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_position_in_stream_to_word_rel_to_word_id` FOREIGN KEY (`word_id`) REFERENCES `word` (`word_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  `sign_stream_section_id` int(10) unsigned NOT NULL COMMENT 'Reference to sign_stream_section',
+  PRIMARY KEY (`position_in_stream_id`,`sign_stream_section_id`),
+  KEY `fk_position_in_stream_to_section_rel_to_word_id` (`sign_stream_section_id`),
+  CONSTRAINT `fk_position_in_stream_to_section_rel_to_position_in_stream` FOREIGN KEY (`position_in_stream_id`) REFERENCES `position_in_stream` (`position_in_stream_id`),
+  CONSTRAINT `fk_position_in_stream_to_section_rel_to_word_id` FOREIGN KEY (`sign_stream_section_id`) REFERENCES `sign_stream_section` (`sign_stream_section_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table links sign_interpretations to the words they are part of.  This creates a bridge from the SQE data to the words stored in the QWB database.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1361,6 +1266,25 @@ CREATE TABLE `qwb_biblio` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `qwb_ref`
+--
+
+DROP TABLE IF EXISTS `qwb_ref`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `qwb_ref` (
+  `qwb_ref_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `line_id` int(10) unsigned DEFAULT NULL COMMENT 'The SQE line id related to this QWB reference',
+  `qwb_scroll_name` varchar(16) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'The precise name of the scroll in the QWB database',
+  `qwb_fragment_name` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'The precise name of the fragment or column in the QWB database',
+  `qwb_line_name` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'The precise line designation in the QWB database',
+  `text` varchar(255) GENERATED ALWAYS AS (concat(`qwb_scroll_name`,'%',if(locate('frg',`qwb_fragment_name`) > 0,`qwb_fragment_name`,concat('col. ',`qwb_fragment_name`)),'%',`qwb_line_name`)) STORED,
+  PRIMARY KEY (`qwb_ref_id`),
+  KEY `qwb_ref_text_index` (`text`)
+) ENGINE=InnoDB AUTO_INCREMENT=65536 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table creates a connection between the references in the QWB database and the textual references within the SQE text system.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `qwb_variant`
 --
 
@@ -1393,13 +1317,10 @@ DROP TABLE IF EXISTS `qwb_word`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `qwb_word` (
-  `word_id` int(10) unsigned NOT NULL,
   `qwb_word_id` int(10) unsigned NOT NULL,
   `qwb_last_change` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
   `processing` tinyint(4) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`word_id`,`qwb_word_id`),
-  UNIQUE KEY `qwb_word_id_uindex` (`qwb_word_id`),
-  CONSTRAINT `fk_qwb_word_to_word` FOREIGN KEY (`word_id`) REFERENCES `word` (`word_id`)
+  PRIMARY KEY (`qwb_word_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1453,35 +1374,117 @@ CREATE TABLE `roi_shape` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `scribal_font_type`
+-- Table structure for table `scribal_font`
 --
 
-DROP TABLE IF EXISTS `scribal_font_type`;
+DROP TABLE IF EXISTS `scribal_font`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `scribal_font_type` (
-  `scribal_font_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Provides metadata for „Fonts“ used by scribes .\n\nToDo: Define the ontology (fromal …) which should be used',
-  `font_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`scribal_font_type_id`),
-  UNIQUE KEY `style_name_idx` (`font_name`)
+CREATE TABLE `scribal_font` (
+  `scribal_font_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
+  `font_file_id` int(10) unsigned NOT NULL COMMENT 'Reference to the font file.',
+  `default_word_space` smallint(5) unsigned DEFAULT 85 COMMENT 'The default space in pixel to be set between two words',
+  `default_interlinear_space` smallint(5) unsigned DEFAULT 280 COMMENT 'The default space between two lines in pixel',
+  PRIMARY KEY (`scribal_font_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Defines a font found in the scrolls. It connects to a font file and is referred by glyph info';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `scribal_font_glyph_metrics`
+--
+
+DROP TABLE IF EXISTS `scribal_font_glyph_metrics`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `scribal_font_glyph_metrics` (
+  `scribal_font_glyph_metrics_id` int(10) unsigned NOT NULL COMMENT 'Unique identifier',
+  `scribal_font_id` int(10) unsigned NOT NULL COMMENT 'Reference to scribal font',
+  `unicode_char` varbinary(4) NOT NULL COMMENT 'Char of font',
+  `width` smallint(6) unsigned NOT NULL DEFAULT 100 COMMENT 'Width of glyph',
+  `height` smallint(5) unsigned NOT NULL DEFAULT 200 COMMENT 'Height of glyph',
+  `y_offset` smallint(6) NOT NULL DEFAULT -200 COMMENT 'Vertical offset glyph (thought to stand on line)',
+  PRIMARY KEY (`scribal_font_glyph_metrics_id`),
+  UNIQUE KEY `char_idx` (`unicode_char`),
+  KEY `fk_sfg_to_scribal_font` (`scribal_font_id`),
+  CONSTRAINT `fk_sfg_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains the bounding box and position metrics of a scribal font. Only used to calculate ROIs not yet set by the user.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `scribal_font_glyph_metrics_owner`
+--
+
+DROP TABLE IF EXISTS `scribal_font_glyph_metrics_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `scribal_font_glyph_metrics_owner` (
+  `scribal_font_glyph_metrics_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`scribal_font_glyph_metrics_id`,`edition_id`),
+  KEY `fk_sfgm_to_edition` (`edition_id`),
+  KEY `fk_sfgm_to_edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_sfgm_owner_to_sfgm` FOREIGN KEY (`scribal_font_glyph_metrics_id`) REFERENCES `scribal_font_glyph_metrics` (`scribal_font_glyph_metrics_id`),
+  CONSTRAINT `fk_sfgm_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_sfgm_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `scribal_font_type_owner`
+-- Table structure for table `scribal_font_kerning`
 --
 
-DROP TABLE IF EXISTS `scribal_font_type_owner`;
+DROP TABLE IF EXISTS `scribal_font_kerning`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `scribal_font_type_owner` (
-  `scribal_font_type_id` int(10) unsigned NOT NULL,
+CREATE TABLE `scribal_font_kerning` (
+  `scribal_font_kerning_id` int(10) unsigned NOT NULL COMMENT 'Unique identifier',
+  `scribal_font_id` int(10) unsigned NOT NULL COMMENT 'Reference to scribal font',
+  `first_unicode_char` varbinary(4) NOT NULL COMMENT 'Charcode of the first glyph',
+  `second_unicode_char` varbinary(4) NOT NULL COMMENT 'Charcode of the second glyph',
+  `kerning_x` smallint(6) NOT NULL DEFAULT 0 COMMENT 'Horizontal kerning',
+  `kerning_y` smallint(6) NOT NULL DEFAULT 0 COMMENT 'Vertical kerning',
+  PRIMARY KEY (`scribal_font_kerning_id`),
+  UNIQUE KEY `char_idx` (`scribal_font_id`,`first_unicode_char`,`second_unicode_char`),
+  CONSTRAINT `fk_sfk_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains kerning of glyph of a scribal font. Only used to calculated the position of signs not yet positioned by the user';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `scribal_font_kerning_owner`
+--
+
+DROP TABLE IF EXISTS `scribal_font_kerning_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `scribal_font_kerning_owner` (
+  `scribal_font_kerning_id` int(11) unsigned NOT NULL DEFAULT 0,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`scribal_font_type_id`,`edition_id`),
-  KEY `fk_font_owner_scroll_version_idx` (`edition_editor_id`),
+  PRIMARY KEY (`scribal_font_kerning_id`,`edition_id`),
+  KEY `fk_sfk_to_edition` (`edition_id`),
+  KEY `fk_sfk_to_edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_sfk_owner_to_sfk` FOREIGN KEY (`scribal_font_kerning_id`) REFERENCES `scribal_font_kerning` (`scribal_font_kerning_id`),
+  CONSTRAINT `fk_sfk_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_sfk_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `scribal_font_owner`
+--
+
+DROP TABLE IF EXISTS `scribal_font_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `scribal_font_owner` (
+  `scribal_font_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`scribal_font_id`,`edition_id`),
   KEY `fk_scribal_font_type_to_edition` (`edition_id`),
-  CONSTRAINT `fk_font_owner_to_font` FOREIGN KEY (`scribal_font_type_id`) REFERENCES `scribal_font_type` (`scribal_font_type_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  KEY `fk_scribal_font_owner_scroll_version_idx` (`edition_editor_id`),
+  CONSTRAINT `fk_scribal_font_owner_to_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`),
   CONSTRAINT `fk_scribal_font_type_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_scribal_font_type_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1683,6 +1686,57 @@ CREATE TABLE `sign_interpretation_roi_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `sign_stream_section`
+--
+
+DROP TABLE IF EXISTS `sign_stream_section`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sign_stream_section` (
+  `sign_stream_section_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
+  `commentary` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`sign_stream_section_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=380474 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='A collection of coherent signs from a stream.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sign_stream_section_owner`
+--
+
+DROP TABLE IF EXISTS `sign_stream_section_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sign_stream_section_owner` (
+  `sign_stream_section_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`sign_stream_section_id`,`edition_id`),
+  KEY `fk_sss_owner_to_scroll_version_idx` (`edition_editor_id`),
+  KEY `fk_sss_owner_to_edition` (`edition_id`),
+  CONSTRAINT `fk_sss_owner_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_sss_owner_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_sss_owner_to_sss` FOREIGN KEY (`sign_stream_section_id`) REFERENCES `sign_stream_section` (`sign_stream_section_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sign_stream_section_to_qwb_word`
+--
+
+DROP TABLE IF EXISTS `sign_stream_section_to_qwb_word`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sign_stream_section_to_qwb_word` (
+  `sign_stream_section_id` int(10) unsigned NOT NULL COMMENT 'Refers to sign_stream_section',
+  `qwb_word_id` int(10) unsigned NOT NULL COMMENT 'Refers to qwb_word',
+  UNIQUE KEY `sign_stream_section_to_qwb_word_pk` (`sign_stream_section_id`,`qwb_word_id`),
+  KEY `sss_to_qwb_word_fk` (`qwb_word_id`),
+  CONSTRAINT `sss_to_qwb_word_fk` FOREIGN KEY (`qwb_word_id`) REFERENCES `qwb_word` (`qwb_word_id`),
+  CONSTRAINT `sss_to_qwb_word_to_sss_fk` FOREIGN KEY (`sign_stream_section_id`) REFERENCES `sign_stream_section` (`sign_stream_section_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Provides n:m connection between qwb words and sections of the sign stream.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `single_action`
 --
 
@@ -1699,26 +1753,6 @@ CREATE TABLE `single_action` (
   KEY `fk_single_action_to_main_idx` (`main_action_id`),
   CONSTRAINT `fk_single_action_to_main` FOREIGN KEY (`main_action_id`) REFERENCES `main_action` (`main_action_id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table joins with the main_action table to record all mutation actions taken regarding each edition.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `sqe_session`
---
-
-DROP TABLE IF EXISTS `sqe_session`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `sqe_session` (
-  `sqe_session_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `scroll_version_id` int(10) unsigned NOT NULL,
-  `session_start` timestamp(6) NOT NULL DEFAULT current_timestamp(6),
-  `last_internal_session_end` timestamp(6) NULL DEFAULT NULL,
-  `attributes` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`sqe_session_id`),
-  KEY `fk_sqe_sesseio_to_user_idx` (`user_id`),
-  CONSTRAINT `fk_sqe_session_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1835,24 +1869,6 @@ CREATE TABLE `user` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `user_comment`
---
-
-DROP TABLE IF EXISTS `user_comment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_comment` (
-  `comment_id` int(10) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `comment_text` varchar(5000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `entry_time` datetime DEFAULT NULL,
-  PRIMARY KEY (`comment_id`,`user_id`),
-  KEY `fk_user_comment_to_user_idx` (`user_id`),
-  CONSTRAINT `fk_user_comment_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Created by Martin 17/03/03';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `user_contributions`
 --
 
@@ -1887,60 +1903,6 @@ CREATE TABLE `user_email_token` (
   KEY `fk_user_email_token_to_user` (`user_id`),
   CONSTRAINT `fk_user_email_token_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds a list of unique tokens that are sent to the user in order to confirm certain operations in the database.  These tokens are intended to expire and a scheduled event in the database clears out all entries that are over 2 days old.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `user_sessions`
---
-
-DROP TABLE IF EXISTS `user_sessions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_sessions` (
-  `session_id` int(10) NOT NULL AUTO_INCREMENT,
-  `user_id` smallint(5) unsigned NOT NULL,
-  `session_key` char(56) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `session_start` datetime DEFAULT NULL,
-  `session_end` datetime DEFAULT NULL,
-  `current` tinyint(1) DEFAULT NULL COMMENT 'Boolean determining whether the current session is still in progress or has been finished (user has exited).',
-  PRIMARY KEY (`session_id`,`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores a record of all user sessions.\nCreated by Martin 17/03/03';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `word`
---
-
-DROP TABLE IF EXISTS `word`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `word` (
-  `word_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
-  `qwb_word_id` int(11) unsigned DEFAULT NULL COMMENT 'Old word identifier from QWB.',
-  `commentary` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`word_id`),
-  KEY `old_word_idx` (`qwb_word_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=380474 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='A collection of signs from a stream. Maintains link to original QWB word id.';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `word_owner`
---
-
-DROP TABLE IF EXISTS `word_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `word_owner` (
-  `word_id` int(10) unsigned NOT NULL,
-  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
-  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`word_id`,`edition_id`),
-  KEY `fk_word_owner_to_scroll_version_idx` (`edition_editor_id`),
-  KEY `fk_word_to_edition` (`edition_id`),
-  CONSTRAINT `fk_word_owner_to_word` FOREIGN KEY (`word_id`) REFERENCES `word` (`word_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_word_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_word_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
