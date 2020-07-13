@@ -1,0 +1,7 @@
+This update involves an overhaul of the font mamgement system in SQE with many tables changed and updated (see the documentation).
+
+This updates also provides an update to the qwb_ref table and the linkage between SQE textual data and the QWB system.
+
+Updated build scripts.
+
+It was planned to update the Dockerfile in this version to use libmariadbclient-dev, but we encountered the error "libmariadbclient-dev : Depends: libmariadbclient18 (= 1:10.1.44-0ubuntu0.18.04.1) but 1:10.3.23+maria~bionic is to be installed"
