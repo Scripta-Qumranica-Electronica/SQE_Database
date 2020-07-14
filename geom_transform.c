@@ -1,4 +1,4 @@
-#ifdef STANDARD
+//#ifdef STANDARD
 /* STANDARD is defined. Don't use any MySQL functions */
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,10 +11,10 @@
 typedef unsigned long long ulonglong;
 typedef long long longlong;
 // #endif /*__WIN__*/
-#else
+//#else
 #include <my_global.h>
 #include <my_sys.h>
-#endif
+//#endif
 #include <mysql.h>
 #include <ctype.h>
 #include <stdint.h>
@@ -159,18 +159,18 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
     if (binaryEndian == 1)
     {
         // Get the geometry type
-        uint32_t geom_type = be32toh(*((uint32_t*) transform));
+        u_int32_t geom_type = be32toh(*((u_int32_t*) transform));
         transform += GEOMTYPE_BYTE_SIZE;
 
         if (geom_type == 3){ // This is a WKB POLYGON
             // Get the number of rings 
-            uint32_t num_of_rings = be32toh(*((uint32_t*) transform));
+            u_int32_t num_of_rings = be32toh(*((u_int32_t*) transform));
             transform += RING_NUMS_BYTE_SIZE;
 
             for (int ring = 0; ring < num_of_rings; ++ring)
             {
                 // Get the number of points in this rings
-                uint32_t num_of_points = be32toh(*((uint32_t*) transform));
+                u_int32_t num_of_points = be32toh(*((u_int32_t*) transform));
                 transform += POINT_NUMS_BYTE_SIZE;
 
                 for (int point = 0; point < num_of_points; ++point)
@@ -185,7 +185,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                     // Modify and write point1
                     double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
-                    uint8_t *array1 = (uint8_t*)(&num1);
+                    u_int8_t *array1 = (u_int8_t*)(&num1);
 
                     for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                         *transform = array1[i];
@@ -194,7 +194,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                     // Modify and write point2
                     double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
-                    uint8_t *array2 = (uint8_t*)(&num2);
+                    u_int8_t *array2 = (u_int8_t*)(&num2);
 
                     for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                         *transform = array2[i];
@@ -203,7 +203,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
                 }
             }
         } else if (geom_type == 6){ // This is a WKB MULTIPOLYGON
-            uint32_t num_polys = be32toh(*((uint32_t*) transform));
+            u_int32_t num_polys = be32toh(*((u_int32_t*) transform));
             transform += POLY_NUMS_BYTE_SIZE;
 
             for (int poly = 0; poly < num_polys; ++poly)
@@ -212,13 +212,13 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
                 transform += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
 
                 // Get the number of rings 
-                uint32_t num_of_rings = be32toh(*((uint32_t*) transform));
+                u_int32_t num_of_rings = be32toh(*((u_int32_t*) transform));
                 transform += RING_NUMS_BYTE_SIZE;
 
                 for (int ring = 0; ring < num_of_rings; ++ring)
                 {
                     // Get the number of points in this rings
-                    uint32_t num_of_points = be32toh(*((uint32_t*) transform));
+                    u_int32_t num_of_points = be32toh(*((u_int32_t*) transform));
                     transform += POINT_NUMS_BYTE_SIZE;
 
                     for (int point = 0; point < num_of_points; ++point)
@@ -233,7 +233,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                         // Modify and write point1
                         double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
-                        uint8_t *array1 = (uint8_t*)(&num1);
+                        u_int8_t *array1 = (u_int8_t*)(&num1);
 
                         for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                             *transform = array1[i];
@@ -242,7 +242,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                         // Modify and write point2
                         double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
-                        uint8_t *array2 = (uint8_t*)(&num2);
+                        u_int8_t *array2 = (u_int8_t*)(&num2);
 
                         for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                             *transform = array2[i];
@@ -262,7 +262,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
             // Modify and write x
             double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
-            uint8_t *array1 = (uint8_t*)(&num1);
+            u_int8_t *array1 = (u_int8_t*)(&num1);
 
             for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                 *transform = array1[i];
@@ -271,7 +271,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
             // Modify and write y
             double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
-            uint8_t *array2 = (uint8_t*)(&num2);
+            u_int8_t *array2 = (u_int8_t*)(&num2);
 
             for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                 *transform = array2[i];
@@ -279,7 +279,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
             }
         } else if (geom_type == 4){ // This is a WKB MULTIPOINT
             // Get the number of points in this rings
-            uint32_t num_of_points = be32toh(*((uint32_t*) transform));
+            u_int32_t num_of_points = be32toh(*((u_int32_t*) transform));
             transform += POINT_NUMS_BYTE_SIZE;
 
             for (int point = 0; point < num_of_points; ++point)
@@ -297,7 +297,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                 // Modify and write point1
                 double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
-                uint8_t *array1 = (uint8_t*)(&num1);
+                u_int8_t *array1 = (u_int8_t*)(&num1);
 
                 for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                     *transform = array1[i];
@@ -306,7 +306,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                 // Modify and write point2
                 double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
-                uint8_t *array2 = (uint8_t*)(&num2);
+                u_int8_t *array2 = (u_int8_t*)(&num2);
 
                 for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                     *transform = array2[i];
@@ -322,18 +322,18 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
     else
     {
         // Get the geometry type
-        uint32_t geom_type = le32toh(*((uint32_t*) transform));
+        u_int32_t geom_type = le32toh(*((u_int32_t*) transform));
         transform += GEOMTYPE_BYTE_SIZE;
 
         if (geom_type == 3){ // This is a WKB POLYGON
             // Get the number of rings 
-            uint32_t num_of_rings = le32toh(*((uint32_t*) transform));
+            u_int32_t num_of_rings = le32toh(*((u_int32_t*) transform));
             transform += RING_NUMS_BYTE_SIZE;
 
             for (int ring = 0; ring < num_of_rings; ++ring)
             {
                 // Get the number of points in this rings
-                uint32_t num_of_points = le32toh(*((uint32_t*) transform));
+                u_int32_t num_of_points = le32toh(*((u_int32_t*) transform));
                 transform += POINT_NUMS_BYTE_SIZE;
 
                 for (int point = 0; point < num_of_points; ++point)
@@ -348,7 +348,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                     // Modify and write point1
                     double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
-                    uint8_t *array1 = (uint8_t*)(&num1);
+                    u_int8_t *array1 = (u_int8_t*)(&num1);
 
                     for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                         *transform = array1[i];
@@ -357,7 +357,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                     // Modify and write point2
                     double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
-                    uint8_t *array2 = (uint8_t*)(&num2);
+                    u_int8_t *array2 = (u_int8_t*)(&num2);
 
                     for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                         *transform = array2[i];
@@ -366,7 +366,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
                 }
             }
         } else if (geom_type == 6){ // This is a WKB MULTIPOLYGON
-            uint32_t num_polys = le32toh(*((uint32_t*) transform));
+            u_int32_t num_polys = le32toh(*((u_int32_t*) transform));
             transform += POLY_NUMS_BYTE_SIZE;
 
             for (int poly = 0; poly < num_polys; ++poly)
@@ -375,13 +375,13 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
                 transform += ENDIAN_BYTE_SIZE + GEOMTYPE_BYTE_SIZE;
 
                 // Get the number of rings 
-                uint32_t num_of_rings = le32toh(*((uint32_t*) transform));
+                u_int32_t num_of_rings = le32toh(*((u_int32_t*) transform));
                 transform += RING_NUMS_BYTE_SIZE;
 
                 for (int ring = 0; ring < num_of_rings; ++ring)
                 {
                     // Get the number of points in this rings
-                    uint32_t num_of_points = le32toh(*((uint32_t*) transform));
+                    u_int32_t num_of_points = le32toh(*((u_int32_t*) transform));
                     transform += POINT_NUMS_BYTE_SIZE;
 
                     for (int point = 0; point < num_of_points; ++point)
@@ -396,7 +396,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                         // Modify and write point1
                         double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
-                        uint8_t *array1 = (uint8_t*)(&num1);
+                        u_int8_t *array1 = (u_int8_t*)(&num1);
 
                         for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                             *transform = array1[i];
@@ -405,7 +405,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                         // Modify and write point2
                         double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
-                        uint8_t *array2 = (uint8_t*)(&num2);
+                        u_int8_t *array2 = (u_int8_t*)(&num2);
 
                         for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                             *transform = array2[i];
@@ -425,7 +425,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
             // Modify and write x
             double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
-            uint8_t *array1 = (uint8_t*)(&num1);
+            u_int8_t *array1 = (u_int8_t*)(&num1);
 
             for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                 *transform = array1[i];
@@ -434,7 +434,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
             // Modify and write y
             double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
-            uint8_t *array2 = (uint8_t*)(&num2);
+            u_int8_t *array2 = (u_int8_t*)(&num2);
 
             for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                 *transform = array2[i];
@@ -442,7 +442,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
             }
         } else if (geom_type == 4){ // This is a WKB MULTIPOINT
             // Get the number of points in this rings
-            uint32_t num_of_points = le32toh(*((uint32_t*) transform));
+            u_int32_t num_of_points = le32toh(*((u_int32_t*) transform));
             transform += POINT_NUMS_BYTE_SIZE;
 
             for (int point = 0; point < num_of_points; ++point)
@@ -460,7 +460,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                 // Modify and write point1
                 double num1  = CALC_X(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_x);
-                uint8_t *array1 = (uint8_t*)(&num1);
+                u_int8_t *array1 = (u_int8_t*)(&num1);
 
                 for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                     *transform = array1[i];
@@ -469,7 +469,7 @@ char *geom_transform(UDF_INIT *initid, UDF_ARGS *args, char *result, unsigned lo
 
                 // Modify and write point2
                 double num2 = CALC_Y(x, y, scaledSine, scaledCosine, origin_x, origin_y, translate_y);
-                uint8_t *array2 = (uint8_t*)(&num2);
+                u_int8_t *array2 = (u_int8_t*)(&num2);
 
                 for (int i = 0; i < POINT_BYTE_SIZE; ++i) {
                     *transform = array2[i];

@@ -1088,49 +1088,165 @@ DROP TABLE IF EXISTS `parallel_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `parallel_group` (
-  `parallel_group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parallel_group_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
   PRIMARY KEY (`parallel_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Provides a unique identifier for groups of sign_stream_sections representing parallel chunks of text';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_group_pair`
+--
+
+DROP TABLE IF EXISTS `parallel_group_pair`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_group_pair` (
+  `parallel_group_pair_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
+  `parallel_group_a_id` int(10) unsigned NOT NULL COMMENT 'Refers to the first parallel_group',
+  `parallel_group_b_id` int(10) unsigned NOT NULL COMMENT 'Refers to second parallel_group',
+  PRIMARY KEY (`parallel_group_pair_id`),
+  UNIQUE KEY `parallel_group_pairs__index` (`parallel_group_a_id`,`parallel_group_b_id`),
+  KEY `fk_parallel_group_pair_parallel_group_b` (`parallel_group_b_id`),
+  CONSTRAINT `fk_parallel_group_pair_parallel_group_a` FOREIGN KEY (`parallel_group_a_id`) REFERENCES `parallel_group` (`parallel_group_id`),
+  CONSTRAINT `fk_parallel_group_pair_parallel_group_b` FOREIGN KEY (`parallel_group_b_id`) REFERENCES `parallel_group` (`parallel_group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Creates a pair of parallel_groups';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_group_pair_owner`
+--
+
+DROP TABLE IF EXISTS `parallel_group_pair_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_group_pair_owner` (
+  `parallel_group_pair_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`parallel_group_pair_id`,`edition_id`),
+  KEY `fk_parallel_group_pair_to_edition` (`edition_id`),
+  KEY `fk_parallel_group_pair_to_edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_par_group_pair_owner_to_pararalle_group_pair` FOREIGN KEY (`parallel_group_pair_id`) REFERENCES `parallel_group_pair` (`parallel_group_pair_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `parallel_word`
+-- Table structure for table `parallel_group_pair_to_type`
 --
 
-DROP TABLE IF EXISTS `parallel_word`;
+DROP TABLE IF EXISTS `parallel_group_pair_to_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `parallel_word` (
-  `parallel_word_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `word_id` int(10) unsigned NOT NULL,
-  `parallel_group_id` int(10) unsigned NOT NULL,
-  `sub_group` tinyint(3) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`parallel_word_id`),
-  UNIQUE KEY `unique_word_id_parallel_group_id_sup_group` (`parallel_group_id`,`sub_group`,`word_id`) USING BTREE,
-  KEY `fk_par_word_to_group_idx` (`parallel_group_id`),
-  KEY `fk_par_owrd_to_word_idx` (`word_id`),
-  CONSTRAINT `fk_par_owrd_to_word` FOREIGN KEY (`word_id`) REFERENCES `sign_stream_section` (`sign_stream_section_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_par_word_to_group` FOREIGN KEY (`parallel_group_id`) REFERENCES `parallel_group` (`parallel_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+CREATE TABLE `parallel_group_pair_to_type` (
+  `parallel_group_pair_to_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
+  `parallel_group_pair_id` int(10) unsigned NOT NULL COMMENT 'Refers to a parallel_group_pair',
+  `parallel_type_id` int(10) unsigned NOT NULL COMMENT 'Refers to a parallel_type.',
+  PRIMARY KEY (`parallel_group_pair_to_type_id`),
+  UNIQUE KEY `parallel_group_pair_to_type_index` (`parallel_group_pair_id`,`parallel_type_id`),
+  KEY `fk_parallel_group_pair_to_type` (`parallel_type_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_parallel_group_pair` FOREIGN KEY (`parallel_group_pair_id`) REFERENCES `parallel_group_pair` (`parallel_group_pair_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_type` FOREIGN KEY (`parallel_type_id`) REFERENCES `parallel_type` (`parallel_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Connexts a parallel_group_pair with a parallel type';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_group_pair_to_type_owner`
+--
+
+DROP TABLE IF EXISTS `parallel_group_pair_to_type_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_group_pair_to_type_owner` (
+  `parallel_group_pair_to_type_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`parallel_group_pair_to_type_id`,`edition_id`),
+  KEY `fk_parallel_group_pair_to_type_to_edition` (`edition_id`),
+  KEY `fk_parallel_group_pair_to_type_to_edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk__group_pair_to_type_owner_to_pararalle_type` FOREIGN KEY (`parallel_group_pair_to_type_id`) REFERENCES `parallel_group_pair_to_type` (`parallel_group_pair_to_type_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_type_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_type_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_sign_stream_section`
+--
+
+DROP TABLE IF EXISTS `parallel_sign_stream_section`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_sign_stream_section` (
+  `parallel_sign_stream_section_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
+  `sign_stream_section_id` int(10) unsigned NOT NULL COMMENT 'Reference to sign_stream_section',
+  `parallel_group_id` int(10) unsigned NOT NULL COMMENT 'Reference to parallel_group',
+  PRIMARY KEY (`parallel_sign_stream_section_id`),
+  UNIQUE KEY `unique_sign_stream_section_id_parallel_group_id_idx` (`parallel_group_id`,`sign_stream_section_id`),
+  KEY `fk_par_sss_to_word_idx` (`sign_stream_section_id`),
+  KEY `fk_par_sss_to_group_idx` (`parallel_group_id`),
+  CONSTRAINT `fk_par_sss_to_parallel_group` FOREIGN KEY (`parallel_group_id`) REFERENCES `parallel_group` (`parallel_group_id`),
+  CONSTRAINT `fk_par_sss_to_soign_stream_section` FOREIGN KEY (`sign_stream_section_id`) REFERENCES `sign_stream_section` (`sign_stream_section_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table enables a connection to be made between parallel words in two different manuscripts.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `parallel_word_owner`
+-- Table structure for table `parallel_sign_stream_section_owner`
 --
 
-DROP TABLE IF EXISTS `parallel_word_owner`;
+DROP TABLE IF EXISTS `parallel_sign_stream_section_owner`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `parallel_word_owner` (
-  `parallel_word_id` int(10) unsigned NOT NULL,
+CREATE TABLE `parallel_sign_stream_section_owner` (
+  `parallel_sign_stream_section_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`parallel_word_id`,`edition_id`),
-  KEY `fk_par_word_owner_to_sc_idx` (`edition_editor_id`),
-  KEY `fk_parallel_word_to_edition` (`edition_id`),
-  CONSTRAINT `fk_par_word_owner_to_par_word` FOREIGN KEY (`parallel_word_id`) REFERENCES `parallel_word` (`parallel_word_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_parallel_word_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_parallel_word_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+  PRIMARY KEY (`parallel_sign_stream_section_id`,`edition_id`),
+  KEY `fk_par_sss_owner_to_sc_idx` (`edition_editor_id`),
+  KEY `fk_parallel_sss_to_edition` (`edition_id`),
+  CONSTRAINT `fk_par_sss_owner_to_par_sss` FOREIGN KEY (`parallel_sign_stream_section_id`) REFERENCES `parallel_sign_stream_section` (`parallel_sign_stream_section_id`),
+  CONSTRAINT `fk_parallel_sss_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_parallel_sss_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_type`
+--
+
+DROP TABLE IF EXISTS `parallel_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_type` (
+  `parallel_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
+  `parent_type_id` int(10) unsigned DEFAULT NULL COMMENT 'Refers to a parent type',
+  `name` varchar(255) NOT NULL COMMENT 'Name of the type.',
+  `description` text DEFAULT NULL,
+  PRIMARY KEY (`parallel_type_id`),
+  KEY `fk_parallel_type_to_parent` (`parent_type_id`),
+  KEY `parallel_type_name_index` (`name`),
+  CONSTRAINT `fk_parallel_type_to_parent` FOREIGN KEY (`parent_type_id`) REFERENCES `parallel_type` (`parallel_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Hierarchical list which defines parallel_types';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_type_owner`
+--
+
+DROP TABLE IF EXISTS `parallel_type_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_type_owner` (
+  `parallel_type_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`parallel_type_id`,`edition_id`),
+  KEY `fk_parallel_type_to_edition` (`edition_id`),
+  KEY `fk_parallel_type_to_edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_par_type_owner_to_pararalle_type` FOREIGN KEY (`parallel_type_id`) REFERENCES `parallel_type` (`parallel_type_id`),
+  CONSTRAINT `fk_parallel_type_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_parallel_type_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
