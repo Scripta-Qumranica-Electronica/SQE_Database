@@ -1,0 +1,5 @@
+1.  Updated and added tables for handling parallels
+
+2. Updated Dockerfile to use libmariadb-dev for compiling the UDFs
+
+3. Updated geom_transform.c and nested_geom_transform.c to Mariadb (types uint... => u_int...)

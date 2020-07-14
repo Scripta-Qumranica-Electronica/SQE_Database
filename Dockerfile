@@ -7,13 +7,14 @@ RUN ["sed", "-i", "s/exec \"$@\"/echo \"not running $@\"/", "/usr/local/bin/dock
 ENV MYSQL_ROOT_PASSWORD=none
 ENV MYSQL_DATABASE=SQE
 
+
 ## Build UDFs and install them
 COPY ./geom_transform.c /tmp/geom_transform.c
 COPY ./nested_geom_transform.c /tmp/nested_geom_transform.c
 RUN apt-get update \
-    && apt-get install -y gcc libmysqlclient-dev \
-    && gcc -shared -o `mysql_config --plugindir`/geom_transform.so /tmp/geom_transform.c -I/usr/include/mysql -fPIC -O3 \
-    && gcc -shared -o `mysql_config --plugindir`/nested_geom_transform.so /tmp/nested_geom_transform.c -I/usr/include/mysql -fPIC -O3 \
+    && apt-get install -y gcc libmariadb-dev \
+    && gcc -shared -o /usr/lib/mysql/plugin/geom_transform.so /tmp/geom_transform.c  -I/usr/include/mariadb -fPIC -O3 \
+    && gcc -shared -o /usr/lib/mysql/plugin/nested_geom_transform.so /tmp/nested_geom_transform.c -I/usr/include/mariadb -fPIC -O3 \
     && apt-get remove -y gcc libmysqlclient-dev \
     && apt-get -y autoclean \
     && apt-get clean \
