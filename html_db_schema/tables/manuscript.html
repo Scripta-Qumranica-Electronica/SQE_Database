@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>manuscript - SQE Database</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../index.html" class="navbar-brand"><b>SQE</b> Database</a>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>manuscript</h1><p><span id="recordNumber">1645</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>The manuscript is an abstract placeholder that is given metadata via the manuscript_data table. This allows multiple editions of the same manuscript to be created, regardless of the naming scheme used. A manuscript will contain one or more text fragments (manuscript_to_text_fragment)</p>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table id="standard_table" class="table table-bordered table-striped dataTable" role="grid">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="manuscript_id">manuscript_id</span></td>
+                                    <td>INT UNSIGNED</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title='Automatically updated by the database'>√</td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="edition.manuscript_id references manuscript.manuscript_id via fk_edition_to_manuscript"><a href='edition.html'>edition</a><span class='relatedKey'>.manuscript_id</span></td>
+                                                <td class="constraint detail">fk_edition_to_manuscript<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="iaa_edition_catalog.manuscript_id references manuscript.manuscript_id via fk_edition_catalog_to_manuscript_id"><a href='iaa_edition_catalog.html'>iaa_edition_catalog</a><span class='relatedKey'>.manuscript_id</span></td>
+                                                <td class="constraint detail">fk_edition_catalog_to_manuscript_id<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="manuscript_data.manuscript_id references manuscript.manuscript_id via fk_manuscript_to_master_manuscript"><a href='manuscript_data.html'>manuscript_data</a><span class='relatedKey'>.manuscript_id</span></td>
+                                                <td class="constraint detail">fk_manuscript_to_master_manuscript<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="manuscript_metrics.manuscript_id references manuscript.manuscript_id via manuscript_metrics_to_manuscript"><a href='manuscript_metrics.html'>manuscript_metrics</a><span class='relatedKey'>.manuscript_id</span></td>
+                                                <td class="constraint detail">manuscript_metrics_to_manuscript<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td title="manuscript_to_text_fragment.manuscript_id references manuscript.manuscript_id via fk_manuscript_to_text_fragment_to_scroll"><a href='manuscript_to_text_fragment.html'>manuscript_to_text_fragment</a><span class='relatedKey'>.manuscript_id</span></td>
+                                                <td class="constraint detail">fk_manuscript_to_text_fragment_to_scroll<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 id="Indexes" class="box-title">Indexes</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table id="indexes_table" class="table table-bordered table-striped dataTable" role="grid">
+                                <thead>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Type</th>
+                                    <th>Sort</th>
+                                    <th>Column(s)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PRIMARY</td>
+                                    <td>Primary key</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>manuscript_id</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="429,5,630,152">
+<area shape="rect" id="node2" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,536,316,635">
+<area shape="rect" id="node3" href="../../tables/iaa_edition_catalog.html" target="_top" title="iaa_edition_catalog" alt="" coords="406,169,653,492">
+<area shape="rect" id="node4" href="../../tables/manuscript_data.html" target="_top" title="manuscript_data" alt="" coords="416,509,643,661">
+<area shape="rect" id="node5" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="404,679,655,977">
+<area shape="rect" id="node6" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="360,995,699,1147">
+</map>
+                                        <a name='diagram'><object type="image/svg+xml" id="oneDegreeImg" data="../diagrams/tables/manuscript.1degree.svg" class="diagram" border="0" align="left"></object></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
+<area shape="rect" id="node1" href="../../tables/artefact_data_owner.html" target="_top" title="artefact_data_owner" alt="" coords="1170,535,1429,623">
+<area shape="rect" id="node2" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="746,1661,949,1749">
+<area shape="rect" id="node3" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="383,1692,584,1839">
+<area shape="rect" id="node13" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,575,316,673">
+<area shape="rect" id="node4" href="../../tables/artefact_group_data_owner.html" target="_top" title="artefact_group_data_owner" alt="" coords="1143,640,1455,728">
+<area shape="rect" id="node5" href="../../tables/artefact_group_member_owner.html" target="_top" title="artefact_group_member_owner" alt="" coords="1128,745,1471,833">
+<area shape="rect" id="node6" href="../../tables/artefact_position_owner.html" target="_top" title="artefact_position_owner" alt="" coords="1156,851,1443,939">
+<area shape="rect" id="node7" href="../../tables/artefact_shape_owner.html" target="_top" title="artefact_shape_owner" alt="" coords="1164,956,1435,1044">
+<area shape="rect" id="node8" href="../../tables/artefact_stack_owner.html" target="_top" title="artefact_stack_owner" alt="" coords="1166,1061,1433,1149">
+<area shape="rect" id="node9" href="../../tables/artefact_status_owner.html" target="_top" title="artefact_status_owner" alt="" coords="1163,1167,1436,1255">
+<area shape="rect" id="node10" href="../../tables/attribute_owner.html" target="_top" title="attribute_owner" alt="" coords="1189,1272,1410,1360">
+<area shape="rect" id="node11" href="../../tables/attribute_value_css_owner.html" target="_top" title="attribute_value_css_owner" alt="" coords="1146,1377,1453,1465">
+<area shape="rect" id="node12" href="../../tables/attribute_value_owner.html" target="_top" title="attribute_value_owner" alt="" coords="1163,1483,1436,1571">
+<area shape="rect" id="node14" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="711,1911,984,1999">
+<area shape="rect" id="node15" href="../../tables/font_file_owner.html" target="_top" title="font_file_owner" alt="" coords="1192,1588,1407,1676">
+<area shape="rect" id="node16" href="../../tables/iaa_edition_catalog.html" target="_top" title="iaa_edition_catalog" alt="" coords="360,277,607,600">
+<area shape="rect" id="node17" href="../../tables/iaa_edition_catalog_author.html" target="_top" title="iaa_edition_catalog_author" alt="" coords="693,280,1001,368">
+<area shape="rect" id="node18" href="../../tables/iaa_edition_catalog_to_text_fragment.html" target="_top" title="iaa_edition_catalog_to_text_fragment" alt="" coords="651,175,1044,263">
+<area shape="rect" id="node19" href="../../tables/text_fragment.html" target="_top" title="text_fragment" alt="" coords="381,141,586,229">
+<area shape="rect" id="node20" href="../../tables/image_to_iaa_edition_catalog.html" target="_top" title="image_to_iaa_edition_catalog" alt="" coords="683,385,1011,473">
+<area shape="rect" id="node21" href="../../tables/line_data_owner.html" target="_top" title="line_data_owner" alt="" coords="1188,1693,1411,1781">
+<area shape="rect" id="node22" href="../../tables/line_to_sign_owner.html" target="_top" title="line_to_sign_owner" alt="" coords="1178,1799,1421,1887">
+<area shape="rect" id="node23" href="../../tables/main_action.html" target="_top" title="main_action" alt="" coords="1205,1904,1393,1992">
+<area shape="rect" id="node24" href="../../tables/manuscript_data.html" target="_top" title="manuscript_data" alt="" coords="370,2632,597,2784">
+<area shape="rect" id="node25" href="../../tables/manuscript_data_owner.html" target="_top" title="manuscript_data_owner" alt="" coords="1157,3379,1441,3467">
+<area shape="rect" id="node26" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="722,491,973,789">
+<area shape="rect" id="node27" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="391,769,576,857">
+<area shape="rect" id="node28" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="1145,113,1454,201">
+<area shape="rect" id="node29" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="678,5,1017,157">
+<area shape="rect" id="node30" href="../../tables/manuscript_to_text_fragment_owner.html" target="_top" title="manuscript_to_text_fragment_owner" alt="" coords="1106,8,1493,96">
+<area shape="rect" id="node31" href="../../tables/parallel_group_pair_owner.html" target="_top" title="parallel_group_pair_owner" alt="" coords="1148,2009,1451,2097">
+<area shape="rect" id="node32" href="../../tables/parallel_group_pair_to_type_owner.html" target="_top" title="parallel_group_pair_to_type_owner" alt="" coords="1114,2115,1485,2203">
+<area shape="rect" id="node33" href="../../tables/parallel_sign_stream_section_owner.html" target="_top" title="parallel_sign_stream_section_owner" alt="" coords="1108,2220,1491,2308">
+<area shape="rect" id="node34" href="../../tables/parallel_type_owner.html" target="_top" title="parallel_type_owner" alt="" coords="1172,2325,1427,2413">
+<area shape="rect" id="node35" href="../../tables/position_in_stream_owner.html" target="_top" title="position_in_stream_owner" alt="" coords="1149,2431,1450,2519">
+<area shape="rect" id="node36" href="../../tables/position_in_text_fragment_stream_owner.html" target="_top" title="position_in_text_fragment_stream_owner" alt="" coords="1088,2536,1511,2624">
+<area shape="rect" id="node37" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="1117,2641,1481,2729">
+<area shape="rect" id="node38" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="1144,2747,1455,2835">
+<area shape="rect" id="node39" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1178,219,1421,307">
+<area shape="rect" id="node40" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="1200,2852,1399,2940">
+<area shape="rect" id="node41" href="../../tables/sign_interpretation_attribute_owner.html" target="_top" title="sign_interpretation_attribute_owner" alt="" coords="1107,2957,1491,3045">
+<area shape="rect" id="node42" href="../../tables/sign_interpretation_commentary_owner.html" target="_top" title="sign_interpretation_commentary_owner" alt="" coords="1092,3063,1507,3151">
+<area shape="rect" id="node43" href="../../tables/sign_interpretation_roi_owner.html" target="_top" title="sign_interpretation_roi_owner" alt="" coords="1133,3168,1466,3256">
+<area shape="rect" id="node44" href="../../tables/sign_stream_section_owner.html" target="_top" title="sign_stream_section_owner" alt="" coords="1142,3273,1457,3361">
+<area shape="rect" id="node45" href="../../tables/text_fragment_data_owner.html" target="_top" title="text_fragment_data_owner" alt="" coords="1146,324,1453,412">
+<area shape="rect" id="node46" href="../../tables/text_fragment_to_line_owner.html" target="_top" title="text_fragment_to_line_owner" alt="" coords="1137,429,1461,517">
+</map>
+                                        <a name='diagram'><object type="image/svg+xml" id="twodegreesDegreeImg" data="../diagrams/tables/manuscript.2degrees.svg" class="diagram" border="0" align="left"></object></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 6.1.0</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>
