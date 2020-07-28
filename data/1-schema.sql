@@ -84,10 +84,13 @@ CREATE TABLE `artefact_data` (
   `artefact_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `artefact_id` int(10) unsigned NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'This is a human readable designation for the artefact. Multiple artefacts are allowed to share the same name, even in a single manuscript, though this is not advised.  The artefact as a distinct entity is made unique by its artefact_id.',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`artefact_data_id`),
   UNIQUE KEY `unique_artefact_id_artefact_data_name` (`artefact_id`,`name`) USING BTREE,
   KEY `fk_artefact_data_to_artefact` (`artefact_id`),
-  CONSTRAINT `fk_artefact_data_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_artefact_data_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_artefact_data_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_artefact_data_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=26821 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This stores metadata about the artefact.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -135,9 +138,12 @@ CREATE TABLE `artefact_group_data` (
   `artefact_group_data_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `artefact_group_id` int(11) unsigned NOT NULL,
   `name` varchar(255) NOT NULL COMMENT 'This is a human readable designation for the artefact group. Multiple artefact groups are allowed to share the same name, even in a single manuscript, though this is not advised.  The artefact group as a distinct entity is made unique by its artefact_group_id.',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`artefact_group_data_id`),
   KEY `artefact_group_data_to_artefact_group` (`artefact_group_id`),
-  CONSTRAINT `artefact_group_data_to_artefact_group` FOREIGN KEY (`artefact_group_id`) REFERENCES `artefact_group` (`artefact_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_artefact_group_data_to_creator_id` (`creator_id`),
+  CONSTRAINT `artefact_group_data_to_artefact_group` FOREIGN KEY (`artefact_group_id`) REFERENCES `artefact_group` (`artefact_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_artefact_group_data_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='This table stores data pertaining to an artefact group, specifically its name.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -172,11 +178,14 @@ CREATE TABLE `artefact_group_member` (
   `artefact_group_member_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `artefact_group_id` int(11) unsigned NOT NULL COMMENT 'The id of the artefact group to which the artefact belongs.',
   `artefact_id` int(11) unsigned NOT NULL COMMENT 'The id of the artefact to add to the artefact group.',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`artefact_group_member_id`),
   KEY `artefact_group_member_to_artefact` (`artefact_id`),
   KEY `artefact_group_member_to_artefact_group` (`artefact_group_id`),
+  KEY `fk_artefact_group_member_to_creator_id` (`creator_id`),
   CONSTRAINT `artefact_group_member_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `artefact_group_member_to_artefact_group` FOREIGN KEY (`artefact_group_id`) REFERENCES `artefact_group` (`artefact_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `artefact_group_member_to_artefact_group` FOREIGN KEY (`artefact_group_id`) REFERENCES `artefact_group` (`artefact_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_artefact_group_member_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='This table is used to aggregate artefacts into groups.  An artefact group consists of a name (see artefact_group_name) and a list of members (see artefact_group_member).  It is up to the user to determine what an artefact group is meant to do functionally.  Typically we assume that when one member of a group is transformed, all members of the group will also be transformed accordingly.  The responsibility for such operations, however, lies downstream from the database (i.e., there are no database triggers involved with artefact groups).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -217,10 +226,13 @@ CREATE TABLE `artefact_position` (
   `translate_y` int(11) DEFAULT NULL COMMENT 'Translation of the artefact on the vertical axis.',
   `translate_x_non_null` int(11) GENERATED ALWAYS AS (coalesce(`translate_x`,-2147483648)) VIRTUAL COMMENT 'This is a generated column for the sake of uniqueness constraints.  It reads the lowest possible value of an int instead of NULL, since that value is basically never going to be used (no scroll or manuscript has pages of such a length).',
   `translate_y_non_null` int(11) GENERATED ALWAYS AS (coalesce(`translate_y`,-2147483648)) VIRTUAL COMMENT 'This is a generated column for the sake of uniqueness constraints.  It reads the lowest possible value of an int instead of NULL, since that value is basically never going to be used (no scroll or manuscript has pages of such a length).',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`artefact_position_id`),
   UNIQUE KEY `fk_unique_artefact_position` (`artefact_id`,`rotate`,`scale`,`translate_x_non_null`,`translate_y_non_null`,`z_index`) USING BTREE,
   KEY `fk_artefact_position_to_artefact` (`artefact_id`),
-  CONSTRAINT `fk_artefact_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_artefact_position_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_artefact_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_artefact_position_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -257,11 +269,14 @@ CREATE TABLE `artefact_shape` (
   `sqe_image_id` int(10) unsigned DEFAULT NULL COMMENT 'This points to the master image (see SQE_image table) in which this artefact is found.',
   `region_in_sqe_image` geometry NOT NULL COMMENT 'This is the exact polygon of the artefact’s location within the master image’s coordinate system, but alwaya at a resolution of 1215 PPI. If the master image is not 1215 PPI it should be scaled to that resolution before the srtefact is drawn upon it.',
   `region_in_sqe_image_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_in_sqe_image`,512)) STORED COMMENT 'This is a quick hash of the region_in_sqe_image polygon for the purpose of uniqueness constraints.',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`artefact_shape_id`) USING BTREE,
   UNIQUE KEY `unique_artefact_shape` (`artefact_id`,`sqe_image_id`,`region_in_sqe_image_hash`) USING BTREE,
   KEY `fk_artefact_shape_to_sqe_image_idx` (`sqe_image_id`) USING BTREE,
   KEY `fk_artefact_shape_to_artefact` (`artefact_id`) USING BTREE,
+  KEY `fk_artefact_shape_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_artefact_shape_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_artefact_shape_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_shape_to_sqe_image` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=36482 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the region of the artefact in the coordinate system of its image. The image must first be scaled to the PPI defined in manuscript_metrics (1215 PPI by default).';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -304,12 +319,15 @@ CREATE TABLE `artefact_stack` (
   `B_is_verso` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'Boolean whether srtefact B is recto=0 or verso=1.',
   `reason` enum('RECTO_VERSO','FOUND_IN_A_STACK','PART_OF_A_WAD','RECONSTRUCTED_STACK') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'RECTO_VERSO',
   `shared` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'True if the given region of artefact_B represents a region which appears on the surface of artefact_A (bleeding through, ink glued to the next layer).',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`artefact_stack_id`),
   UNIQUE KEY `unique_artefact_stack` (`A_is_verso`,`artefact_A_id`,`artefact_B_id`,`artefact_B_offset`(25),`B_is_verso`,`layer_A`,`layer_B`,`reason`,`shared`) USING BTREE,
   KEY `fk_af_stack_A_to_artefact_idx` (`artefact_A_id`),
   KEY `fk_af_stack_B_to_artefact_idx` (`artefact_B_id`),
+  KEY `fk_artefact_stack_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_af_stack_A_to_artefact` FOREIGN KEY (`artefact_A_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_af_stack_B_to_artefact` FOREIGN KEY (`artefact_B_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_af_stack_B_to_artefact` FOREIGN KEY (`artefact_B_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_artefact_stack_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=27724 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the relationship between artefacts which make up a stack, meaning that they represent parallel layers in a stack. This could be:\na) Artefact A is and B represent recto/verso of one layer (artefact), then the layer_A and layer_B must be the same\nb) A and B represent parts of different layers of a already decomposed stack (reason= ‚found in a stack‘) or as part of wad (reason = ‚part of a wad‘) or as thought by the scholar to belong in the same perimeter of the manuscript (reason=‚reconstructed‘).\n\nThe tables allow the creation of a sequence of artefacts: A = recto of layer 1 -> B = verso of layer 1 -> C = recto of recto of layer  2 -> D = verso of layer 2 … (where -> represents a record with the left as artefact_A and the right term as artefact_B)\n\nA special case is marked by shared. We could, e.g., have A as verso and B as recto and additionally a subregion of B as shared to A.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -345,10 +363,13 @@ CREATE TABLE `artefact_status` (
   `artefact_status_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `work_status_id` int(11) unsigned NOT NULL DEFAULT 1,
   `artefact_id` int(11) unsigned NOT NULL,
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`artefact_status_id`),
   UNIQUE KEY `unique_artefact_status` (`artefact_id`,`work_status_id`) USING BTREE,
   KEY `fk_artefact_status_to_work_status_id` (`work_status_id`),
+  KEY `fk_artefact_status_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_artefact_status_to_artefact_id` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_artefact_status_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_status_to_work_status_id` FOREIGN KEY (`work_status_id`) REFERENCES `work_status` (`work_status_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='The artefact status is a user definable placeholder to store information about how state of work on defining the artefact.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -384,8 +405,11 @@ CREATE TABLE `attribute` (
   `attribute_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Designation of the attribute.',
   `description` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'A concise description of the nature of the attribute.',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`attribute_id`),
-  UNIQUE KEY `attribute_name_index` (`name`)
+  UNIQUE KEY `attribute_name_index` (`name`),
+  KEY `fk_attribute_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_attribute_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores attributes that can be used to describe a sign_interpretation.  They are used in conjunction with a string value in the attribute_value, and any related numeric value can be added in the numeric_value column of the sign_interpretation_attribute table.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -421,10 +445,13 @@ CREATE TABLE `attribute_value` (
   `attribute_id` int(10) unsigned NOT NULL COMMENT 'The id of the attribute to which a string value is to be assigned.',
   `string_value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'A unique string value that can be applied as an attribute to a sign interpretation.',
   `description` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'A concise description of the attribute value.',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`attribute_value_id`),
   UNIQUE KEY `unique_attribute_and_value` (`attribute_id`,`string_value`) USING BTREE,
   KEY `fk_att_val_to_att_idx` (`attribute_id`),
-  CONSTRAINT `fk_att_val_to_att` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_attribute_value_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_att_val_to_att` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_attribute_value_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The specific string value associated with an attribute to describe some aspect of a sign_interpretation.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -439,10 +466,13 @@ CREATE TABLE `attribute_value_css` (
   `attribute_value_css_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `attribute_value_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'The attribute value to be formatted with this CSS code.',
   `css` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The CSS descriptor(s) to apply to sign interpretations with the linked attribute value.',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`attribute_value_css_id`),
   UNIQUE KEY `unique_attribute_value_css` (`attribute_value_id`,`css`) USING BTREE,
   KEY `fk_attribute_value_css_to_attribute_value` (`attribute_value_id`),
-  CONSTRAINT `fk_attribute_value_css_to_attribute_value` FOREIGN KEY (`attribute_value_id`) REFERENCES `attribute_value` (`attribute_value_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_attribute_value_css_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_attribute_value_css_to_attribute_value` FOREIGN KEY (`attribute_value_id`) REFERENCES `attribute_value` (`attribute_value_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_attribute_value_css_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Custom CSS to be applied to and attribute when it is visualized in an HTML context.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -569,8 +599,11 @@ CREATE TABLE `font_file` (
   `is_public` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Flag to mark whether the file may be used also by others',
   `font_binary_data` longblob DEFAULT NULL COMMENT 'The font data to be sent as file to the front end',
   `font_format` enum('woff','woff2','ttf','otf','svg') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'woff' COMMENT 'The font-format of the font_binary_data',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`font_file_id`),
-  UNIQUE KEY `font_name_idx` (`font_name`)
+  UNIQUE KEY `font_name_idx` (`font_name`),
+  KEY `fk_font_file_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_font_file_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains a font file to be used for reconstructed text or overlays';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -894,9 +927,12 @@ CREATE TABLE `line_data` (
   `line_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `line_id` int(10) unsigned NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation for this line.',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`line_data_id`),
   UNIQUE KEY `unique_line_id_name` (`line_id`,`name`) USING BTREE,
   KEY `fk_line_data_to_line_idx` (`line_id`),
+  KEY `fk_line_data_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_line_data_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_line_data_to_line` FOREIGN KEY (`line_id`) REFERENCES `line` (`line_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=54448 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Metadata pertaining to the description of a line of transcribed text.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -932,9 +968,12 @@ CREATE TABLE `line_to_sign` (
   `line_to_sign_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `sign_id` int(10) unsigned NOT NULL,
   `line_id` int(10) unsigned NOT NULL,
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`line_to_sign_id`),
   UNIQUE KEY `line_sign_idx` (`sign_id`,`line_id`) USING BTREE,
   KEY `fk_line_to_sign_to_line_idx` (`line_id`),
+  KEY `fk_line_to_sign_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_line_to_sign_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_line_to_sign_to_line` FOREIGN KEY (`line_id`) REFERENCES `line` (`line_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_line_to_sign_to_sign` FOREIGN KEY (`sign_id`) REFERENCES `sign` (`sign_id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1733925 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Linking of abstract signs to a line.';
@@ -1006,9 +1045,12 @@ CREATE TABLE `manuscript_data` (
   `manuscript_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `manuscript_id` int(10) unsigned NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation of the manuscript.',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`manuscript_data_id`),
   UNIQUE KEY `unique_manuscript_id_name` (`manuscript_id`,`name`) USING BTREE,
   KEY `fk_manuscript_to_master_manuscript_idx` (`manuscript_id`) USING BTREE,
+  KEY `fk_manuscript_data_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_manuscript_data_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_manuscript_to_master_manuscript` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1372 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Description of a reconstructed manuscript or combination.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1049,10 +1091,13 @@ CREATE TABLE `manuscript_metrics` (
   `height` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'This is the height of the manucsript in millimeters.',
   `pixels_per_inch` int(11) unsigned NOT NULL DEFAULT 1215 COMMENT 'This is the pixels per inch for the manuscript.  At the outset we have decided to set all manuscripts at 1215 PPI, which is the resolution of most images being used.  All images should be scaled to this resolution before creating artefacts and ROIs that are placed upon the virtual manuscript.  We have no plans to use varying PPI settings for different manuscripts, which would slightly complicate GIS calculations across multiple manuscripts.',
   `scribal_font_id` int(10) unsigned DEFAULT NULL,
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`manuscript_metrics_id`),
   UNIQUE KEY `unique_manuscript_metrics` (`manuscript_id`,`height`,`pixels_per_inch`,`width`,`x_origin`,`y_origin`) USING BTREE,
   KEY `manuscript_metrics_to_manuscript` (`manuscript_id`),
   KEY `manuscript_metrics_to_scribal_font_fk` (`scribal_font_id`),
+  KEY `fk_manuscript_metrics_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_manuscript_metrics_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `manuscript_metrics_to_manuscript` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `manuscript_metrics_to_scribal_font_fk` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1372 DEFAULT CHARSET=utf8mb4 COMMENT='This table stores basic information about the gross metrics of a manuscript.  The user is able to specify an  x/y-origin point for the start of the manuscript along with its proposed height and width in millimeters.  The coordinate system begins top left, positive values increase while moving downward on the y-axis and while moving rightward on the x-axis.  The PPI is currently fixed ad 1215 PPI to facilitate comparison of GIS data between manuscripts.  All images should be scaled to this resolution before creating artefacts and ROIs that are placed upon the virtual manuscript.';
@@ -1089,9 +1134,12 @@ CREATE TABLE `manuscript_to_text_fragment` (
   `manuscript_to_text_fragment_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `manuscript_id` int(10) unsigned NOT NULL,
   `text_fragment_id` int(10) unsigned NOT NULL,
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`manuscript_to_text_fragment_id`),
   UNIQUE KEY `manuscript_text_fragment_idx` (`manuscript_id`,`text_fragment_id`) USING BTREE,
   KEY `fk_manuscript_to_text_fragment_to_text_fragment_idx` (`text_fragment_id`) USING BTREE,
+  KEY `fk_manuscript_to_text_fragment_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_manuscript_to_text_fragment_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_manuscript_to_text_fragment_to_scroll` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_manuscript_to_text_fragment_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Links an entry in the text_fragment table to a reconstructed manuscript.';
@@ -1142,12 +1190,15 @@ CREATE TABLE `parallel_word` (
   `word_id` int(10) unsigned NOT NULL,
   `parallel_group_id` int(10) unsigned NOT NULL,
   `sub_group` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`parallel_word_id`),
   UNIQUE KEY `unique_word_id_parallel_group_id_sup_group` (`parallel_group_id`,`sub_group`,`word_id`) USING BTREE,
   KEY `fk_par_word_to_group_idx` (`parallel_group_id`),
   KEY `fk_par_owrd_to_word_idx` (`word_id`),
+  KEY `fk_parallel_word_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_par_owrd_to_word` FOREIGN KEY (`word_id`) REFERENCES `sign_stream_section` (`sign_stream_section_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_par_word_to_group` FOREIGN KEY (`parallel_group_id`) REFERENCES `parallel_group` (`parallel_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_par_word_to_group` FOREIGN KEY (`parallel_group_id`) REFERENCES `parallel_group` (`parallel_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parallel_word_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table enables a connection to be made between parallel words in two different manuscripts.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1200,9 +1251,12 @@ CREATE TABLE `position_in_stream` (
   `position_in_stream_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `sign_interpretation_id` int(11) unsigned NOT NULL,
   `next_sign_interpretation_id` int(11) unsigned DEFAULT NULL,
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`position_in_stream_id`),
   KEY `fk_position_in_stream_to_sign_interpretation` (`sign_interpretation_id`),
   KEY `fk_position_in_stream_to_next_sign_interpretation` (`next_sign_interpretation_id`),
+  KEY `fk_position_in_stream_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_position_in_stream_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_position_in_stream_to_next_sign_interpretation` FOREIGN KEY (`next_sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`),
   CONSTRAINT `fk_position_in_stream_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1722967 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table provides ordering data for the transcriptions.  It provides a DAG linking sign_interpretations to each other.';
@@ -1257,11 +1311,14 @@ CREATE TABLE `position_in_text_fragment_stream` (
   `position_in_text_fragment_stream_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `text_fragment_id` int(10) unsigned NOT NULL,
   `next_text_fragment_id` int(10) unsigned DEFAULT NULL,
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`position_in_text_fragment_stream_id`),
   KEY `fk_pitfs_next_to_text_fragment` (`next_text_fragment_id`),
   KEY `fk_pitfs_to_text_fragment` (`text_fragment_id`),
+  KEY `fk_position_in_text_fragment_stream_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_pitfs_next_to_text_fragment` FOREIGN KEY (`next_text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`),
-  CONSTRAINT `fk_pitfs_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`)
+  CONSTRAINT `fk_pitfs_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`),
+  CONSTRAINT `fk_position_in_text_fragment_stream_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=16715 DEFAULT CHARSET=latin1 COMMENT='Gives a stream of fragments in a scroll in the right order';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1422,7 +1479,10 @@ CREATE TABLE `scribal_font` (
   `font_file_id` int(10) unsigned NOT NULL COMMENT 'Reference to the font file.',
   `default_word_space` smallint(5) unsigned DEFAULT 85 COMMENT 'The default space in pixel to be set between two words',
   `default_interlinear_space` smallint(5) unsigned DEFAULT 280 COMMENT 'The default space between two lines in pixel',
-  PRIMARY KEY (`scribal_font_id`)
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`scribal_font_id`),
+  KEY `fk_scribal_font_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_scribal_font_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Defines a font found in the scrolls. It connects to a font file and is referred by glyph info';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1440,9 +1500,12 @@ CREATE TABLE `scribal_font_glyph_metrics` (
   `width` smallint(6) unsigned NOT NULL DEFAULT 100 COMMENT 'Width of glyph',
   `height` smallint(5) unsigned NOT NULL DEFAULT 200 COMMENT 'Height of glyph',
   `y_offset` smallint(6) NOT NULL DEFAULT -200 COMMENT 'Vertical offset glyph (thought to stand on line)',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`scribal_font_glyph_metrics_id`),
   UNIQUE KEY `char_idx` (`unicode_char`),
   KEY `fk_sfg_to_scribal_font` (`scribal_font_id`),
+  KEY `fk_scribal_font_glyph_metrics_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_scribal_font_glyph_metrics_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sfg_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains the bounding box and position metrics of a scribal font. Only used to calculate ROIs not yet set by the user.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1481,8 +1544,11 @@ CREATE TABLE `scribal_font_kerning` (
   `second_unicode_char` varbinary(4) NOT NULL COMMENT 'Charcode of the second glyph',
   `kerning_x` smallint(6) NOT NULL DEFAULT 0 COMMENT 'Horizontal kerning',
   `kerning_y` smallint(6) NOT NULL DEFAULT 0 COMMENT 'Vertical kerning',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`scribal_font_kerning_id`),
   UNIQUE KEY `char_idx` (`scribal_font_id`,`first_unicode_char`,`second_unicode_char`),
+  KEY `fk_scribal_font_kerning_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_scribal_font_kerning_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sfk_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains kerning of glyph of a scribal font. Only used to calculated the position of signs not yet positioned by the user';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1538,7 +1604,10 @@ CREATE TABLE `scribe` (
   `scribe_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `commetary` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`scribe_id`)
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`scribe_id`),
+  KEY `fk_scribe_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_scribe_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1607,12 +1676,15 @@ CREATE TABLE `sign_interpretation_attribute` (
   `attribute_value_id` int(10) unsigned NOT NULL COMMENT 'Id of the attribute to apply to this sign interpretation.',
   `sequence` tinyint(4) DEFAULT NULL COMMENT 'Absolute ordering of this record.  This is used to define the order of all records for the same sign_char_id.',
   `numeric_value` float DEFAULT NULL COMMENT 'Contains the width of a character (normally 1), space (dto.), or vacat (normally > 1) or the level of probability.',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`sign_interpretation_attribute_id`),
   UNIQUE KEY `unique_sign_interpretation_id_attribute_value_id_sequence` (`attribute_value_id`,`sequence`,`sign_interpretation_id`) USING BTREE,
   KEY `fk_sign_interpretation_attr_to_attr_value_idx` (`attribute_value_id`) USING BTREE,
   KEY `fk_sign_interpretation_attr_to_sign_interpretation_idx` (`sign_interpretation_id`) USING BTREE,
+  KEY `fk_sign_interpretation_attribute_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_sign_interpretation_attr_to_attr_value` FOREIGN KEY (`attribute_value_id`) REFERENCES `attribute_value` (`attribute_value_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_sign_interpretation_attr_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_sign_interpretation_attr_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_sign_interpretation_attribute_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=4970052 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table links sign_interpretations to the attributes that further describe the sign’s interpretation.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1649,10 +1721,13 @@ CREATE TABLE `sign_interpretation_commentary` (
   `sign_interpretation_id` int(10) unsigned NOT NULL COMMENT 'Id of the sign interpretation being commented on.',
   `attribute_id` int(10) unsigned DEFAULT NULL COMMENT 'Id of the attrivute describing the aspect of this sign interpretation being commented on.',
   `commentary` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Editorial comments.',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`sign_interpretation_commentary_id`),
   KEY `fk_sic_to_attribute_idx` (`attribute_id`) USING BTREE,
   KEY `sign_interpretation_id` (`sign_interpretation_id`) USING BTREE,
+  KEY `fk_sign_interpretation_commentary_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_sign_interpretation_commentary_to_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_sign_interpretation_commentary_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sign_interpretation_commentary_to_sign_char` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table allows editors to attach commentary to a specific attribute of a sign interpretation.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1691,13 +1766,16 @@ CREATE TABLE `sign_interpretation_roi` (
   `roi_position_id` int(10) unsigned NOT NULL COMMENT 'Id for the position of this ROI in its artefact.',
   `values_set` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `exceptional` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean whether this ROI is exceptional (and thus should be excluded from some statistical analyses).',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`sign_interpretation_roi_id`),
   UNIQUE KEY `unique_sign_interpretation_shape_position` (`sign_interpretation_id`,`roi_shape_id`,`roi_position_id`) USING BTREE,
   KEY `fk_sign_area_to_area_idx` (`roi_shape_id`),
   KEY `fk_sign_area_to_area_position_idx` (`roi_position_id`),
   KEY `fk_sign_area_to_sign_interpretation_idx` (`sign_interpretation_id`) USING BTREE,
+  KEY `fk_sign_interpretation_roi_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_sign_area_to_roi_position` FOREIGN KEY (`roi_position_id`) REFERENCES `roi_position` (`roi_position_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sign_area_to_roi_shape` FOREIGN KEY (`roi_shape_id`) REFERENCES `roi_shape` (`roi_shape_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_sign_interpretation_roi_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sign_sign_roi_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table links a sign_interpretation to the ROI or ROIs it describes.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1732,7 +1810,10 @@ DROP TABLE IF EXISTS `sign_stream_section`;
 CREATE TABLE `sign_stream_section` (
   `sign_stream_section_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
   `commentary` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`sign_stream_section_id`)
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`sign_stream_section_id`),
+  KEY `fk_sign_stream_section_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_sign_stream_section_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=380474 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='A collection of coherent signs from a stream.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1793,6 +1874,21 @@ CREATE TABLE `single_action` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `system_roles`
+--
+
+DROP TABLE IF EXISTS `system_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `system_roles` (
+  `system_roles_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `role_title` varchar(128) NOT NULL DEFAULT '' COMMENT 'A short title for the role.',
+  `role_description` text NOT NULL COMMENT 'A description of what an API that manages the database should consider as permissable for this role to do within the database.',
+  PRIMARY KEY (`system_roles_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `text_fragment`
 --
 
@@ -1816,9 +1912,12 @@ CREATE TABLE `text_fragment_data` (
   `text_fragment_data_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `text_fragment_id` int(10) unsigned NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation for this fragment of text (usually col. x or frg. x).',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`text_fragment_data_id`),
   UNIQUE KEY `unique_text_fragment_id_text_fragment_name` (`text_fragment_id`,`name`) USING BTREE,
   KEY `fk_text_fragment_data_to_text_fragment_idx` (`text_fragment_id`) USING BTREE,
+  KEY `fk_text_fragment_data_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_text_fragment_data_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_text_fragment_data_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table defines the properties of a unified grouping of text containing one or more lines.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1854,9 +1953,12 @@ CREATE TABLE `text_fragment_to_line` (
   `text_fragment_to_line_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `text_fragment_id` int(10) unsigned NOT NULL,
   `line_id` int(10) unsigned NOT NULL,
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`text_fragment_to_line_id`),
   UNIQUE KEY `text_fragment_line_idx` (`text_fragment_id`,`line_id`) USING BTREE,
   KEY `fk_text_fragment_to_line_to_line_idx` (`line_id`) USING BTREE,
+  KEY `fk_text_fragment_to_line_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_text_fragment_to_line_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_text_fragment_to_line_to_line` FOREIGN KEY (`line_id`) REFERENCES `line` (`line_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_text_fragment_to_line_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=54448 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table links lines of an edition to a specific text fragment.';
@@ -1940,6 +2042,23 @@ CREATE TABLE `user_email_token` (
   KEY `fk_user_email_token_to_user` (`user_id`),
   CONSTRAINT `fk_user_email_token_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds a list of unique tokens that are sent to the user in order to confirm certain operations in the database.  These tokens are intended to expire and a scheduled event in the database clears out all entries that are over 2 days old.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `users_system_roles`
+--
+
+DROP TABLE IF EXISTS `users_system_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users_system_roles` (
+  `user_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `system_roles_id` int(11) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`user_id`,`system_roles_id`),
+  KEY `users_system_roles_to_system_roles_id` (`system_roles_id`),
+  CONSTRAINT `users_system_roles_to_system_roles_id` FOREIGN KEY (`system_roles_id`) REFERENCES `system_roles` (`system_roles_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `users_system_roles_to_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table applies individual system roles to each user.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
