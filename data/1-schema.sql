@@ -696,8 +696,8 @@ DROP TABLE IF EXISTS `iaa_edition_catalog_to_text_fragment_confirmation`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `iaa_edition_catalog_to_text_fragment_confirmation` (
   `iaa_edition_catalog_to_text_fragment_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `confirmed` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean for whether the match has been confirmed (1) or rejected (0).  If this is set to 0 and the user_id is NULL, then the match has neither been confirmed nor rejected (thus it should be queued for review).',
-  `user_id` int(11) unsigned DEFAULT NULL COMMENT 'user_id of the person who has confirmed or rejected the match.  If NULL, the match has neither been confirmed nor rejected.',
+  `confirmed` tinyint(1) unsigned DEFAULT 0 COMMENT 'Boolean for whether the match has been confirmed (1) or rejected (0).  If this is set to 0 and the user_id is NULL, then the match has neither been confirmed nor rejected (thus it should be queued for review).',
+  `user_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'user_id of the person who has confirmed or rejected the match.  If NULL, the match has neither been confirmed nor rejected.',
   `time` datetime NOT NULL DEFAULT current_timestamp(),
   UNIQUE KEY `unique_edition_catalog_to_text_fragment_confirmation` (`iaa_edition_catalog_to_text_fragment_id`,`confirmed`,`user_id`,`time`) USING BTREE,
   KEY `fk_iaa_edition_catalog_to_text_fragment_confirmation_to_user` (`user_id`) USING BTREE,

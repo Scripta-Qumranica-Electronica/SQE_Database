@@ -1,0 +1,1 @@
+Small update to iaa_edition_catalog_to_text_fragment_confirmation for proper accounting of records.
