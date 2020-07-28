@@ -1,0 +1,9 @@
+This update adds convenience columns to track the creator of each datum. It also adds the concept of user roles to the database so that the API can provide authorized access to lower level data alterations and reduce the reliance on a specialized database admin.
+
+1.  Add created_by columns to every "owned" data table.
+
+2.  Correctly populate the created_by columns.
+
+3.  Add a system_roles table with a description of each possible role.
+
+4.  Add a users_system_roles table to assign roles to users. Populate with every user being a 'registered user'.
