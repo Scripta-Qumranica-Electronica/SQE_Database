@@ -1884,8 +1884,9 @@ CREATE TABLE `system_roles` (
   `system_roles_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `role_title` varchar(128) NOT NULL DEFAULT '' COMMENT 'A short title for the role.',
   `role_description` text NOT NULL COMMENT 'A description of what an API that manages the database should consider as permissable for this role to do within the database.',
-  PRIMARY KEY (`system_roles_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (`system_roles_id`),
+  UNIQUE KEY `role_title` (`role_title`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

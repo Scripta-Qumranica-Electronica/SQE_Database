@@ -6,7 +6,8 @@ CREATE TABLE `system_roles` (
   `system_roles_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `role_title` varchar(128) NOT NULL DEFAULT '' COMMENT 'A short title for the role.',
   `role_description` text NOT NULL COMMENT 'A description of what an API that manages the database should consider as permissable for this role to do within the database.',
-  PRIMARY KEY (`system_roles_id`)
+  PRIMARY KEY (`system_roles_id`),
+  UNIQUE(role_title)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ########################################
