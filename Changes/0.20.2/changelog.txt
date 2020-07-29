@@ -1,0 +1,1 @@
+This is a quick patch for the X view, it should only return a URL for the master image.
