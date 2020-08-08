@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: SQE
 -- ------------------------------------------------------
--- Server version	10.3.23-MariaDB-1:10.3.23+maria~bionic
+-- Server version	10.3.23-MariaDB-1:10.3.23+maria~focal
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -1675,10 +1675,10 @@ CREATE TABLE `sign_interpretation_attribute` (
   `sign_interpretation_id` int(10) unsigned NOT NULL COMMENT 'Id of the sign interpretation being descibed.',
   `attribute_value_id` int(10) unsigned NOT NULL COMMENT 'Id of the attribute to apply to this sign interpretation.',
   `sequence` tinyint(4) DEFAULT NULL COMMENT 'Absolute ordering of this record.  This is used to define the order of all records for the same sign_char_id.',
-  `numeric_value` float DEFAULT NULL COMMENT 'Contains the width of a character (normally 1), space (dto.), or vacat (normally > 1) or the level of probability.',
+  `numeric_value` decimal(8,2) DEFAULT NULL COMMENT 'Contains the width of a character (normally 1), space (dto.), or vacat (normally > 1) or the level of probability.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`sign_interpretation_attribute_id`),
-  UNIQUE KEY `unique_sign_interpretation_id_attribute_value_id_sequence` (`attribute_value_id`,`sequence`,`sign_interpretation_id`) USING BTREE,
+  UNIQUE KEY `unique_sign_interpretation_attribute_sequence_numeric_value` (`attribute_value_id`,`sequence`,`sign_interpretation_id`,`numeric_value`) USING BTREE,
   KEY `fk_sign_interpretation_attr_to_attr_value_idx` (`attribute_value_id`) USING BTREE,
   KEY `fk_sign_interpretation_attr_to_sign_interpretation_idx` (`sign_interpretation_id`) USING BTREE,
   KEY `fk_sign_interpretation_attribute_to_creator_id` (`creator_id`),

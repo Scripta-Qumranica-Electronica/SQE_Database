@@ -203,6 +203,27 @@
                                     </td>
                                     <td><p>The default space between two lines in pixel</p></td>
                                 </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="creator_id">creator_id</span></td>
+                                    <td>INT UNSIGNED</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>1</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="scribal_font.creator_id references user.user_id via fk_scribal_font_to_creator_id"><a href='user.html'>user</a><span class='relatedKey'>.user_id</span></td>
+                                                <td class="constraint detail">fk_scribal_font_to_creator_id<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -233,6 +254,12 @@
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>scribal_font_id</td>
                                 </tr>
+                                <tr>
+                                    <td title='Indexed'>fk_scribal_font_to_creator_id</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>creator_id</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div><!-- /.box-body -->
@@ -258,56 +285,128 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="520,5,771,304">
-<area shape="rect" id="node2" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="5,445,445,632">
-<area shape="rect" id="node3" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="489,321,801,497">
-<area shape="rect" id="node4" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="517,515,773,720">
-<area shape="rect" id="node5" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="524,737,767,889">
+<area shape="rect" id="node1" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="779,5,1029,333">
+<area shape="rect" id="node2" href="../../tables/user.html" target="_top" title="user" alt="" coords="5,572,244,719">
+<area shape="rect" id="node3" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="288,415,704,631">
+<area shape="rect" id="node4" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="748,520,1060,725">
+<area shape="rect" id="node5" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="776,743,1032,977">
+<area shape="rect" id="node6" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="795,351,1013,503">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="oneDegreeImg" data="../diagrams/tables/scribal_font.1degree.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="357,569,547,657">
-<area shape="rect" id="node2" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,431,188,519">
-<area shape="rect" id="node3" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="771,587,973,675">
-<area shape="rect" id="node4" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="747,5,997,304">
-<area shape="rect" id="node5" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="232,357,672,544">
-<area shape="rect" id="node6" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="1099,443,1409,531">
-<area shape="rect" id="node7" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="716,321,1028,497">
-<area shape="rect" id="node8" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="1072,548,1436,636">
-<area shape="rect" id="node9" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="744,692,1000,897">
-<area shape="rect" id="node10" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="1099,695,1409,783">
-<area shape="rect" id="node11" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1133,875,1375,1027">
+<area shape="rect" id="node1" href="../../tables/artefact_data.html" target="_top" title="artefact_data" alt="" coords="422,939,594,1027">
+<area shape="rect" id="node2" href="../../tables/user.html" target="_top" title="user" alt="" coords="5,1621,244,1768">
+<area shape="rect" id="node3" href="../../tables/artefact_group_data.html" target="_top" title="artefact_group_data" alt="" coords="397,1044,619,1132">
+<area shape="rect" id="node4" href="../../tables/artefact_group_member.html" target="_top" title="artefact_group_member" alt="" coords="383,1149,633,1237">
+<area shape="rect" id="node5" href="../../tables/artefact_position.html" target="_top" title="artefact_position" alt="" coords="409,1255,607,1343">
+<area shape="rect" id="node6" href="../../tables/artefact_shape.html" target="_top" title="artefact_shape" alt="" coords="416,1360,600,1448">
+<area shape="rect" id="node7" href="../../tables/artefact_stack.html" target="_top" title="artefact_stack" alt="" coords="419,1465,597,1553">
+<area shape="rect" id="node8" href="../../tables/artefact_status.html" target="_top" title="artefact_status" alt="" coords="415,1571,601,1659">
+<area shape="rect" id="node9" href="../../tables/attribute.html" target="_top" title="attribute" alt="" coords="438,499,578,587">
+<area shape="rect" id="node10" href="../../tables/attribute_value.html" target="_top" title="attribute_value" alt="" coords="835,533,1021,621">
+<area shape="rect" id="node11" href="../../tables/attribute_value_css.html" target="_top" title="attribute_value_css" alt="" coords="1180,437,1397,525">
+<area shape="rect" id="node12" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="424,3281,592,3369">
+<area shape="rect" id="node13" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="45,3476,205,3564">
+<area shape="rect" id="node14" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="839,3215,1017,3303">
+<area shape="rect" id="node15" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="809,1281,1047,1369">
+<area shape="rect" id="node16" href="../../tables/user_email_token.html" target="_top" title="user_email_token" alt="" coords="406,1676,610,1764">
+<area shape="rect" id="node17" href="../../tables/font_file.html" target="_top" title="font_file" alt="" coords="439,1995,577,2083">
+<area shape="rect" id="node18" href="../../tables/iaa_edition_catalog_author.html" target="_top" title="iaa_edition_catalog_author" alt="" coords="373,2100,643,2188">
+<area shape="rect" id="node19" href="../../tables/iaa_edition_catalog_to_text_fragment_confirmation.html" target="_top" title="iaa_edition_catalog_to_text_fragment_confirmation" alt="" coords="288,2205,728,2293">
+<area shape="rect" id="node20" href="../../tables/image_catalog_author.html" target="_top" title="image_catalog_author" alt="" coords="390,2311,626,2399">
+<area shape="rect" id="node21" href="../../tables/image_to_image_map_author.html" target="_top" title="image_to_image_map_author" alt="" coords="365,2416,651,2504">
+<area shape="rect" id="node22" href="../../tables/line_data.html" target="_top" title="line_data" alt="" coords="424,2521,592,2609">
+<area shape="rect" id="node23" href="../../tables/line_to_sign.html" target="_top" title="line_to_sign" alt="" coords="414,2627,602,2715">
+<area shape="rect" id="node24" href="../../tables/manuscript_data.html" target="_top" title="manuscript_data" alt="" coords="409,3528,607,3616">
+<area shape="rect" id="node25" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="803,3395,1053,3723">
+<area shape="rect" id="node26" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="300,2732,716,2948">
+<area shape="rect" id="node27" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="1153,3365,1424,3453">
+<area shape="rect" id="node28" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="365,3423,651,3511">
+<area shape="rect" id="node29" href="../../tables/parallel_word.html" target="_top" title="parallel_word" alt="" coords="841,1815,1015,1903">
+<area shape="rect" id="node30" href="../../tables/sign_stream_section.html" target="_top" title="sign_stream_section" alt="" coords="395,1781,621,1869">
+<area shape="rect" id="node31" href="../../tables/position_in_stream.html" target="_top" title="position_in_stream" alt="" coords="401,2965,615,3053">
+<area shape="rect" id="node32" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="348,3071,668,3159">
+<area shape="rect" id="node33" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="772,2769,1084,2975">
+<area shape="rect" id="node34" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="1128,3091,1449,3179">
+<area shape="rect" id="node35" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="800,2517,1056,2752">
+<area shape="rect" id="node36" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="1151,2985,1427,3073">
+<area shape="rect" id="node37" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1180,3196,1397,3348">
+<area shape="rect" id="node38" href="../../tables/scribe.html" target="_top" title="scribe" alt="" coords="442,3176,574,3264">
+<area shape="rect" id="node39" href="../../tables/sign_interpretation_attribute.html" target="_top" title="sign_interpretation_attribute" alt="" coords="1148,629,1429,717">
+<area shape="rect" id="node40" href="../../tables/sign_interpretation_commentary.html" target="_top" title="sign_interpretation_commentary" alt="" coords="773,340,1083,428">
+<area shape="rect" id="node41" href="../../tables/sign_interpretation_roi.html" target="_top" title="sign_interpretation_roi" alt="" coords="387,5,629,93">
+<area shape="rect" id="node42" href="../../tables/SQE_image_author.html" target="_top" title="SQE_image_author" alt="" coords="400,111,616,199">
+<area shape="rect" id="node43" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="400,288,616,376">
+<area shape="rect" id="node44" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="391,393,625,481">
+<area shape="rect" id="node45" href="../../tables/user_contributions.html" target="_top" title="user_contributions" alt="" coords="401,640,615,728">
+<area shape="rect" id="node46" href="../../tables/users_system_roles.html" target="_top" title="users_system_roles" alt="" coords="397,745,619,833">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="twodegreesDegreeImg" data="../diagrams/tables/scribal_font.2degrees.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="764,5,1015,304">
-<area shape="rect" id="node2" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="249,445,689,632">
-<area shape="rect" id="node3" href="../../tables/font_file.html" target="_top" title="font_file" alt="" coords="5,477,205,624">
-<area shape="rect" id="node4" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="733,321,1045,497">
-<area shape="rect" id="node5" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="761,515,1017,720">
-<area shape="rect" id="node6" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="768,737,1011,889">
+<area shape="rect" id="node1" href="../../tables/font_file.html" target="_top" title="font_file" alt="" coords="288,419,488,595">
+<area shape="rect" id="node2" href="../../tables/user.html" target="_top" title="user" alt="" coords="5,572,244,719">
+<area shape="rect" id="node3" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="1023,5,1273,333">
+<area shape="rect" id="node4" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="532,401,948,617">
+<area shape="rect" id="node5" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="992,520,1304,725">
+<area shape="rect" id="node6" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="1020,743,1276,977">
+<area shape="rect" id="node7" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1039,351,1257,503">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="oneimpliedDegreeImg" data="../diagrams/tables/scribal_font.implied1degrees.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
                                     <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="375,259,564,347">
-<area shape="rect" id="node2" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="14,328,197,416">
-<area shape="rect" id="node3" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="788,259,991,347">
-<area shape="rect" id="node4" href="../../tables/font_file_owner.html" target="_top" title="font_file_owner" alt="" coords="1164,5,1379,93">
-<area shape="rect" id="node5" href="../../tables/font_file.html" target="_top" title="font_file" alt="" coords="5,517,205,664">
-<area shape="rect" id="node6" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="764,436,1015,735">
-<area shape="rect" id="node7" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="249,639,689,825">
-<area shape="rect" id="node8" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="1117,280,1426,368">
-<area shape="rect" id="node9" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="733,975,1045,1151">
-<area shape="rect" id="node10" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="1089,491,1453,579">
-<area shape="rect" id="node11" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="761,752,1017,957">
-<area shape="rect" id="node12" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="1116,385,1427,473">
-<area shape="rect" id="node13" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1150,111,1393,263">
+<area shape="rect" id="node1" href="../../tables/artefact_data.html" target="_top" title="artefact_data" alt="" coords="422,1556,594,1644">
+<area shape="rect" id="node2" href="../../tables/user.html" target="_top" title="user" alt="" coords="5,1553,244,1700">
+<area shape="rect" id="node3" href="../../tables/artefact_group_data.html" target="_top" title="artefact_group_data" alt="" coords="397,1661,619,1749">
+<area shape="rect" id="node4" href="../../tables/artefact_group_member.html" target="_top" title="artefact_group_member" alt="" coords="383,1767,633,1855">
+<area shape="rect" id="node5" href="../../tables/artefact_position.html" target="_top" title="artefact_position" alt="" coords="409,1872,607,1960">
+<area shape="rect" id="node6" href="../../tables/artefact_shape.html" target="_top" title="artefact_shape" alt="" coords="416,1977,600,2065">
+<area shape="rect" id="node7" href="../../tables/artefact_stack.html" target="_top" title="artefact_stack" alt="" coords="419,2083,597,2171">
+<area shape="rect" id="node8" href="../../tables/artefact_status.html" target="_top" title="artefact_status" alt="" coords="415,2188,601,2276">
+<area shape="rect" id="node9" href="../../tables/attribute.html" target="_top" title="attribute" alt="" coords="438,499,578,587">
+<area shape="rect" id="node10" href="../../tables/attribute_value.html" target="_top" title="attribute_value" alt="" coords="887,331,1073,419">
+<area shape="rect" id="node11" href="../../tables/attribute_value_css.html" target="_top" title="attribute_value_css" alt="" coords="1279,279,1497,367">
+<area shape="rect" id="node12" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="424,3289,592,3377">
+<area shape="rect" id="node13" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="45,3484,205,3572">
+<area shape="rect" id="node14" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="891,2960,1069,3048">
+<area shape="rect" id="node15" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="861,737,1099,825">
+<area shape="rect" id="node16" href="../../tables/user_email_token.html" target="_top" title="user_email_token" alt="" coords="406,764,610,852">
+<area shape="rect" id="node17" href="../../tables/font_file.html" target="_top" title="font_file" alt="" coords="408,1363,608,1539">
+<area shape="rect" id="node18" href="../../tables/font_file_owner.html" target="_top" title="font_file_owner" alt="" coords="1293,2787,1483,2875">
+<area shape="rect" id="node19" href="../../tables/iaa_edition_catalog_author.html" target="_top" title="iaa_edition_catalog_author" alt="" coords="373,2365,643,2453">
+<area shape="rect" id="node20" href="../../tables/iaa_edition_catalog_to_text_fragment_confirmation.html" target="_top" title="iaa_edition_catalog_to_text_fragment_confirmation" alt="" coords="288,2471,728,2559">
+<area shape="rect" id="node21" href="../../tables/image_catalog_author.html" target="_top" title="image_catalog_author" alt="" coords="390,2576,626,2664">
+<area shape="rect" id="node22" href="../../tables/image_to_image_map_author.html" target="_top" title="image_to_image_map_author" alt="" coords="365,2681,651,2769">
+<area shape="rect" id="node23" href="../../tables/line_data.html" target="_top" title="line_data" alt="" coords="424,2787,592,2875">
+<area shape="rect" id="node24" href="../../tables/line_to_sign.html" target="_top" title="line_to_sign" alt="" coords="414,2892,602,2980">
+<area shape="rect" id="node25" href="../../tables/manuscript_data.html" target="_top" title="manuscript_data" alt="" coords="409,3431,607,3519">
+<area shape="rect" id="node26" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="1263,3241,1513,3569">
+<area shape="rect" id="node27" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="772,2411,1188,2627">
+<area shape="rect" id="node28" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="1613,3168,1884,3256">
+<area shape="rect" id="node29" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="365,3536,651,3624">
+<area shape="rect" id="node30" href="../../tables/parallel_word.html" target="_top" title="parallel_word" alt="" coords="893,1008,1067,1096">
+<area shape="rect" id="node31" href="../../tables/sign_stream_section.html" target="_top" title="sign_stream_section" alt="" coords="395,975,621,1063">
+<area shape="rect" id="node32" href="../../tables/position_in_stream.html" target="_top" title="position_in_stream" alt="" coords="401,2997,615,3085">
+<area shape="rect" id="node33" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="348,3103,668,3191">
+<area shape="rect" id="node34" href="../../tables/recent_edition_catalog_to_col_confirmation.html" target="_top" title="recent_edition_catalog_to_col_confirmation" alt="" coords="315,3208,701,3272">
+<area shape="rect" id="node35" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="1232,2456,1544,2661">
+<area shape="rect" id="node36" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="1588,3060,1909,3148">
+<area shape="rect" id="node37" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="1260,2204,1516,2439">
+<area shape="rect" id="node38" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="1611,2713,1887,2801">
+<area shape="rect" id="node39" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1279,2928,1497,3080">
+<area shape="rect" id="node40" href="../../tables/scribe.html" target="_top" title="scribe" alt="" coords="442,5,574,93">
+<area shape="rect" id="node41" href="../../tables/sign_interpretation_attribute.html" target="_top" title="sign_interpretation_attribute" alt="" coords="1247,493,1529,581">
+<area shape="rect" id="node42" href="../../tables/sign_interpretation_commentary.html" target="_top" title="sign_interpretation_commentary" alt="" coords="825,516,1135,604">
+<area shape="rect" id="node43" href="../../tables/sign_interpretation_roi.html" target="_top" title="sign_interpretation_roi" alt="" coords="387,111,629,199">
+<area shape="rect" id="node44" href="../../tables/SQE_image_author.html" target="_top" title="SQE_image_author" alt="" coords="400,288,616,376">
+<area shape="rect" id="node45" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="400,393,616,481">
+<area shape="rect" id="node46" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="391,869,625,957">
+<area shape="rect" id="node47" href="../../tables/user_contributions.html" target="_top" title="user_contributions" alt="" coords="401,1116,615,1204">
+<area shape="rect" id="node48" href="../../tables/users_system_roles.html" target="_top" title="users_system_roles" alt="" coords="397,1221,619,1309">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="twoimpliedDegreeImg" data="../diagrams/tables/scribal_font.implied2degrees.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
