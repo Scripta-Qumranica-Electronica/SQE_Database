@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>image_text_fragment_match_catalogue - SQE Database</title>
+        <!-- Tell the browser to be responsive to screen width -->
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+        <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
+        <!-- Bootstrap 3.3.5 -->
+        <link rel="stylesheet" href="../bower/admin-lte/bootstrap/css/bootstrap.min.css">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="../bower/font-awesome/css/font-awesome.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="../bower/ionicons/css/ionicons.min.css">
+        <!-- DataTables -->
+        <link rel="stylesheet" href="../bower/datatables.net-bs/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="../bower/datatables.net-buttons-bs/css/buttons.bootstrap.min.css">
+        <!-- Code Mirror -->
+        <link rel="stylesheet" href="../bower/codemirror/codemirror.css">
+        <!-- Fonts -->
+        <link href='../fonts/indieflower/indie-flower.css' rel='stylesheet' type='text/css'>
+        <link href='../fonts/source-sans-pro/source-sans-pro.css' rel='stylesheet' type='text/css'>
+
+        <!-- Theme style -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/AdminLTE.min.css">
+        <!-- Salvattore -->
+        <link rel="stylesheet" href="../bower/salvattore/salvattore.css">
+        <!-- AdminLTE Skins. Choose a skin from the css/skins
+           folder instead of downloading all of them to reduce the load. -->
+        <link rel="stylesheet" href="../bower/admin-lte/dist/css/skins/_all-skins.min.css">
+        <!-- SchemaSpy -->
+        <link rel="stylesheet" href="../schemaSpy.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="../bower/html5shiv/html5shiv.min.js"></script>
+        <script src="../bower/respond/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
+    <body class="hold-transition skin-blue layout-top-nav">
+        <div class="wrapper">
+            <header class="main-header">
+                <nav class="navbar navbar-static-top">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="../index.html" class="navbar-brand"><b>SQE</b> Database</a>
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav">
+                                <li><a href="../index.html">Tables <span class="sr-only">(current)</span></a></li>
+                                <li><a href="../columns.html" title="All of the columns in the schema">Columns</a></li>
+                                <li><a href="../constraints.html" title="Useful for diagnosing error messages that just give constraint name or number">Constraints</a></li>
+                                <li><a href="../relationships.html" title="Diagram of table relationships">Relationships</a></li>
+                                <li><a href="../orphans.html" title="View of tables with neither parents nor children">Orphan&nbsp;Tables</a></li>
+                                <li><a href="../anomalies.html" title="Things that might not be quite right">Anomalies</a></li>
+                                <li><a href="../routines.html" title="Procedures and functions">Routines</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.navbar-collapse -->
+                        <!-- Navbar Right Menu -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </nav>
+            </header>
+            <!-- Main content -->
+            <!-- Full Width Column -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <section class="content-header">
+                    <h1>image_text_fragment_match_catalogue</h1><p><span id="recordNumber">0</span> rows</p><br />
+                </section>
+                <!-- Main content -->
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                            <h3 id="Columns" class="box-title">Columns</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table id="standard_table" class="table table-bordered table-striped dataTable" role="grid">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Column</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th title='Are nulls allowed?'>Nulls</th>
+                                    <th title='Is column automatically updated?'>Auto</th>
+                                    <th title='Default value'>Default</th>
+                                    <th title='Columns in tables that reference this column'>Children</th>
+                                    <th title='Columns in tables that are referenced by this column'>Parents</th>
+                                    <th title='Comments' class="toggle"><span>Comments</span></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td><span id="image_catalog_id">image_catalog_id</span></td>
+                                    <td>INT UNSIGNED</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>0</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="institution">institution</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Name of the institution providing the image.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="catalog_number_1">catalog_number_1</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>First tier object identifier (perhaps a plate or accession number).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="catalog_number_2">catalog_number_2</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Second tier object identifier (if available). Perhaps a fragment number on a plate, or some subdesignation of an accession number.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="catalog_side">catalog_side</span></td>
+                                    <td>BIT</td>
+                                    <td>3</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>0</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Side reference designation, recto = 0, verso = 1.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="object_id">object_id</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>NULL</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>An autogenerated human readable object identifier based on the institution and catalogue numbers.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="image_urls_id">image_urls_id</span></td>
+                                    <td>INT UNSIGNED</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>0</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="url">url</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>&#39;&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>URL prefix of the iiif server.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="proxy">proxy</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Specify a proxy address if it is necessary to use a proxy for CORS compliance.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="suffix">suffix</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Special suffux for file name (if applicable).  Usually default.jpg.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="license">license</span></td>
+                                    <td>TEXT</td>
+                                    <td>65535</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>NULL</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>License for this iiif servers resources.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="filename">filename</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Actual filename of the image as specified on the iiif server.  This may often look more like a URI, or a partial URI.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="iaa_edition_catalog_id">iaa_edition_catalog_id</span></td>
+                                    <td>INT UNSIGNED</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>0</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="manuscript_id">manuscript_id</span></td>
+                                    <td>INT UNSIGNED</td>
+                                    <td>10</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>NULL</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="image_text_fragment_match_catalogue.manuscript_id&#39;s name implies that it&#39;s a child of manuscript.manuscript_id, but it doesn&#39;t reference that column."><a href='manuscript.html'>manuscript</a><span class='relatedKey'>.manuscript_id</span></td>
+                                                <td class="constraint detail">Implied Constraint<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>Id of the manuscript within the SQE database.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="edition_name">edition_name</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Name of the publication in which the editio princeps appears.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="edition_volume">edition_volume</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>128</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Volume of the publication in which the editio princeps appears.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="edition_location_1">edition_location_1</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>64</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>First tier identifier (usually a page number).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="edition_location_2">edition_location_2</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>64</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Second tier identifier (usually a fragment/column designation).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="edition_side">edition_side</span></td>
+                                    <td>BIT</td>
+                                    <td>3</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>0</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Side designation in editio princeps.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="comment">comment</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>NULL</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Extra comments.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="iaa_edition_catalog_to_text_fragment_id">iaa_edition_catalog_to_text_fragment_id</span></td>
+                                    <td>INT UNSIGNED</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>0</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="text_fragment_id">text_fragment_id</span></td>
+                                    <td>INT UNSIGNED</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="image_text_fragment_match_catalogue.text_fragment_id&#39;s name implies that it&#39;s a child of text_fragment.text_fragment_id, but it doesn&#39;t reference that column."><a href='text_fragment.html'>text_fragment</a><span class='relatedKey'>.text_fragment_id</span></td>
+                                                <td class="constraint detail">Implied Constraint<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="name">name</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Name designation for this fragment of text (usually col. x or frg. x).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="manuscript_name">manuscript_name</span></td>
+                                    <td>VARCHAR</td>
+                                    <td>255</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>&#39;NULL&#39;</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Name designation of the manuscript.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="edition_id">edition_id</span></td>
+                                    <td>INT UNSIGNED</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>0</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="image_text_fragment_match_catalogue.edition_id&#39;s name implies that it&#39;s a child of edition.edition_id, but it doesn&#39;t reference that column."><a href='edition.html'>edition</a><span class='relatedKey'>.edition_id</span></td>
+                                                <td class="constraint detail">Implied Constraint<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>Unique id of the edition.</p></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-code-fork"></i>
+                            <h3 id="Relationships" class="box-title">Relationships</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom"><!-- Tabs within a box -->
+                                <h5>Close relationships within degrees of separation</h5>
+                                <ul class="nav nav-tabs pull-left ui-sortable-handle">
+                                    <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
+                                </ul>
+                                <div class="tab-content no-padding">
+                                    <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="../../tables/image_text_fragment_match_catalogue.html" target="_top" title="image_text_fragment_match_catalogue" alt="" coords="5,5,529,784">
+</map>
+                                        <a name='diagram'><object type="image/svg+xml" id="oneDegreeImg" data="../diagrams/tables/image_text_fragment_match_catalogue.1degree.svg" class="diagram" border="0" align="left"></object></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="225,712,427,859">
+<area shape="rect" id="node2" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,600,181,693">
+<area shape="rect" id="node3" href="../../tables/image_text_fragment_match_catalogue.html" target="_top" title="image_text_fragment_match_catalogue" alt="" coords="471,5,995,784">
+<area shape="rect" id="node4" href="../../tables/text_fragment.html" target="_top" title="text_fragment" alt="" coords="225,601,427,695">
+</map>
+                                        <a name='diagram'><object type="image/svg+xml" id="oneimpliedDegreeImg" data="../diagrams/tables/image_text_fragment_match_catalogue.implied1degrees.svg" class="diagram" border="0" align="left"></object></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="../../tables/artefact_data_owner.html" target="_top" title="artefact_data_owner" alt="" coords="1131,1276,1354,1364">
+<area shape="rect" id="node2" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="663,1453,840,1541">
+<area shape="rect" id="node3" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="235,1485,436,1632">
+<area shape="rect" id="node13" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,1783,181,1876">
+<area shape="rect" id="node4" href="../../tables/artefact_group_data_owner.html" target="_top" title="artefact_group_data_owner" alt="" coords="1106,1381,1379,1469">
+<area shape="rect" id="node5" href="../../tables/artefact_group_member_owner.html" target="_top" title="artefact_group_member_owner" alt="" coords="1093,1487,1393,1575">
+<area shape="rect" id="node6" href="../../tables/artefact_position_owner.html" target="_top" title="artefact_position_owner" alt="" coords="1118,1592,1367,1680">
+<area shape="rect" id="node7" href="../../tables/artefact_shape_owner.html" target="_top" title="artefact_shape_owner" alt="" coords="1125,1697,1360,1785">
+<area shape="rect" id="node8" href="../../tables/artefact_stack_owner.html" target="_top" title="artefact_stack_owner" alt="" coords="1128,1803,1357,1891">
+<area shape="rect" id="node9" href="../../tables/artefact_status_owner.html" target="_top" title="artefact_status_owner" alt="" coords="1125,1908,1361,1996">
+<area shape="rect" id="node10" href="../../tables/attribute_owner.html" target="_top" title="attribute_owner" alt="" coords="1147,2013,1338,2101">
+<area shape="rect" id="node11" href="../../tables/attribute_value_css_owner.html" target="_top" title="attribute_value_css_owner" alt="" coords="1109,2119,1377,2207">
+<area shape="rect" id="node12" href="../../tables/attribute_value_owner.html" target="_top" title="attribute_value_owner" alt="" coords="1125,2224,1361,2312">
+<area shape="rect" id="node14" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="632,1060,871,1148">
+<area shape="rect" id="node15" href="../../tables/font_file_owner.html" target="_top" title="font_file_owner" alt="" coords="1148,2329,1337,2417">
+<area shape="rect" id="node16" href="../../tables/iaa_edition_catalog.html" target="_top" title="iaa_edition_catalog" alt="" coords="227,3272,443,3360">
+<area shape="rect" id="node17" href="../../tables/iaa_edition_catalog_to_text_fragment.html" target="_top" title="iaa_edition_catalog_to_text_fragment" alt="" coords="580,3316,923,3404">
+<area shape="rect" id="node18" href="../../tables/text_fragment.html" target="_top" title="text_fragment" alt="" coords="235,2997,436,3091">
+<area shape="rect" id="node19" href="../../tables/image_text_fragment_match_catalogue.html" target="_top" title="image_text_fragment_match_catalogue" alt="" coords="489,2099,1013,2877">
+<area shape="rect" id="node20" href="../../tables/line_data_owner.html" target="_top" title="line_data_owner" alt="" coords="1145,2435,1340,2523">
+<area shape="rect" id="node21" href="../../tables/line_to_sign_owner.html" target="_top" title="line_to_sign_owner" alt="" coords="1134,2540,1351,2628">
+<area shape="rect" id="node22" href="../../tables/main_action.html" target="_top" title="main_action" alt="" coords="1160,2645,1325,2733">
+<area shape="rect" id="node23" href="../../tables/manuscript_data.html" target="_top" title="manuscript_data" alt="" coords="237,843,434,931">
+<area shape="rect" id="node24" href="../../tables/manuscript_data_owner.html" target="_top" title="manuscript_data_owner" alt="" coords="1118,12,1367,100">
+<area shape="rect" id="node25" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="225,1092,445,1180">
+<area shape="rect" id="node26" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="1107,117,1378,205">
+<area shape="rect" id="node27" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="608,3211,895,3299">
+<area shape="rect" id="node28" href="../../tables/manuscript_to_text_fragment_owner.html" target="_top" title="manuscript_to_text_fragment_owner" alt="" coords="1074,3067,1411,3155">
+<area shape="rect" id="node29" href="../../tables/parallel_word_owner.html" target="_top" title="parallel_word_owner" alt="" coords="1130,223,1355,311">
+<area shape="rect" id="node30" href="../../tables/position_in_stream_owner.html" target="_top" title="position_in_stream_owner" alt="" coords="1110,328,1375,416">
+<area shape="rect" id="node31" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="591,2895,911,2983">
+<area shape="rect" id="node32" href="../../tables/position_in_text_fragment_stream_owner.html" target="_top" title="position_in_text_fragment_stream_owner" alt="" coords="1057,2751,1428,2839">
+<area shape="rect" id="node33" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="1082,433,1403,521">
+<area shape="rect" id="node34" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="1105,539,1381,627">
+<area shape="rect" id="node35" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1135,644,1350,732">
+<area shape="rect" id="node36" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="1155,749,1330,837">
+<area shape="rect" id="node37" href="../../tables/sign_interpretation_attribute_owner.html" target="_top" title="sign_interpretation_attribute_owner" alt="" coords="1077,855,1409,943">
+<area shape="rect" id="node38" href="../../tables/sign_interpretation_commentary_owner.html" target="_top" title="sign_interpretation_commentary_owner" alt="" coords="1063,960,1423,1048">
+<area shape="rect" id="node39" href="../../tables/sign_interpretation_roi_owner.html" target="_top" title="sign_interpretation_roi_owner" alt="" coords="1097,1065,1389,1153">
+<area shape="rect" id="node40" href="../../tables/sign_stream_section_owner.html" target="_top" title="sign_stream_section_owner" alt="" coords="1104,1171,1381,1259">
+<area shape="rect" id="node41" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="643,3000,859,3088">
+<area shape="rect" id="node42" href="../../tables/text_fragment_data_owner.html" target="_top" title="text_fragment_data_owner" alt="" coords="1109,2856,1376,2944">
+<area shape="rect" id="node43" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="635,3105,868,3193">
+<area shape="rect" id="node44" href="../../tables/text_fragment_to_line_owner.html" target="_top" title="text_fragment_to_line_owner" alt="" coords="1101,2961,1385,3049">
+</map>
+                                        <a name='diagram'><object type="image/svg+xml" id="twoimpliedDegreeImg" data="../diagrams/tables/image_text_fragment_match_catalogue.implied2degrees.svg" class="diagram" border="0" align="left"></object></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-code-o"></i>
+                            <h3 id="ViewDefinition" class="box-title">View Definition</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <textarea id="sql-script-codemirror" name="sql-script-codemirror" rows="" style="display: none;">select `SQE`.`image_catalog`.`image_catalog_id` AS `image_catalog_id`,`SQE`.`image_catalog`.`institution` AS `institution`,`SQE`.`image_catalog`.`catalog_number_1` AS `catalog_number_1`,`SQE`.`image_catalog`.`catalog_number_2` AS `catalog_number_2`,`SQE`.`image_catalog`.`catalog_side` AS `catalog_side`,`SQE`.`image_catalog`.`object_id` AS `object_id`,`SQE`.`image_urls`.`image_urls_id` AS `image_urls_id`,`SQE`.`image_urls`.`url` AS `url`,`SQE`.`image_urls`.`proxy` AS `proxy`,`SQE`.`image_urls`.`suffix` AS `suffix`,`SQE`.`image_urls`.`license` AS `license`,`SQE`.`SQE_image`.`filename` AS `filename`,`SQE`.`iaa_edition_catalog`.`iaa_edition_catalog_id` AS `iaa_edition_catalog_id`,`SQE`.`iaa_edition_catalog`.`manuscript_id` AS `manuscript_id`,`SQE`.`iaa_edition_catalog`.`edition_name` AS `edition_name`,`SQE`.`iaa_edition_catalog`.`edition_volume` AS `edition_volume`,`SQE`.`iaa_edition_catalog`.`edition_location_1` AS `edition_location_1`,`SQE`.`iaa_edition_catalog`.`edition_location_2` AS `edition_location_2`,`SQE`.`iaa_edition_catalog`.`edition_side` AS `edition_side`,`SQE`.`iaa_edition_catalog`.`comment` AS `comment`,`SQE`.`iaa_edition_catalog_to_text_fragment`.`iaa_edition_catalog_to_text_fragment_id` AS `iaa_edition_catalog_to_text_fragment_id`,`SQE`.`iaa_edition_catalog_to_text_fragment`.`text_fragment_id` AS `text_fragment_id`,`SQE`.`text_fragment_data`.`name` AS `name`,`SQE`.`manuscript_data`.`name` AS `manuscript_name`,`SQE`.`edition`.`edition_id` AS `edition_id` from ((((((((((`SQE`.`image_catalog` join `SQE`.`SQE_image` on(`SQE`.`SQE_image`.`image_catalog_id` = `SQE`.`image_catalog`.`image_catalog_id` and `SQE`.`SQE_image`.`is_master` = 1)) join `SQE`.`image_urls` on(`SQE`.`SQE_image`.`image_urls_id` = `SQE`.`image_urls`.`image_urls_id`)) join `SQE`.`image_to_iaa_edition_catalog` on(`SQE`.`image_to_iaa_edition_catalog`.`image_catalog_id` = `SQE`.`image_catalog`.`image_catalog_id`)) join `SQE`.`iaa_edition_catalog` on(`SQE`.`image_to_iaa_edition_catalog`.`iaa_edition_catalog_id` = `SQE`.`iaa_edition_catalog`.`iaa_edition_catalog_id`)) join `SQE`.`iaa_edition_catalog_to_text_fragment` on(`SQE`.`image_to_iaa_edition_catalog`.`iaa_edition_catalog_id` = `SQE`.`iaa_edition_catalog_to_text_fragment`.`iaa_edition_catalog_id`)) join `SQE`.`text_fragment_data` on(`SQE`.`iaa_edition_catalog_to_text_fragment`.`text_fragment_id` = `SQE`.`text_fragment_data`.`text_fragment_id`)) join `SQE`.`text_fragment_data_owner` on(`SQE`.`text_fragment_data`.`text_fragment_data_id` = `SQE`.`text_fragment_data_owner`.`text_fragment_data_id`)) join `SQE`.`manuscript_data` on(`SQE`.`iaa_edition_catalog`.`manuscript_id` = `SQE`.`manuscript_data`.`manuscript_id`)) join `SQE`.`manuscript_data_owner` on(`SQE`.`manuscript_data`.`manuscript_data_id` = `SQE`.`manuscript_data_owner`.`manuscript_data_id`)) join `SQE`.`edition` on(`SQE`.`edition`.`edition_id` = `SQE`.`text_fragment_data_owner`.`edition_id` and `SQE`.`edition`.`edition_id` = `SQE`.`manuscript_data_owner`.`edition_id`)) where `SQE`.`edition`.`public` = 1</textarea>
+                            <div style="padding-top: 5px;"><hr></div>
+                            <div class="box box-solid">
+                                <div class="box-header with-border">
+                                    <i class="fa fa-puzzle-piece"></i>
+                                    <h3 class="box-title">Possibly Referenced Tables/Views</h3>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <ul class="list-unstyled">
+                                        <li><a href="image_catalog.html">image_catalog</a></li>
+                                        <li><a href="image_urls.html">image_urls</a></li>
+                                        <li><a href="SQE_image.html">SQE_image</a></li>
+                                        <li><a href="iaa_edition_catalog.html">iaa_edition_catalog</a></li>
+                                        <li><a href="iaa_edition_catalog_to_text_fragment.html">iaa_edition_catalog_to_text_fragment</a></li>
+                                        <li><a href="text_fragment_data.html">text_fragment_data</a></li>
+                                        <li><a href="manuscript_data.html">manuscript_data</a></li>
+                                        <li><a href="edition.html">edition</a></li>
+                                        <li><a href="image_to_iaa_edition_catalog.html">image_to_iaa_edition_catalog</a></li>
+                                        <li><a href="text_fragment_data_owner.html">text_fragment_data_owner</a></li>
+                                        <li><a href="manuscript_data_owner.html">manuscript_data_owner</a></li>
+                                    </ul>
+                                </div><!-- /.box-body -->
+                            </div>
+                        </div><!-- /.box-body -->
+                    </div>
+                </section>
+                <script>
+                    var config = {
+                        pagination: true
+                    }
+                </script>
+            </div>
+            <!-- /.content-wrapper -->
+            <footer class="main-footer">
+                <div>
+                    <div class="pull-right hidden-xs">
+                        <a href="https://github.com/schemaspy/schemaspy" title="GitHub for SchemaSpy"><i class="fa fa-github-square fa-2x"></i></a>
+                        <a href="http://stackoverflow.com/questions/tagged/schemaspy" title="StackOverflow for SchemaSpy"><i class="fa fa-stack-overflow fa-2x"></i></a>
+                    </div>
+                    <strong>Generated by <a href="http://schemaspy.org/" class="logo-text"><i class="fa fa-database"></i> SchemaSpy 6.1.0</a></strong>
+                </div>
+                <!-- /.container -->
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+
+        <!-- jQuery 2.2.3 -->
+        <script src="../bower/admin-lte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+        <script src="../bower/admin-lte/plugins/jQueryUI/jquery-ui.min.js"></script>
+        <!-- Bootstrap 3.3.5 -->
+        <script src="../bower/admin-lte/bootstrap/js/bootstrap.min.js"></script>
+        <!-- DataTables -->
+        <script src="../bower/datatables.net/jquery.dataTables.min.js"></script>
+        <script src="../bower/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/dataTables.buttons.min.js"></script>
+        <script src="../bower/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.html5.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.print.min.js"></script>
+        <script src="../bower/datatables.net-buttons/buttons.colVis.min.js"></script>
+        <!-- SheetJS -->
+        <script src="../bower/js-xlsx/xlsx.full.min.js"></script>
+        <!-- pdfmake -->
+        <script src="../bower/pdfmake/pdfmake.min.js"></script>
+        <script src="../bower/pdfmake/vfs_fonts.js"></script>
+        <!-- SlimScroll -->
+        <script src="../bower/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+        <!-- FastClick -->
+        <script src="../bower/admin-lte/plugins/fastclick/fastclick.js"></script>
+        <!-- Salvattore -->
+        <script src="../bower/salvattore/salvattore.min.js"></script>
+        <!-- AnchorJS -->
+        <script src="../bower/anchor-js/anchor.min.js"></script>
+        <!-- CodeMirror -->
+        <script src="../bower/codemirror/codemirror.js"></script>
+        <script src="../bower/codemirror/sql.js"></script>
+        <!-- AdminLTE App -->
+        <script src="../bower/admin-lte/dist/js/app.min.js"></script>
+        <script src="table.js"></script>
+        <script src="../schemaSpy.js"></script>
+    </body>
+</html>

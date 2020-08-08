@@ -177,6 +177,10 @@
                                                 <td class="constraint detail">fk_font_file_to_edition<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
+                                                <td title="image_text_fragment_match_catalogue.edition_id&#39;s name implies that it&#39;s a child of edition.edition_id, but it doesn&#39;t reference that column."><a href='image_text_fragment_match_catalogue.html'>image_text_fragment_match_catalogue</a><span class='relatedKey'>.edition_id</span></td>
+                                                <td class="constraint detail">Implied Constraint<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
                                                 <td title="line_data_owner.edition_id references edition.edition_id via fk_line_data_to_edition"><a href='line_data_owner.html'>line_data_owner</a><span class='relatedKey'>.edition_id</span></td>
                                                 <td class="constraint detail">fk_line_data_to_edition<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
@@ -201,20 +205,8 @@
                                                 <td class="constraint detail">fk_manuscript_to_text_fragment_to_edition<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
-                                                <td title="parallel_group_pair_owner.edition_id references edition.edition_id via fk_parallel_group_pair_to_edition"><a href='parallel_group_pair_owner.html'>parallel_group_pair_owner</a><span class='relatedKey'>.edition_id</span></td>
-                                                <td class="constraint detail">fk_parallel_group_pair_to_edition<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td title="parallel_group_pair_to_type_owner.edition_id references edition.edition_id via fk_parallel_group_pair_to_type_to_edition"><a href='parallel_group_pair_to_type_owner.html'>parallel_group_pair_to_type_owner</a><span class='relatedKey'>.edition_id</span></td>
-                                                <td class="constraint detail">fk_parallel_group_pair_to_type_to_edition<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td title="parallel_sign_stream_section_owner.edition_id references edition.edition_id via fk_parallel_sss_to_edition"><a href='parallel_sign_stream_section_owner.html'>parallel_sign_stream_section_owner</a><span class='relatedKey'>.edition_id</span></td>
-                                                <td class="constraint detail">fk_parallel_sss_to_edition<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td title="parallel_type_owner.edition_id references edition.edition_id via fk_parallel_type_to_edition"><a href='parallel_type_owner.html'>parallel_type_owner</a><span class='relatedKey'>.edition_id</span></td>
-                                                <td class="constraint detail">fk_parallel_type_to_edition<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                                <td title="parallel_word_owner.edition_id references edition.edition_id via fk_parallel_word_to_edition"><a href='parallel_word_owner.html'>parallel_word_owner</a><span class='relatedKey'>.edition_id</span></td>
+                                                <td class="constraint detail">fk_parallel_word_to_edition<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
                                                 <td title="position_in_stream_owner.edition_id references edition.edition_id via fk_position_in_stream_owner_to_edition_id"><a href='position_in_stream_owner.html'>position_in_stream_owner</a><span class='relatedKey'>.edition_id</span></td>
@@ -416,127 +408,234 @@
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
                                     <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="../../tables/artefact_data_owner.html" target="_top" title="artefact_data_owner" alt="" coords="1030,5,1289,157">
-<area shape="rect" id="node2" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="666,2721,869,2897">
-<area shape="rect" id="node3" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="232,2777,587,3023">
-<area shape="rect" id="node13" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,2809,188,2903">
-<area shape="rect" id="node4" href="../../tables/artefact_group_data_owner.html" target="_top" title="artefact_group_data_owner" alt="" coords="1003,175,1315,327">
-<area shape="rect" id="node5" href="../../tables/artefact_group_member_owner.html" target="_top" title="artefact_group_member_owner" alt="" coords="988,344,1331,496">
-<area shape="rect" id="node6" href="../../tables/artefact_position_owner.html" target="_top" title="artefact_position_owner" alt="" coords="1016,513,1303,665">
-<area shape="rect" id="node7" href="../../tables/artefact_shape_owner.html" target="_top" title="artefact_shape_owner" alt="" coords="1024,683,1295,835">
-<area shape="rect" id="node8" href="../../tables/artefact_stack_owner.html" target="_top" title="artefact_stack_owner" alt="" coords="1026,852,1293,1004">
-<area shape="rect" id="node9" href="../../tables/artefact_status_owner.html" target="_top" title="artefact_status_owner" alt="" coords="1023,1021,1296,1173">
-<area shape="rect" id="node10" href="../../tables/attribute_owner.html" target="_top" title="attribute_owner" alt="" coords="1049,1191,1270,1343">
-<area shape="rect" id="node11" href="../../tables/attribute_value_css_owner.html" target="_top" title="attribute_value_css_owner" alt="" coords="1006,1360,1313,1512">
-<area shape="rect" id="node12" href="../../tables/attribute_value_owner.html" target="_top" title="attribute_value_owner" alt="" coords="1023,1529,1296,1681">
-<area shape="rect" id="node14" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="631,2319,904,2524">
-<area shape="rect" id="node15" href="../../tables/font_file_owner.html" target="_top" title="font_file_owner" alt="" coords="1052,1699,1267,1851">
-<area shape="rect" id="node16" href="../../tables/line_data_owner.html" target="_top" title="line_data_owner" alt="" coords="1048,1868,1271,2020">
-<area shape="rect" id="node17" href="../../tables/line_to_sign_owner.html" target="_top" title="line_to_sign_owner" alt="" coords="1038,2037,1281,2189">
-<area shape="rect" id="node18" href="../../tables/main_action.html" target="_top" title="main_action" alt="" coords="1060,2207,1259,2383">
-<area shape="rect" id="node19" href="../../tables/manuscript_data_owner.html" target="_top" title="manuscript_data_owner" alt="" coords="1017,2400,1301,2552">
-<area shape="rect" id="node20" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="1005,2569,1314,2721">
-<area shape="rect" id="node21" href="../../tables/manuscript_to_text_fragment_owner.html" target="_top" title="manuscript_to_text_fragment_owner" alt="" coords="966,2739,1353,2891">
-<area shape="rect" id="node22" href="../../tables/parallel_group_pair_owner.html" target="_top" title="parallel_group_pair_owner" alt="" coords="1008,2908,1311,3060">
-<area shape="rect" id="node23" href="../../tables/parallel_group_pair_to_type_owner.html" target="_top" title="parallel_group_pair_to_type_owner" alt="" coords="974,3077,1345,3229">
-<area shape="rect" id="node24" href="../../tables/parallel_sign_stream_section_owner.html" target="_top" title="parallel_sign_stream_section_owner" alt="" coords="968,3247,1351,3399">
-<area shape="rect" id="node25" href="../../tables/parallel_type_owner.html" target="_top" title="parallel_type_owner" alt="" coords="1032,3416,1287,3568">
-<area shape="rect" id="node26" href="../../tables/position_in_stream_owner.html" target="_top" title="position_in_stream_owner" alt="" coords="1009,3585,1310,3761">
-<area shape="rect" id="node27" href="../../tables/position_in_text_fragment_stream_owner.html" target="_top" title="position_in_text_fragment_stream_owner" alt="" coords="948,3779,1371,3955">
-<area shape="rect" id="node28" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="977,3972,1341,4124">
-<area shape="rect" id="node29" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="1004,4141,1315,4293">
-<area shape="rect" id="node30" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1038,4311,1281,4463">
-<area shape="rect" id="node31" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="1060,4480,1259,4632">
-<area shape="rect" id="node32" href="../../tables/sign_interpretation_attribute_owner.html" target="_top" title="sign_interpretation_attribute_owner" alt="" coords="967,4649,1351,4801">
-<area shape="rect" id="node33" href="../../tables/sign_interpretation_commentary_owner.html" target="_top" title="sign_interpretation_commentary_owner" alt="" coords="952,4819,1367,4971">
-<area shape="rect" id="node34" href="../../tables/sign_interpretation_roi_owner.html" target="_top" title="sign_interpretation_roi_owner" alt="" coords="993,4988,1326,5140">
-<area shape="rect" id="node35" href="../../tables/sign_stream_section_owner.html" target="_top" title="sign_stream_section_owner" alt="" coords="1002,5157,1317,5309">
-<area shape="rect" id="node36" href="../../tables/text_fragment_data_owner.html" target="_top" title="text_fragment_data_owner" alt="" coords="1006,5327,1313,5479">
-<area shape="rect" id="node37" href="../../tables/text_fragment_to_line_owner.html" target="_top" title="text_fragment_to_line_owner" alt="" coords="997,5496,1321,5648">
+<area shape="rect" id="node1" href="../../tables/artefact_data_owner.html" target="_top" title="artefact_data_owner" alt="" coords="988,5,1221,157">
+<area shape="rect" id="node2" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="627,2420,825,2596">
+<area shape="rect" id="node3" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="225,2524,556,2769">
+<area shape="rect" id="node13" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,2556,181,2649">
+<area shape="rect" id="node4" href="../../tables/artefact_group_data_owner.html" target="_top" title="artefact_group_data_owner" alt="" coords="957,175,1252,327">
+<area shape="rect" id="node5" href="../../tables/artefact_group_member_owner.html" target="_top" title="artefact_group_member_owner" alt="" coords="941,344,1269,496">
+<area shape="rect" id="node6" href="../../tables/artefact_position_owner.html" target="_top" title="artefact_position_owner" alt="" coords="972,513,1237,665">
+<area shape="rect" id="node7" href="../../tables/artefact_shape_owner.html" target="_top" title="artefact_shape_owner" alt="" coords="981,683,1228,835">
+<area shape="rect" id="node8" href="../../tables/artefact_stack_owner.html" target="_top" title="artefact_stack_owner" alt="" coords="984,852,1225,1004">
+<area shape="rect" id="node9" href="../../tables/artefact_status_owner.html" target="_top" title="artefact_status_owner" alt="" coords="980,1021,1229,1173">
+<area shape="rect" id="node10" href="../../tables/attribute_owner.html" target="_top" title="attribute_owner" alt="" coords="1005,1191,1204,1343">
+<area shape="rect" id="node11" href="../../tables/attribute_value_css_owner.html" target="_top" title="attribute_value_css_owner" alt="" coords="961,1360,1248,1512">
+<area shape="rect" id="node12" href="../../tables/attribute_value_owner.html" target="_top" title="attribute_value_owner" alt="" coords="979,1529,1230,1681">
+<area shape="rect" id="node14" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="600,2089,852,2295">
+<area shape="rect" id="node15" href="../../tables/font_file_owner.html" target="_top" title="font_file_owner" alt="" coords="1005,1699,1204,1851">
+<area shape="rect" id="node16" href="../../tables/line_data_owner.html" target="_top" title="line_data_owner" alt="" coords="1005,1868,1204,2020">
+<area shape="rect" id="node17" href="../../tables/line_to_sign_owner.html" target="_top" title="line_to_sign_owner" alt="" coords="995,2037,1214,2189">
+<area shape="rect" id="node18" href="../../tables/main_action.html" target="_top" title="main_action" alt="" coords="1005,2207,1204,2383">
+<area shape="rect" id="node19" href="../../tables/manuscript_data_owner.html" target="_top" title="manuscript_data_owner" alt="" coords="973,2400,1236,2552">
+<area shape="rect" id="node20" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="960,2569,1249,2721">
+<area shape="rect" id="node21" href="../../tables/manuscript_to_text_fragment_owner.html" target="_top" title="manuscript_to_text_fragment_owner" alt="" coords="916,2739,1293,2891">
+<area shape="rect" id="node22" href="../../tables/parallel_word_owner.html" target="_top" title="parallel_word_owner" alt="" coords="988,2908,1221,3060">
+<area shape="rect" id="node23" href="../../tables/position_in_stream_owner.html" target="_top" title="position_in_stream_owner" alt="" coords="964,3077,1245,3253">
+<area shape="rect" id="node24" href="../../tables/position_in_text_fragment_stream_owner.html" target="_top" title="position_in_text_fragment_stream_owner" alt="" coords="896,3271,1313,3447">
+<area shape="rect" id="node25" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="929,3464,1281,3616">
+<area shape="rect" id="node26" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="957,3633,1252,3785">
+<area shape="rect" id="node27" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="996,3803,1213,3955">
+<area shape="rect" id="node28" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="1005,3972,1204,4124">
+<area shape="rect" id="node29" href="../../tables/sign_interpretation_attribute_owner.html" target="_top" title="sign_interpretation_attribute_owner" alt="" coords="917,4141,1292,4293">
+<area shape="rect" id="node30" href="../../tables/sign_interpretation_commentary_owner.html" target="_top" title="sign_interpretation_commentary_owner" alt="" coords="901,4311,1308,4463">
+<area shape="rect" id="node31" href="../../tables/sign_interpretation_roi_owner.html" target="_top" title="sign_interpretation_roi_owner" alt="" coords="945,4480,1264,4632">
+<area shape="rect" id="node32" href="../../tables/sign_stream_section_owner.html" target="_top" title="sign_stream_section_owner" alt="" coords="957,4649,1252,4801">
+<area shape="rect" id="node33" href="../../tables/text_fragment_data_owner.html" target="_top" title="text_fragment_data_owner" alt="" coords="960,4819,1249,4971">
+<area shape="rect" id="node34" href="../../tables/text_fragment_to_line_owner.html" target="_top" title="text_fragment_to_line_owner" alt="" coords="951,4988,1259,5140">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="oneDegreeImg" data="../diagrams/tables/edition.1degree.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="../../tables/artefact_data_owner.html" target="_top" title="artefact_data_owner" alt="" coords="1123,2651,1382,2803">
-<area shape="rect" id="node2" href="../../tables/artefact_data.html" target="_top" title="artefact_data" alt="" coords="715,2588,915,2676">
-<area shape="rect" id="node3" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="713,2871,916,3047">
-<area shape="rect" id="node4" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="233,2859,587,3104">
-<area shape="rect" id="node24" href="../../tables/user.html" target="_top" title="user" alt="" coords="339,5661,481,5749">
-<area shape="rect" id="node23" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,1059,188,1152">
-<area shape="rect" id="node5" href="../../tables/artefact_group_data_owner.html" target="_top" title="artefact_group_data_owner" alt="" coords="1097,2820,1409,2972">
-<area shape="rect" id="node6" href="../../tables/artefact_group_data.html" target="_top" title="artefact_group_data" alt="" coords="687,2729,942,2817">
-<area shape="rect" id="node7" href="../../tables/artefact_group_member_owner.html" target="_top" title="artefact_group_member_owner" alt="" coords="1081,3061,1424,3213">
-<area shape="rect" id="node8" href="../../tables/artefact_group_member.html" target="_top" title="artefact_group_member" alt="" coords="673,3100,957,3188">
-<area shape="rect" id="node9" href="../../tables/artefact_position_owner.html" target="_top" title="artefact_position_owner" alt="" coords="1109,344,1396,496">
-<area shape="rect" id="node10" href="../../tables/artefact_position.html" target="_top" title="artefact_position" alt="" coords="700,347,929,435">
-<area shape="rect" id="node11" href="../../tables/artefact_shape_owner.html" target="_top" title="artefact_shape_owner" alt="" coords="1117,513,1388,665">
-<area shape="rect" id="node12" href="../../tables/artefact_shape.html" target="_top" title="artefact_shape" alt="" coords="709,516,921,604">
-<area shape="rect" id="node13" href="../../tables/artefact_stack_owner.html" target="_top" title="artefact_stack_owner" alt="" coords="1119,1360,1386,1512">
-<area shape="rect" id="node14" href="../../tables/artefact_stack.html" target="_top" title="artefact_stack" alt="" coords="711,1363,919,1451">
-<area shape="rect" id="node15" href="../../tables/artefact_status_owner.html" target="_top" title="artefact_status_owner" alt="" coords="1116,1529,1389,1681">
-<area shape="rect" id="node16" href="../../tables/artefact_status.html" target="_top" title="artefact_status" alt="" coords="707,1532,922,1620">
-<area shape="rect" id="node17" href="../../tables/attribute_owner.html" target="_top" title="attribute_owner" alt="" coords="1142,3763,1363,3915">
-<area shape="rect" id="node18" href="../../tables/attribute.html" target="_top" title="attribute" alt="" coords="15,4491,178,4579">
-<area shape="rect" id="node19" href="../../tables/attribute_value.html" target="_top" title="attribute_value" alt="" coords="303,4915,517,5003">
-<area shape="rect" id="node20" href="../../tables/attribute_value_css.html" target="_top" title="attribute_value_css" alt="" coords="690,5315,939,5403">
-<area shape="rect" id="node21" href="../../tables/attribute_value_css_owner.html" target="_top" title="attribute_value_css_owner" alt="" coords="1099,5335,1406,5487">
-<area shape="rect" id="node22" href="../../tables/attribute_value_owner.html" target="_top" title="attribute_value_owner" alt="" coords="1116,4827,1389,4979">
-<area shape="rect" id="node25" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="1116,5673,1389,5879">
-<area shape="rect" id="node26" href="../../tables/user_email_token.html" target="_top" title="user_email_token" alt="" coords="699,5627,930,5715">
-<area shape="rect" id="node27" href="../../tables/font_file_owner.html" target="_top" title="font_file_owner" alt="" coords="1145,1699,1360,1851">
-<area shape="rect" id="node28" href="../../tables/font_file.html" target="_top" title="font_file" alt="" coords="737,1701,893,1789">
-<area shape="rect" id="node29" href="../../tables/iaa_edition_catalog.html" target="_top" title="iaa_edition_catalog" alt="" coords="287,1167,533,1255">
-<area shape="rect" id="node30" href="../../tables/line_data_owner.html" target="_top" title="line_data_owner" alt="" coords="1141,1868,1364,2020">
-<area shape="rect" id="node31" href="../../tables/line_data.html" target="_top" title="line_data" alt="" coords="720,1871,909,1959">
-<area shape="rect" id="node32" href="../../tables/line_to_sign_owner.html" target="_top" title="line_to_sign_owner" alt="" coords="1131,2481,1374,2633">
-<area shape="rect" id="node33" href="../../tables/line_to_sign.html" target="_top" title="line_to_sign" alt="" coords="709,2447,921,2535">
-<area shape="rect" id="node34" href="../../tables/main_action.html" target="_top" title="main_action" alt="" coords="1153,3400,1352,3576">
-<area shape="rect" id="node35" href="../../tables/manuscript_data.html" target="_top" title="manuscript_data" alt="" coords="297,359,523,447">
-<area shape="rect" id="node36" href="../../tables/manuscript_data_owner.html" target="_top" title="manuscript_data_owner" alt="" coords="1111,5,1395,157">
-<area shape="rect" id="node37" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="689,847,940,935">
-<area shape="rect" id="node38" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="317,792,503,880">
-<area shape="rect" id="node39" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="1098,852,1407,1004">
-<area shape="rect" id="node40" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="246,1061,574,1149">
-<area shape="rect" id="node41" href="../../tables/manuscript_to_text_fragment_owner.html" target="_top" title="manuscript_to_text_fragment_owner" alt="" coords="1059,1191,1446,1343">
-<area shape="rect" id="node42" href="../../tables/parallel_group_pair_owner.html" target="_top" title="parallel_group_pair_owner" alt="" coords="1101,2143,1404,2295">
-<area shape="rect" id="node43" href="../../tables/parallel_group_pair.html" target="_top" title="parallel_group_pair" alt="" coords="692,2092,937,2180">
-<area shape="rect" id="node44" href="../../tables/parallel_group_pair_to_type.html" target="_top" title="parallel_group_pair_to_type" alt="" coords="1096,2037,1409,2125">
-<area shape="rect" id="node45" href="../../tables/parallel_type.html" target="_top" title="parallel_type" alt="" coords="717,2201,913,2289">
-<area shape="rect" id="node46" href="../../tables/parallel_group_pair_to_type_owner.html" target="_top" title="parallel_group_pair_to_type_owner" alt="" coords="1508,2920,1879,3072">
-<area shape="rect" id="node47" href="../../tables/parallel_sign_stream_section.html" target="_top" title="parallel_sign_stream_section" alt="" coords="652,5164,977,5252">
-<area shape="rect" id="node48" href="../../tables/sign_stream_section.html" target="_top" title="sign_stream_section" alt="" coords="282,5315,538,5403">
-<area shape="rect" id="node49" href="../../tables/parallel_sign_stream_section_owner.html" target="_top" title="parallel_sign_stream_section_owner" alt="" coords="1061,5165,1444,5317">
-<area shape="rect" id="node50" href="../../tables/parallel_type_owner.html" target="_top" title="parallel_type_owner" alt="" coords="1125,2312,1380,2464">
-<area shape="rect" id="node51" href="../../tables/position_in_stream_owner.html" target="_top" title="position_in_stream_owner" alt="" coords="1102,4101,1403,4277">
-<area shape="rect" id="node52" href="../../tables/position_in_stream.html" target="_top" title="position_in_stream" alt="" coords="693,4067,936,4155">
-<area shape="rect" id="node53" href="../../tables/position_in_text_fragment_stream_owner.html" target="_top" title="position_in_text_fragment_stream_owner" alt="" coords="1041,4295,1464,4471">
-<area shape="rect" id="node54" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="632,4259,997,4347">
-<area shape="rect" id="node55" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="661,185,968,273">
-<area shape="rect" id="node56" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="1071,175,1435,327">
-<area shape="rect" id="node57" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="688,1024,941,1112">
-<area shape="rect" id="node58" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="1097,1021,1408,1173">
-<area shape="rect" id="node59" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1131,683,1374,835">
-<area shape="rect" id="node60" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="1153,4657,1352,4809">
-<area shape="rect" id="node61" href="../../tables/scribe.html" target="_top" title="scribe" alt="" coords="745,4651,885,4739">
-<area shape="rect" id="node62" href="../../tables/sign_interpretation_attribute.html" target="_top" title="sign_interpretation_attribute" alt="" coords="651,4960,978,5048">
-<area shape="rect" id="node63" href="../../tables/sign_interpretation_attribute_owner.html" target="_top" title="sign_interpretation_attribute_owner" alt="" coords="1061,4996,1445,5148">
-<area shape="rect" id="node64" href="../../tables/sign_interpretation_commentary.html" target="_top" title="sign_interpretation_commentary" alt="" coords="232,4491,588,4579">
-<area shape="rect" id="node65" href="../../tables/sign_interpretation_commentary_owner.html" target="_top" title="sign_interpretation_commentary_owner" alt="" coords="1045,4488,1460,4640">
-<area shape="rect" id="node66" href="../../tables/sign_interpretation_roi_owner.html" target="_top" title="sign_interpretation_roi_owner" alt="" coords="1086,3231,1419,3383">
-<area shape="rect" id="node67" href="../../tables/sign_interpretation_roi.html" target="_top" title="sign_interpretation_roi" alt="" coords="677,3241,952,3329">
-<area shape="rect" id="node68" href="../../tables/sign_stream_section_owner.html" target="_top" title="sign_stream_section_owner" alt="" coords="1095,5504,1410,5656">
-<area shape="rect" id="node69" href="../../tables/single_action.html" target="_top" title="single_action" alt="" coords="1595,3403,1792,3491">
-<area shape="rect" id="node70" href="../../tables/text_fragment_data_owner.html" target="_top" title="text_fragment_data_owner" alt="" coords="1099,3593,1406,3745">
-<area shape="rect" id="node71" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="690,3587,939,3675">
-<area shape="rect" id="node72" href="../../tables/text_fragment_to_line_owner.html" target="_top" title="text_fragment_to_line_owner" alt="" coords="1091,3932,1415,4084">
-<area shape="rect" id="node73" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="681,3925,948,4013">
+<area shape="rect" id="node1" href="../../tables/artefact_data.html" target="_top" title="artefact_data" alt="" coords="674,3591,846,3679">
+<area shape="rect" id="node2" href="../../tables/user.html" target="_top" title="user" alt="" coords="327,1891,455,1979">
+<area shape="rect" id="node3" href="../../tables/artefact_data_owner.html" target="_top" title="artefact_data_owner" alt="" coords="1056,3853,1289,4005">
+<area shape="rect" id="node4" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="661,3187,859,3363">
+<area shape="rect" id="node5" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="225,3759,556,4004">
+<area shape="rect" id="node24" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,3791,181,3884">
+<area shape="rect" id="node6" href="../../tables/artefact_group_data.html" target="_top" title="artefact_group_data" alt="" coords="649,3696,871,3784">
+<area shape="rect" id="node7" href="../../tables/artefact_group_data_owner.html" target="_top" title="artefact_group_data_owner" alt="" coords="1025,4023,1320,4175">
+<area shape="rect" id="node8" href="../../tables/artefact_group_member.html" target="_top" title="artefact_group_member" alt="" coords="635,3945,885,4033">
+<area shape="rect" id="node9" href="../../tables/artefact_group_member_owner.html" target="_top" title="artefact_group_member_owner" alt="" coords="1009,4192,1337,4344">
+<area shape="rect" id="node10" href="../../tables/artefact_position.html" target="_top" title="artefact_position" alt="" coords="661,4051,859,4139">
+<area shape="rect" id="node11" href="../../tables/artefact_position_owner.html" target="_top" title="artefact_position_owner" alt="" coords="1040,4361,1305,4513">
+<area shape="rect" id="node12" href="../../tables/artefact_shape.html" target="_top" title="artefact_shape" alt="" coords="668,4156,852,4244">
+<area shape="rect" id="node13" href="../../tables/artefact_shape_owner.html" target="_top" title="artefact_shape_owner" alt="" coords="1049,4531,1296,4683">
+<area shape="rect" id="node14" href="../../tables/artefact_stack.html" target="_top" title="artefact_stack" alt="" coords="671,1641,849,1729">
+<area shape="rect" id="node15" href="../../tables/artefact_stack_owner.html" target="_top" title="artefact_stack_owner" alt="" coords="1052,1655,1293,1807">
+<area shape="rect" id="node16" href="../../tables/artefact_status.html" target="_top" title="artefact_status" alt="" coords="667,1891,853,1979">
+<area shape="rect" id="node17" href="../../tables/artefact_status_owner.html" target="_top" title="artefact_status_owner" alt="" coords="1048,1824,1297,1976">
+<area shape="rect" id="node18" href="../../tables/attribute.html" target="_top" title="attribute" alt="" coords="690,771,830,859">
+<area shape="rect" id="node19" href="../../tables/attribute_owner.html" target="_top" title="attribute_owner" alt="" coords="1073,1147,1272,1299">
+<area shape="rect" id="node20" href="../../tables/attribute_value.html" target="_top" title="attribute_value" alt="" coords="1080,415,1265,503">
+<area shape="rect" id="node21" href="../../tables/attribute_value_css.html" target="_top" title="attribute_value_css" alt="" coords="1520,501,1737,589">
+<area shape="rect" id="node22" href="../../tables/attribute_value_css_owner.html" target="_top" title="attribute_value_css_owner" alt="" coords="1920,3712,2207,3864">
+<area shape="rect" id="node23" href="../../tables/attribute_value_owner.html" target="_top" title="attribute_value_owner" alt="" coords="1503,2863,1754,3015">
+<area shape="rect" id="node25" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="1047,87,1299,292">
+<area shape="rect" id="node26" href="../../tables/user_email_token.html" target="_top" title="user_email_token" alt="" coords="658,113,862,201">
+<area shape="rect" id="node27" href="../../tables/font_file.html" target="_top" title="font_file" alt="" coords="691,1996,829,2084">
+<area shape="rect" id="node28" href="../../tables/font_file_owner.html" target="_top" title="font_file_owner" alt="" coords="1073,1993,1272,2145">
+<area shape="rect" id="node29" href="../../tables/iaa_edition_catalog.html" target="_top" title="iaa_edition_catalog" alt="" coords="283,4057,499,4145">
+<area shape="rect" id="node30" href="../../tables/line_data.html" target="_top" title="line_data" alt="" coords="676,2101,844,2189">
+<area shape="rect" id="node31" href="../../tables/line_data_owner.html" target="_top" title="line_data_owner" alt="" coords="1073,2163,1272,2315">
+<area shape="rect" id="node32" href="../../tables/line_to_sign.html" target="_top" title="line_to_sign" alt="" coords="666,2207,854,2295">
+<area shape="rect" id="node33" href="../../tables/line_to_sign_owner.html" target="_top" title="line_to_sign_owner" alt="" coords="1063,2332,1282,2484">
+<area shape="rect" id="node34" href="../../tables/main_action.html" target="_top" title="main_action" alt="" coords="1073,4916,1272,5092">
+<area shape="rect" id="node35" href="../../tables/manuscript_data.html" target="_top" title="manuscript_data" alt="" coords="661,4952,859,5040">
+<area shape="rect" id="node36" href="../../tables/manuscript_data_owner.html" target="_top" title="manuscript_data_owner" alt="" coords="1041,5109,1304,5261">
+<area shape="rect" id="node37" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="1063,556,1283,644">
+<area shape="rect" id="node38" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="678,1056,842,1144">
+<area shape="rect" id="node39" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="1484,3201,1773,3353">
+<area shape="rect" id="node40" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="617,629,903,717">
+<area shape="rect" id="node41" href="../../tables/manuscript_to_text_fragment_owner.html" target="_top" title="manuscript_to_text_fragment_owner" alt="" coords="984,977,1361,1129">
+<area shape="rect" id="node42" href="../../tables/parallel_word.html" target="_top" title="parallel_word" alt="" coords="1085,767,1260,855">
+<area shape="rect" id="node43" href="../../tables/sign_stream_section.html" target="_top" title="sign_stream_section" alt="" coords="647,1488,873,1576">
+<area shape="rect" id="node44" href="../../tables/parallel_word_owner.html" target="_top" title="parallel_word_owner" alt="" coords="1512,3407,1745,3559">
+<area shape="rect" id="node45" href="../../tables/position_in_stream.html" target="_top" title="position_in_stream" alt="" coords="653,2711,867,2799">
+<area shape="rect" id="node46" href="../../tables/position_in_stream_owner.html" target="_top" title="position_in_stream_owner" alt="" coords="1032,2840,1313,3016">
+<area shape="rect" id="node47" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="600,3005,920,3093">
+<area shape="rect" id="node48" href="../../tables/position_in_text_fragment_stream_owner.html" target="_top" title="position_in_text_fragment_stream_owner" alt="" coords="964,3033,1381,3209">
+<area shape="rect" id="node49" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="1037,872,1308,960">
+<area shape="rect" id="node50" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="1453,3576,1805,3728">
+<area shape="rect" id="node51" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="1060,661,1285,749">
+<area shape="rect" id="node52" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="1481,3032,1776,3184">
+<area shape="rect" id="node53" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1064,1316,1281,1468">
+<area shape="rect" id="node54" href="../../tables/scribe.html" target="_top" title="scribe" alt="" coords="694,3380,826,3468">
+<area shape="rect" id="node55" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="1073,3515,1272,3667">
+<area shape="rect" id="node56" href="../../tables/sign_interpretation_attribute.html" target="_top" title="sign_interpretation_attribute" alt="" coords="1488,396,1769,484">
+<area shape="rect" id="node57" href="../../tables/sign_interpretation_attribute_owner.html" target="_top" title="sign_interpretation_attribute_owner" alt="" coords="1876,3301,2251,3453">
+<area shape="rect" id="node58" href="../../tables/sign_interpretation_commentary.html" target="_top" title="sign_interpretation_commentary" alt="" coords="1018,309,1327,397">
+<area shape="rect" id="node59" href="../../tables/sign_interpretation_commentary_owner.html" target="_top" title="sign_interpretation_commentary_owner" alt="" coords="1425,2693,1832,2845">
+<area shape="rect" id="node60" href="../../tables/sign_interpretation_roi.html" target="_top" title="sign_interpretation_roi" alt="" coords="639,3485,881,3573">
+<area shape="rect" id="node61" href="../../tables/sign_interpretation_roi_owner.html" target="_top" title="sign_interpretation_roi_owner" alt="" coords="1013,3684,1332,3836">
+<area shape="rect" id="node62" href="../../tables/sign_stream_section_owner.html" target="_top" title="sign_stream_section_owner" alt="" coords="1025,1485,1320,1637">
+<area shape="rect" id="node63" href="../../tables/single_action.html" target="_top" title="single_action" alt="" coords="1542,4919,1715,5007">
+<area shape="rect" id="node64" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="652,2312,868,2400">
+<area shape="rect" id="node65" href="../../tables/text_fragment_data_owner.html" target="_top" title="text_fragment_data_owner" alt="" coords="1028,2501,1317,2653">
+<area shape="rect" id="node66" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="643,2433,877,2521">
+<area shape="rect" id="node67" href="../../tables/text_fragment_to_line_owner.html" target="_top" title="text_fragment_to_line_owner" alt="" coords="1019,2671,1327,2823">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="twodegreesDegreeImg" data="../diagrams/tables/edition.2degrees.svg" class="diagram" border="0" align="left"></object></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="../../tables/artefact_data_owner.html" target="_top" title="artefact_data_owner" alt="" coords="1145,513,1379,665">
+<area shape="rect" id="node2" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="705,2543,904,2719">
+<area shape="rect" id="node3" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="225,2417,556,2663">
+<area shape="rect" id="node13" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,2213,181,2307">
+<area shape="rect" id="node4" href="../../tables/artefact_group_data_owner.html" target="_top" title="artefact_group_data_owner" alt="" coords="1115,683,1409,835">
+<area shape="rect" id="node5" href="../../tables/artefact_group_member_owner.html" target="_top" title="artefact_group_member_owner" alt="" coords="1098,852,1426,1004">
+<area shape="rect" id="node6" href="../../tables/artefact_position_owner.html" target="_top" title="artefact_position_owner" alt="" coords="1129,1021,1395,1173">
+<area shape="rect" id="node7" href="../../tables/artefact_shape_owner.html" target="_top" title="artefact_shape_owner" alt="" coords="1139,1191,1385,1343">
+<area shape="rect" id="node8" href="../../tables/artefact_stack_owner.html" target="_top" title="artefact_stack_owner" alt="" coords="1141,1360,1383,1512">
+<area shape="rect" id="node9" href="../../tables/artefact_status_owner.html" target="_top" title="artefact_status_owner" alt="" coords="1137,1529,1387,1681">
+<area shape="rect" id="node10" href="../../tables/attribute_owner.html" target="_top" title="attribute_owner" alt="" coords="1163,1699,1361,1851">
+<area shape="rect" id="node11" href="../../tables/attribute_value_css_owner.html" target="_top" title="attribute_value_css_owner" alt="" coords="1119,1868,1405,2020">
+<area shape="rect" id="node12" href="../../tables/attribute_value_owner.html" target="_top" title="attribute_value_owner" alt="" coords="1137,2037,1387,2189">
+<area shape="rect" id="node14" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="679,2284,931,2489">
+<area shape="rect" id="node15" href="../../tables/font_file_owner.html" target="_top" title="font_file_owner" alt="" coords="1163,2207,1361,2359">
+<area shape="rect" id="node16" href="../../tables/image_text_fragment_match_catalogue.html" target="_top" title="image_text_fragment_match_catalogue" alt="" coords="600,1611,1009,1763">
+<area shape="rect" id="node17" href="../../tables/line_data_owner.html" target="_top" title="line_data_owner" alt="" coords="1163,2376,1361,2528">
+<area shape="rect" id="node18" href="../../tables/line_to_sign_owner.html" target="_top" title="line_to_sign_owner" alt="" coords="1153,2545,1371,2697">
+<area shape="rect" id="node19" href="../../tables/main_action.html" target="_top" title="main_action" alt="" coords="1163,2715,1361,2891">
+<area shape="rect" id="node20" href="../../tables/manuscript_data_owner.html" target="_top" title="manuscript_data_owner" alt="" coords="1131,2908,1393,3060">
+<area shape="rect" id="node21" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="1117,3077,1407,3229">
+<area shape="rect" id="node22" href="../../tables/manuscript_to_text_fragment_owner.html" target="_top" title="manuscript_to_text_fragment_owner" alt="" coords="1073,3247,1451,3399">
+<area shape="rect" id="node23" href="../../tables/parallel_word_owner.html" target="_top" title="parallel_word_owner" alt="" coords="1145,3416,1379,3568">
+<area shape="rect" id="node24" href="../../tables/position_in_stream_owner.html" target="_top" title="position_in_stream_owner" alt="" coords="1121,3585,1403,3761">
+<area shape="rect" id="node25" href="../../tables/position_in_text_fragment_stream_owner.html" target="_top" title="position_in_text_fragment_stream_owner" alt="" coords="1053,3779,1471,3955">
+<area shape="rect" id="node26" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="1086,3972,1438,4124">
+<area shape="rect" id="node27" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="1115,4141,1409,4293">
+<area shape="rect" id="node28" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1153,4311,1371,4463">
+<area shape="rect" id="node29" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="1163,4480,1361,4632">
+<area shape="rect" id="node30" href="../../tables/sign_interpretation_attribute_owner.html" target="_top" title="sign_interpretation_attribute_owner" alt="" coords="1075,4649,1449,4801">
+<area shape="rect" id="node31" href="../../tables/sign_interpretation_commentary_owner.html" target="_top" title="sign_interpretation_commentary_owner" alt="" coords="1059,4819,1465,4971">
+<area shape="rect" id="node32" href="../../tables/sign_interpretation_roi_owner.html" target="_top" title="sign_interpretation_roi_owner" alt="" coords="1103,4988,1421,5140">
+<area shape="rect" id="node33" href="../../tables/sign_stream_section_owner.html" target="_top" title="sign_stream_section_owner" alt="" coords="1115,5,1409,157">
+<area shape="rect" id="node34" href="../../tables/text_fragment_data_owner.html" target="_top" title="text_fragment_data_owner" alt="" coords="1117,175,1407,327">
+<area shape="rect" id="node35" href="../../tables/text_fragment_to_line_owner.html" target="_top" title="text_fragment_to_line_owner" alt="" coords="1108,344,1416,496">
+</map>
+                                        <a name='diagram'><object type="image/svg+xml" id="oneimpliedDegreeImg" data="../diagrams/tables/edition.implied1degrees.svg" class="diagram" border="0" align="left"></object></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="../../tables/artefact_data.html" target="_top" title="artefact_data" alt="" coords="719,1421,891,1509">
+<area shape="rect" id="node2" href="../../tables/user.html" target="_top" title="user" alt="" coords="327,1558,455,1646">
+<area shape="rect" id="node3" href="../../tables/artefact_data_owner.html" target="_top" title="artefact_data_owner" alt="" coords="1145,1386,1379,1538">
+<area shape="rect" id="node4" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="705,2955,904,3131">
+<area shape="rect" id="node5" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="225,3706,556,3951">
+<area shape="rect" id="node24" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,5171,181,5265">
+<area shape="rect" id="node6" href="../../tables/artefact_group_data.html" target="_top" title="artefact_group_data" alt="" coords="694,1558,915,1646">
+<area shape="rect" id="node7" href="../../tables/artefact_group_data_owner.html" target="_top" title="artefact_group_data_owner" alt="" coords="1115,1555,1409,1707">
+<area shape="rect" id="node8" href="../../tables/artefact_group_member.html" target="_top" title="artefact_group_member" alt="" coords="680,1663,929,1751">
+<area shape="rect" id="node9" href="../../tables/artefact_group_member_owner.html" target="_top" title="artefact_group_member_owner" alt="" coords="1098,1725,1426,1877">
+<area shape="rect" id="node10" href="../../tables/artefact_position.html" target="_top" title="artefact_position" alt="" coords="705,1781,904,1869">
+<area shape="rect" id="node11" href="../../tables/artefact_position_owner.html" target="_top" title="artefact_position_owner" alt="" coords="1129,1894,1395,2046">
+<area shape="rect" id="node12" href="../../tables/artefact_shape.html" target="_top" title="artefact_shape" alt="" coords="713,1887,897,1975">
+<area shape="rect" id="node13" href="../../tables/artefact_shape_owner.html" target="_top" title="artefact_shape_owner" alt="" coords="1139,2063,1385,2215">
+<area shape="rect" id="node14" href="../../tables/artefact_stack.html" target="_top" title="artefact_stack" alt="" coords="715,2029,894,2117">
+<area shape="rect" id="node15" href="../../tables/artefact_stack_owner.html" target="_top" title="artefact_stack_owner" alt="" coords="1141,2233,1383,2385">
+<area shape="rect" id="node16" href="../../tables/artefact_status.html" target="_top" title="artefact_status" alt="" coords="712,2134,897,2222">
+<area shape="rect" id="node17" href="../../tables/artefact_status_owner.html" target="_top" title="artefact_status_owner" alt="" coords="1137,2402,1387,2554">
+<area shape="rect" id="node18" href="../../tables/attribute.html" target="_top" title="attribute" alt="" coords="735,846,875,934">
+<area shape="rect" id="node19" href="../../tables/attribute_owner.html" target="_top" title="attribute_owner" alt="" coords="1163,1047,1361,1199">
+<area shape="rect" id="node20" href="../../tables/attribute_value.html" target="_top" title="attribute_value" alt="" coords="1169,526,1355,614">
+<area shape="rect" id="node21" href="../../tables/attribute_value_css.html" target="_top" title="attribute_value_css" alt="" coords="1609,805,1827,893">
+<area shape="rect" id="node22" href="../../tables/attribute_value_css_owner.html" target="_top" title="attribute_value_css_owner" alt="" coords="2009,3359,2296,3511">
+<area shape="rect" id="node23" href="../../tables/attribute_value_owner.html" target="_top" title="attribute_value_owner" alt="" coords="1593,3090,1843,3242">
+<area shape="rect" id="node25" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="1136,90,1388,295">
+<area shape="rect" id="node26" href="../../tables/user_email_token.html" target="_top" title="user_email_token" alt="" coords="703,114,907,202">
+<area shape="rect" id="node27" href="../../tables/font_file.html" target="_top" title="font_file" alt="" coords="736,705,873,793">
+<area shape="rect" id="node28" href="../../tables/font_file_owner.html" target="_top" title="font_file_owner" alt="" coords="1163,878,1361,1030">
+<area shape="rect" id="node29" href="../../tables/iaa_edition_catalog.html" target="_top" title="iaa_edition_catalog" alt="" coords="283,5437,499,5525">
+<area shape="rect" id="node30" href="../../tables/image_text_fragment_match_catalogue.html" target="_top" title="image_text_fragment_match_catalogue" alt="" coords="600,5021,1009,5173">
+<area shape="rect" id="node31" href="../../tables/text_fragment.html" target="_top" title="text_fragment" alt="" coords="302,5167,479,5255">
+<area shape="rect" id="node32" href="../../tables/line_data.html" target="_top" title="line_data" alt="" coords="721,2569,889,2657">
+<area shape="rect" id="node33" href="../../tables/line_data_owner.html" target="_top" title="line_data_owner" alt="" coords="1163,2571,1361,2723">
+<area shape="rect" id="node34" href="../../tables/line_to_sign.html" target="_top" title="line_to_sign" alt="" coords="711,2706,899,2794">
+<area shape="rect" id="node35" href="../../tables/line_to_sign_owner.html" target="_top" title="line_to_sign_owner" alt="" coords="1153,2741,1371,2893">
+<area shape="rect" id="node36" href="../../tables/main_action.html" target="_top" title="main_action" alt="" coords="1163,3874,1361,4050">
+<area shape="rect" id="node37" href="../../tables/manuscript_data.html" target="_top" title="manuscript_data" alt="" coords="706,4442,903,4530">
+<area shape="rect" id="node38" href="../../tables/manuscript_data_owner.html" target="_top" title="manuscript_data_owner" alt="" coords="1131,4442,1393,4594">
+<area shape="rect" id="node39" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="1608,665,1828,753">
+<area shape="rect" id="node40" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="1180,385,1344,473">
+<area shape="rect" id="node41" href="../../tables/manuscript_metrics_owner.html" target="_top" title="manuscript_metrics_owner" alt="" coords="2008,3154,2297,3306">
+<area shape="rect" id="node42" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="661,5295,948,5383">
+<area shape="rect" id="node43" href="../../tables/manuscript_to_text_fragment_owner.html" target="_top" title="manuscript_to_text_fragment_owner" alt="" coords="1073,4877,1451,5029">
+<area shape="rect" id="node44" href="../../tables/parallel_word.html" target="_top" title="parallel_word" alt="" coords="1175,631,1349,719">
+<area shape="rect" id="node45" href="../../tables/sign_stream_section.html" target="_top" title="sign_stream_section" alt="" coords="692,951,917,1039">
+<area shape="rect" id="node46" href="../../tables/parallel_word_owner.html" target="_top" title="parallel_word_owner" alt="" coords="1601,3259,1835,3411">
+<area shape="rect" id="node47" href="../../tables/position_in_stream.html" target="_top" title="position_in_stream" alt="" coords="697,3151,912,3239">
+<area shape="rect" id="node48" href="../../tables/position_in_stream_owner.html" target="_top" title="position_in_stream_owner" alt="" coords="1121,3234,1403,3410">
+<area shape="rect" id="node49" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="645,5190,965,5278">
+<area shape="rect" id="node50" href="../../tables/position_in_text_fragment_stream_owner.html" target="_top" title="position_in_text_fragment_stream_owner" alt="" coords="1053,4611,1471,4787">
+<area shape="rect" id="node51" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="1583,403,1853,491">
+<area shape="rect" id="node52" href="../../tables/scribal_font_glyph_metrics_owner.html" target="_top" title="scribal_font_glyph_metrics_owner" alt="" coords="1977,2815,2329,2967">
+<area shape="rect" id="node53" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="1605,298,1831,386">
+<area shape="rect" id="node54" href="../../tables/scribal_font_kerning_owner.html" target="_top" title="scribal_font_kerning_owner" alt="" coords="2005,2646,2300,2798">
+<area shape="rect" id="node55" href="../../tables/scribal_font_owner.html" target="_top" title="scribal_font_owner" alt="" coords="1609,2777,1827,2929">
+<area shape="rect" id="node56" href="../../tables/scribe.html" target="_top" title="scribe" alt="" coords="739,3359,871,3447">
+<area shape="rect" id="node57" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="1163,3427,1361,3579">
+<area shape="rect" id="node58" href="../../tables/sign_interpretation_attribute.html" target="_top" title="sign_interpretation_attribute" alt="" coords="1577,526,1859,614">
+<area shape="rect" id="node59" href="../../tables/sign_interpretation_attribute_owner.html" target="_top" title="sign_interpretation_attribute_owner" alt="" coords="1965,2985,2340,3137">
+<area shape="rect" id="node60" href="../../tables/sign_interpretation_commentary.html" target="_top" title="sign_interpretation_commentary" alt="" coords="1107,737,1417,825">
+<area shape="rect" id="node61" href="../../tables/sign_interpretation_commentary_owner.html" target="_top" title="sign_interpretation_commentary_owner" alt="" coords="1515,3465,1921,3617">
+<area shape="rect" id="node62" href="../../tables/sign_interpretation_roi.html" target="_top" title="sign_interpretation_roi" alt="" coords="684,3491,925,3579">
+<area shape="rect" id="node63" href="../../tables/sign_interpretation_roi_owner.html" target="_top" title="sign_interpretation_roi_owner" alt="" coords="1103,3597,1421,3749">
+<area shape="rect" id="node64" href="../../tables/sign_stream_section_owner.html" target="_top" title="sign_stream_section_owner" alt="" coords="1115,1217,1409,1369">
+<area shape="rect" id="node65" href="../../tables/single_action.html" target="_top" title="single_action" alt="" coords="1631,3877,1805,3965">
+<area shape="rect" id="node66" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="697,4061,913,4149">
+<area shape="rect" id="node67" href="../../tables/text_fragment_data_owner.html" target="_top" title="text_fragment_data_owner" alt="" coords="1117,4067,1407,4219">
+<area shape="rect" id="node68" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="688,4230,921,4318">
+<area shape="rect" id="node69" href="../../tables/text_fragment_to_line_owner.html" target="_top" title="text_fragment_to_line_owner" alt="" coords="1108,4237,1416,4389">
+</map>
+                                        <a name='diagram'><object type="image/svg+xml" id="twoimpliedDegreeImg" data="../diagrams/tables/edition.implied2degrees.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
                                 </div>
                             </div>

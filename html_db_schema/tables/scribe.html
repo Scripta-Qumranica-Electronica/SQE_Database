@@ -157,6 +157,27 @@
                                     </td>
                                     <td></td>
                                 </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="creator_id">creator_id</span></td>
+                                    <td>INT UNSIGNED</td>
+                                    <td>10</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>1</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="scribe.creator_id references user.user_id via fk_scribe_to_creator_id"><a href='user.html'>user</a><span class='relatedKey'>.user_id</span></td>
+                                                <td class="constraint detail">fk_scribe_to_creator_id<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -187,6 +208,12 @@
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>scribe_id</td>
                                 </tr>
+                                <tr>
+                                    <td title='Indexed'>fk_scribe_to_creator_id</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>creator_id</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div><!-- /.box-body -->
@@ -206,23 +233,120 @@
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
                                     <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="387,8,585,160">
-<area shape="rect" id="node2" href="../../tables/scribe.html" target="_top" title="scribe" alt="" coords="5,5,343,163">
+<area shape="rect" id="node1" href="../../tables/scribe.html" target="_top" title="scribe" alt="" coords="288,5,599,192">
+<area shape="rect" id="node2" href="../../tables/user.html" target="_top" title="user" alt="" coords="5,96,244,243">
+<area shape="rect" id="node3" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="643,8,841,160">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="oneDegreeImg" data="../diagrams/tables/scribe.1degree.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="306,180,509,268">
-<area shape="rect" id="node2" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="5,215,195,303">
-<area shape="rect" id="node3" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="620,148,819,300">
-<area shape="rect" id="node4" href="../../tables/scribe.html" target="_top" title="scribe" alt="" coords="239,5,576,163">
+<area shape="rect" id="node1" href="../../tables/artefact_data.html" target="_top" title="artefact_data" alt="" coords="422,1100,594,1188">
+<area shape="rect" id="node2" href="../../tables/user.html" target="_top" title="user" alt="" coords="5,1572,244,1719">
+<area shape="rect" id="node3" href="../../tables/artefact_group_data.html" target="_top" title="artefact_group_data" alt="" coords="397,1205,619,1293">
+<area shape="rect" id="node4" href="../../tables/artefact_group_member.html" target="_top" title="artefact_group_member" alt="" coords="383,1311,633,1399">
+<area shape="rect" id="node5" href="../../tables/artefact_position.html" target="_top" title="artefact_position" alt="" coords="409,1416,607,1504">
+<area shape="rect" id="node6" href="../../tables/artefact_shape.html" target="_top" title="artefact_shape" alt="" coords="416,1521,600,1609">
+<area shape="rect" id="node7" href="../../tables/artefact_stack.html" target="_top" title="artefact_stack" alt="" coords="419,1627,597,1715">
+<area shape="rect" id="node8" href="../../tables/artefact_status.html" target="_top" title="artefact_status" alt="" coords="415,1732,601,1820">
+<area shape="rect" id="node9" href="../../tables/attribute.html" target="_top" title="attribute" alt="" coords="438,393,578,481">
+<area shape="rect" id="node10" href="../../tables/attribute_value.html" target="_top" title="attribute_value" alt="" coords="834,332,1019,420">
+<area shape="rect" id="node11" href="../../tables/attribute_value_css.html" target="_top" title="attribute_value_css" alt="" coords="1157,468,1375,556">
+<area shape="rect" id="node12" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="419,3535,597,3623">
+<area shape="rect" id="node13" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="41,3535,209,3623">
+<area shape="rect" id="node14" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="807,2600,1046,2688">
+<area shape="rect" id="node15" href="../../tables/user_email_token.html" target="_top" title="user_email_token" alt="" coords="406,3189,610,3277">
+<area shape="rect" id="node16" href="../../tables/font_file.html" target="_top" title="font_file" alt="" coords="439,2031,577,2119">
+<area shape="rect" id="node17" href="../../tables/iaa_edition_catalog_author.html" target="_top" title="iaa_edition_catalog_author" alt="" coords="373,2136,643,2224">
+<area shape="rect" id="node18" href="../../tables/iaa_edition_catalog_to_text_fragment_confirmation.html" target="_top" title="iaa_edition_catalog_to_text_fragment_confirmation" alt="" coords="288,2241,728,2329">
+<area shape="rect" id="node19" href="../../tables/image_catalog_author.html" target="_top" title="image_catalog_author" alt="" coords="390,2347,626,2435">
+<area shape="rect" id="node20" href="../../tables/image_to_image_map_author.html" target="_top" title="image_to_image_map_author" alt="" coords="365,2452,651,2540">
+<area shape="rect" id="node21" href="../../tables/line_data.html" target="_top" title="line_data" alt="" coords="424,2557,592,2645">
+<area shape="rect" id="node22" href="../../tables/line_to_sign.html" target="_top" title="line_to_sign" alt="" coords="414,2663,602,2751">
+<area shape="rect" id="node23" href="../../tables/manuscript_data.html" target="_top" title="manuscript_data" alt="" coords="409,2768,607,2856">
+<area shape="rect" id="node24" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="817,1872,1037,1960">
+<area shape="rect" id="node25" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="426,1837,590,1925">
+<area shape="rect" id="node26" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="365,2873,651,2961">
+<area shape="rect" id="node27" href="../../tables/parallel_word.html" target="_top" title="parallel_word" alt="" coords="839,815,1014,903">
+<area shape="rect" id="node28" href="../../tables/sign_stream_section.html" target="_top" title="sign_stream_section" alt="" coords="395,781,621,869">
+<area shape="rect" id="node29" href="../../tables/position_in_stream.html" target="_top" title="position_in_stream" alt="" coords="401,2979,615,3067">
+<area shape="rect" id="node30" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="348,3084,668,3172">
+<area shape="rect" id="node31" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="791,1133,1062,1221">
+<area shape="rect" id="node32" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="814,1591,1039,1679">
+<area shape="rect" id="node33" href="../../tables/scribe.html" target="_top" title="scribe" alt="" coords="353,3331,663,3517">
+<area shape="rect" id="node34" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="827,3503,1026,3655">
+<area shape="rect" id="node35" href="../../tables/sign_interpretation_attribute.html" target="_top" title="sign_interpretation_attribute" alt="" coords="1125,203,1407,291">
+<area shape="rect" id="node36" href="../../tables/sign_interpretation_commentary.html" target="_top" title="sign_interpretation_commentary" alt="" coords="772,455,1081,543">
+<area shape="rect" id="node37" href="../../tables/sign_interpretation_roi.html" target="_top" title="sign_interpretation_roi" alt="" coords="387,5,629,93">
+<area shape="rect" id="node38" href="../../tables/SQE_image_author.html" target="_top" title="SQE_image_author" alt="" coords="400,183,616,271">
+<area shape="rect" id="node39" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="400,288,616,376">
+<area shape="rect" id="node40" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="391,499,625,587">
+<area shape="rect" id="node41" href="../../tables/user_contributions.html" target="_top" title="user_contributions" alt="" coords="401,676,615,764">
+<area shape="rect" id="node42" href="../../tables/users_system_roles.html" target="_top" title="users_system_roles" alt="" coords="397,923,619,1011">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="twodegreesDegreeImg" data="../diagrams/tables/scribe.2degrees.svg" class="diagram" border="0" align="left"></object></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="../../tables/scribe.html" target="_top" title="scribe" alt="" coords="288,5,599,192">
+<area shape="rect" id="node2" href="../../tables/user.html" target="_top" title="user" alt="" coords="5,96,244,243">
+<area shape="rect" id="node3" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="643,8,841,160">
+</map>
+                                        <a name='diagram'><object type="image/svg+xml" id="oneimpliedDegreeImg" data="../diagrams/tables/scribe.implied1degrees.svg" class="diagram" border="0" align="left"></object></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="../../tables/artefact_data.html" target="_top" title="artefact_data" alt="" coords="422,1569,594,1657">
+<area shape="rect" id="node2" href="../../tables/user.html" target="_top" title="user" alt="" coords="5,1493,244,1640">
+<area shape="rect" id="node3" href="../../tables/artefact_group_data.html" target="_top" title="artefact_group_data" alt="" coords="397,1675,619,1763">
+<area shape="rect" id="node4" href="../../tables/artefact_group_member.html" target="_top" title="artefact_group_member" alt="" coords="383,1780,633,1868">
+<area shape="rect" id="node5" href="../../tables/artefact_position.html" target="_top" title="artefact_position" alt="" coords="409,1885,607,1973">
+<area shape="rect" id="node6" href="../../tables/artefact_shape.html" target="_top" title="artefact_shape" alt="" coords="416,1991,600,2079">
+<area shape="rect" id="node7" href="../../tables/artefact_stack.html" target="_top" title="artefact_stack" alt="" coords="419,2096,597,2184">
+<area shape="rect" id="node8" href="../../tables/artefact_status.html" target="_top" title="artefact_status" alt="" coords="415,2201,601,2289">
+<area shape="rect" id="node9" href="../../tables/attribute.html" target="_top" title="attribute" alt="" coords="438,580,578,668">
+<area shape="rect" id="node10" href="../../tables/attribute_value.html" target="_top" title="attribute_value" alt="" coords="834,456,1019,544">
+<area shape="rect" id="node11" href="../../tables/attribute_value_css.html" target="_top" title="attribute_value_css" alt="" coords="1157,360,1375,448">
+<area shape="rect" id="node12" href="../../tables/edition_editor.html" target="_top" title="edition_editor" alt="" coords="419,3547,597,3635">
+<area shape="rect" id="node13" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="41,3547,209,3635">
+<area shape="rect" id="node14" href="../../tables/edition_editor_request.html" target="_top" title="edition_editor_request" alt="" coords="807,2319,1046,2407">
+<area shape="rect" id="node15" href="../../tables/user_email_token.html" target="_top" title="user_email_token" alt="" coords="406,2359,610,2447">
+<area shape="rect" id="node16" href="../../tables/font_file.html" target="_top" title="font_file" alt="" coords="439,1181,577,1269">
+<area shape="rect" id="node17" href="../../tables/iaa_edition_catalog_author.html" target="_top" title="iaa_edition_catalog_author" alt="" coords="373,2464,643,2552">
+<area shape="rect" id="node18" href="../../tables/iaa_edition_catalog_to_text_fragment_confirmation.html" target="_top" title="iaa_edition_catalog_to_text_fragment_confirmation" alt="" coords="288,2569,728,2657">
+<area shape="rect" id="node19" href="../../tables/image_catalog_author.html" target="_top" title="image_catalog_author" alt="" coords="390,2675,626,2763">
+<area shape="rect" id="node20" href="../../tables/image_to_image_map_author.html" target="_top" title="image_to_image_map_author" alt="" coords="365,2780,651,2868">
+<area shape="rect" id="node21" href="../../tables/line_data.html" target="_top" title="line_data" alt="" coords="424,2885,592,2973">
+<area shape="rect" id="node22" href="../../tables/line_to_sign.html" target="_top" title="line_to_sign" alt="" coords="414,2991,602,3079">
+<area shape="rect" id="node23" href="../../tables/manuscript_data.html" target="_top" title="manuscript_data" alt="" coords="409,3096,607,3184">
+<area shape="rect" id="node24" href="../../tables/manuscript_metrics.html" target="_top" title="manuscript_metrics" alt="" coords="1156,1284,1376,1372">
+<area shape="rect" id="node25" href="../../tables/scribal_font.html" target="_top" title="scribal_font" alt="" coords="845,1040,1009,1128">
+<area shape="rect" id="node26" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="365,3201,651,3289">
+<area shape="rect" id="node27" href="../../tables/parallel_word.html" target="_top" title="parallel_word" alt="" coords="839,1339,1014,1427">
+<area shape="rect" id="node28" href="../../tables/sign_stream_section.html" target="_top" title="sign_stream_section" alt="" coords="395,1428,621,1516">
+<area shape="rect" id="node29" href="../../tables/position_in_stream.html" target="_top" title="position_in_stream" alt="" coords="401,5,615,93">
+<area shape="rect" id="node30" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="348,111,668,199">
+<area shape="rect" id="node31" href="../../tables/recent_edition_catalog_to_col_confirmation.html" target="_top" title="recent_edition_catalog_to_col_confirmation" alt="" coords="315,252,701,316">
+<area shape="rect" id="node32" href="../../tables/scribal_font_glyph_metrics.html" target="_top" title="scribal_font_glyph_metrics" alt="" coords="1131,843,1401,931">
+<area shape="rect" id="node33" href="../../tables/scribal_font_kerning.html" target="_top" title="scribal_font_kerning" alt="" coords="1153,1003,1379,1091">
+<area shape="rect" id="node34" href="../../tables/scribe.html" target="_top" title="scribe" alt="" coords="353,3343,663,3529">
+<area shape="rect" id="node35" href="../../tables/scribe_owner.html" target="_top" title="scribe_owner" alt="" coords="827,3515,1026,3667">
+<area shape="rect" id="node36" href="../../tables/sign_interpretation_attribute.html" target="_top" title="sign_interpretation_attribute" alt="" coords="1125,553,1407,641">
+<area shape="rect" id="node37" href="../../tables/sign_interpretation_commentary.html" target="_top" title="sign_interpretation_commentary" alt="" coords="772,615,1081,703">
+<area shape="rect" id="node38" href="../../tables/sign_interpretation_roi.html" target="_top" title="sign_interpretation_roi" alt="" coords="387,333,629,421">
+<area shape="rect" id="node39" href="../../tables/SQE_image_author.html" target="_top" title="SQE_image_author" alt="" coords="400,475,616,563">
+<area shape="rect" id="node40" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="400,721,616,809">
+<area shape="rect" id="node41" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="391,899,625,987">
+<area shape="rect" id="node42" href="../../tables/user_contributions.html" target="_top" title="user_contributions" alt="" coords="401,1076,615,1164">
+<area shape="rect" id="node43" href="../../tables/users_system_roles.html" target="_top" title="users_system_roles" alt="" coords="397,1323,619,1411">
+</map>
+                                        <a name='diagram'><object type="image/svg+xml" id="twoimpliedDegreeImg" data="../diagrams/tables/scribe.implied2degrees.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
                                 </div>
                             </div>

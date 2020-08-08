@@ -129,6 +129,10 @@
                                                 <td class="constraint detail">fk_edition_catalog_to_text_fragment_to_text_fragment_id<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
+                                                <td title="image_text_fragment_match_catalogue.text_fragment_id&#39;s name implies that it&#39;s a child of text_fragment.text_fragment_id, but it doesn&#39;t reference that column."><a href='image_text_fragment_match_catalogue.html'>image_text_fragment_match_catalogue</a><span class='relatedKey'>.text_fragment_id</span></td>
+                                                <td class="constraint detail">Implied Constraint<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
                                                 <td title="manuscript_to_text_fragment.text_fragment_id references text_fragment.text_fragment_id via fk_manuscript_to_text_fragment_to_text_fragment"><a href='manuscript_to_text_fragment.html'>manuscript_to_text_fragment</a><span class='relatedKey'>.text_fragment_id</span></td>
                                                 <td class="constraint detail">fk_manuscript_to_text_fragment_to_text_fragment<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
@@ -205,37 +209,74 @@
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
                                     <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
+                                    <li class=""><a href="#oneimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">One implied</a></li>
+                                    <li class=""><a href="#twoimpliedDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two implied</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="../../tables/iaa_edition_catalog_to_text_fragment.html" target="_top" title="iaa_edition_catalog_to_text_fragment" alt="" coords="385,5,795,157">
-<area shape="rect" id="node2" href="../../tables/text_fragment.html" target="_top" title="text_fragment" alt="" coords="5,385,341,484">
-<area shape="rect" id="node3" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="421,175,759,327">
-<area shape="rect" id="node4" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="401,344,779,496">
-<area shape="rect" id="node5" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="465,513,715,665">
-<area shape="rect" id="node6" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="455,683,725,835">
+<area shape="rect" id="node1" href="../../tables/iaa_edition_catalog_to_text_fragment.html" target="_top" title="iaa_edition_catalog_to_text_fragment" alt="" coords="365,5,775,157">
+<area shape="rect" id="node2" href="../../tables/text_fragment.html" target="_top" title="text_fragment" alt="" coords="5,415,321,513">
+<area shape="rect" id="node3" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="401,175,739,356">
+<area shape="rect" id="node4" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="381,373,759,555">
+<area shape="rect" id="node5" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="445,572,695,753">
+<area shape="rect" id="node6" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="435,771,705,952">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="oneDegreeImg" data="../diagrams/tables/text_fragment.1degree.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="../../tables/iaa_edition_catalog.html" target="_top" title="iaa_edition_catalog" alt="" coords="277,63,523,151">
-<area shape="rect" id="node2" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,109,188,197">
-<area shape="rect" id="node3" href="../../tables/iaa_edition_catalog_to_text_fragment.html" target="_top" title="iaa_edition_catalog_to_text_fragment" alt="" coords="612,5,1021,157">
-<area shape="rect" id="node4" href="../../tables/text_fragment.html" target="_top" title="text_fragment" alt="" coords="232,455,568,553">
-<area shape="rect" id="node5" href="../../tables/iaa_edition_catalog_to_text_fragment_confirmation.html" target="_top" title="iaa_edition_catalog_to_text_fragment_confirmation" alt="" coords="1065,8,1569,96">
-<area shape="rect" id="node6" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="647,175,986,327">
-<area shape="rect" id="node7" href="../../tables/manuscript_to_text_fragment_owner.html" target="_top" title="manuscript_to_text_fragment_owner" alt="" coords="1124,177,1511,265">
-<area shape="rect" id="node8" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="627,513,1006,665">
-<area shape="rect" id="node9" href="../../tables/position_in_text_fragment_stream_owner.html" target="_top" title="position_in_text_fragment_stream_owner" alt="" coords="1106,516,1529,604">
-<area shape="rect" id="node10" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="691,344,942,496">
-<area shape="rect" id="node11" href="../../tables/text_fragment_data_owner.html" target="_top" title="text_fragment_data_owner" alt="" coords="1164,347,1471,435">
-<area shape="rect" id="node12" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="682,683,951,835">
-<area shape="rect" id="node13" href="../../tables/line.html" target="_top" title="line" alt="" coords="313,744,487,832">
-<area shape="rect" id="node14" href="../../tables/text_fragment_to_line_owner.html" target="_top" title="text_fragment_to_line_owner" alt="" coords="1155,685,1479,773">
+<area shape="rect" id="node1" href="../../tables/iaa_edition_catalog.html" target="_top" title="iaa_edition_catalog" alt="" coords="259,63,475,151">
+<area shape="rect" id="node2" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="5,109,165,197">
+<area shape="rect" id="node3" href="../../tables/iaa_edition_catalog_to_text_fragment.html" target="_top" title="iaa_edition_catalog_to_text_fragment" alt="" coords="569,5,979,157">
+<area shape="rect" id="node4" href="../../tables/text_fragment.html" target="_top" title="text_fragment" alt="" coords="209,415,525,513">
+<area shape="rect" id="node5" href="../../tables/iaa_edition_catalog_to_text_fragment_confirmation.html" target="_top" title="iaa_edition_catalog_to_text_fragment_confirmation" alt="" coords="1023,476,1463,564">
+<area shape="rect" id="node6" href="../../tables/user.html" target="_top" title="user" alt="" coords="303,663,431,751">
+<area shape="rect" id="node7" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="605,175,943,356">
+<area shape="rect" id="node8" href="../../tables/manuscript_to_text_fragment_owner.html" target="_top" title="manuscript_to_text_fragment_owner" alt="" coords="1074,177,1411,265">
+<area shape="rect" id="node9" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="585,373,963,555">
+<area shape="rect" id="node10" href="../../tables/position_in_text_fragment_stream_owner.html" target="_top" title="position_in_text_fragment_stream_owner" alt="" coords="1057,371,1428,459">
+<area shape="rect" id="node11" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="649,572,899,753">
+<area shape="rect" id="node12" href="../../tables/text_fragment_data_owner.html" target="_top" title="text_fragment_data_owner" alt="" coords="1109,581,1376,669">
+<area shape="rect" id="node13" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="639,807,909,988">
+<area shape="rect" id="node14" href="../../tables/line.html" target="_top" title="line" alt="" coords="289,868,445,956">
+<area shape="rect" id="node15" href="../../tables/text_fragment_to_line_owner.html" target="_top" title="text_fragment_to_line_owner" alt="" coords="1101,809,1385,897">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="twodegreesDegreeImg" data="../diagrams/tables/text_fragment.2degrees.svg" class="diagram" border="0" align="left"></object></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="../../tables/iaa_edition_catalog_to_text_fragment.html" target="_top" title="iaa_edition_catalog_to_text_fragment" alt="" coords="365,5,775,157">
+<area shape="rect" id="node2" href="../../tables/text_fragment.html" target="_top" title="text_fragment" alt="" coords="5,569,321,668">
+<area shape="rect" id="node3" href="../../tables/image_text_fragment_match_catalogue.html" target="_top" title="image_text_fragment_match_catalogue" alt="" coords="365,175,775,327">
+<area shape="rect" id="node4" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="401,344,739,525">
+<area shape="rect" id="node5" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="381,543,759,724">
+<area shape="rect" id="node6" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="445,741,695,923">
+<area shape="rect" id="node7" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="435,940,705,1121">
+</map>
+                                        <a name='diagram'><object type="image/svg+xml" id="oneimpliedDegreeImg" data="../diagrams/tables/text_fragment.implied1degrees.svg" class="diagram" border="0" align="left"></object></a>
+                                    </div>
+                                    <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
+                                        <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
+<area shape="rect" id="node1" href="../../tables/edition.html" target="_top" title="edition" alt="" coords="471,429,639,517">
+<area shape="rect" id="node2" href="../../tables/manuscript.html" target="_top" title="manuscript" alt="" coords="83,192,243,280">
+<area shape="rect" id="node3" href="../../tables/iaa_edition_catalog.html" target="_top" title="iaa_edition_catalog" alt="" coords="447,17,663,105">
+<area shape="rect" id="node4" href="../../tables/iaa_edition_catalog_to_text_fragment.html" target="_top" title="iaa_edition_catalog_to_text_fragment" alt="" coords="788,5,1197,157">
+<area shape="rect" id="node5" href="../../tables/text_fragment.html" target="_top" title="text_fragment" alt="" coords="5,561,321,660">
+<area shape="rect" id="node6" href="../../tables/iaa_edition_catalog_to_text_fragment_confirmation.html" target="_top" title="iaa_edition_catalog_to_text_fragment_confirmation" alt="" coords="1241,551,1681,639">
+<area shape="rect" id="node7" href="../../tables/user.html" target="_top" title="user" alt="" coords="99,824,227,912">
+<area shape="rect" id="node8" href="../../tables/image_text_fragment_match_catalogue.html" target="_top" title="image_text_fragment_match_catalogue" alt="" coords="788,175,1197,327">
+<area shape="rect" id="node9" href="../../tables/manuscript_to_text_fragment.html" target="_top" title="manuscript_to_text_fragment" alt="" coords="385,231,724,412">
+<area shape="rect" id="node10" href="../../tables/manuscript_to_text_fragment_owner.html" target="_top" title="manuscript_to_text_fragment_owner" alt="" coords="824,361,1161,449">
+<area shape="rect" id="node11" href="../../tables/position_in_text_fragment_stream.html" target="_top" title="position_in_text_fragment_stream" alt="" coords="365,535,744,716">
+<area shape="rect" id="node12" href="../../tables/position_in_text_fragment_stream_owner.html" target="_top" title="position_in_text_fragment_stream_owner" alt="" coords="807,503,1178,591">
+<area shape="rect" id="node13" href="../../tables/text_fragment_data.html" target="_top" title="text_fragment_data" alt="" coords="429,733,680,915">
+<area shape="rect" id="node14" href="../../tables/text_fragment_data_owner.html" target="_top" title="text_fragment_data_owner" alt="" coords="859,689,1126,777">
+<area shape="rect" id="node15" href="../../tables/text_fragment_to_line.html" target="_top" title="text_fragment_to_line" alt="" coords="420,932,689,1113">
+<area shape="rect" id="node16" href="../../tables/line.html" target="_top" title="line" alt="" coords="85,993,241,1081">
+<area shape="rect" id="node17" href="../../tables/text_fragment_to_line_owner.html" target="_top" title="text_fragment_to_line_owner" alt="" coords="851,888,1135,976">
+</map>
+                                        <a name='diagram'><object type="image/svg+xml" id="twoimpliedDegreeImg" data="../diagrams/tables/text_fragment.implied2degrees.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
                                 </div>
                             </div>

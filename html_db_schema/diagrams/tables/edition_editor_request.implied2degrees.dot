@@ -18,24 +18,46 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   edge [
     arrowsize="0.8"
   ];
+  "artefact_data":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_data_owner":"elipses":w -> "artefact_data":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_data_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_data_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_group_data":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_group_data_owner":"elipses":w -> "artefact_group_data":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_group_data_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_group_data_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_group_member":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_group_member_owner":"elipses":w -> "artefact_group_member":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_group_member_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_group_member_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_position":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_position_owner":"elipses":w -> "artefact_position":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_position_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_position_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_shape":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_shape_owner":"elipses":w -> "artefact_shape":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_shape_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_shape_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_stack":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_stack_owner":"elipses":w -> "artefact_stack":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_stack_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_stack_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_status":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_status_owner":"elipses":w -> "artefact_status":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_status_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "artefact_status_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "attribute":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "attribute_owner":"elipses":w -> "attribute":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "attribute_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "attribute_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "attribute_value":"elipses":w -> "attribute":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "attribute_value":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "attribute_value_css":"elipses":w -> "attribute_value":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "attribute_value_css":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "attribute_value_css_owner":"elipses":w -> "attribute_value_css":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "attribute_value_css_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "attribute_value_css_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "attribute_value_owner":"elipses":w -> "attribute_value":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "attribute_value_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "attribute_value_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "edition":"manuscript_id":w -> "manuscript":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -45,70 +67,137 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   "edition_editor_request":"edition_id":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "edition_editor_request":"editor_user_id":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "edition_editor_request":"token":w -> "user_email_token":"token":e [arrowhead=none dir=back arrowtail=crowodot];
+  "font_file":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "font_file_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "font_file_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "font_file_owner":"elipses":w -> "font_file":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "iaa_edition_catalog_author":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "iaa_edition_catalog_to_text_fragment_confirmation":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "image_catalog_author":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "image_text_fragment_match_catalogue":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
+  "image_text_fragment_match_catalogue":"elipses":w -> "manuscript":"elipses":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "image_to_image_map_author":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "line_data":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "line_data_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "line_data_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "line_data_owner":"elipses":w -> "line_data":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "line_to_sign":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "line_to_sign_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "line_to_sign_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "line_to_sign_owner":"elipses":w -> "line_to_sign":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "main_action":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "main_action":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "manuscript_data":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "manuscript_data":"elipses":w -> "manuscript":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "manuscript_data_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "manuscript_data_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "manuscript_data_owner":"elipses":w -> "manuscript_data":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "manuscript_metrics":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "manuscript_metrics":"elipses":w -> "manuscript":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "manuscript_metrics":"elipses":w -> "scribal_font":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "manuscript_metrics_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "manuscript_metrics_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "manuscript_metrics_owner":"elipses":w -> "manuscript_metrics":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "manuscript_to_text_fragment":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "manuscript_to_text_fragment":"elipses":w -> "manuscript":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "manuscript_to_text_fragment_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "manuscript_to_text_fragment_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "parallel_group_pair_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "parallel_group_pair_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "parallel_group_pair_to_type_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "parallel_group_pair_to_type_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "parallel_sign_stream_section_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "parallel_sign_stream_section_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "parallel_type_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "parallel_type_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "manuscript_to_text_fragment_owner":"elipses":w -> "manuscript_to_text_fragment":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "parallel_word":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "parallel_word":"elipses":w -> "sign_stream_section":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "parallel_word_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "parallel_word_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "parallel_word_owner":"elipses":w -> "parallel_word":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "position_in_stream":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "position_in_stream_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "position_in_stream_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "position_in_stream_owner":"elipses":w -> "position_in_stream":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "position_in_text_fragment_stream":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "position_in_text_fragment_stream_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "position_in_text_fragment_stream_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "position_in_text_fragment_stream_owner":"elipses":w -> "position_in_text_fragment_stream":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "recent_edition_catalog_to_col_confirmation":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
+  "scribal_font":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "scribal_font":"elipses":w -> "font_file":"elipses":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
+  "scribal_font_glyph_metrics":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "scribal_font_glyph_metrics":"elipses":w -> "scribal_font":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "scribal_font_glyph_metrics_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "scribal_font_glyph_metrics_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "scribal_font_glyph_metrics_owner":"elipses":w -> "scribal_font_glyph_metrics":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "scribal_font_kerning":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "scribal_font_kerning":"elipses":w -> "scribal_font":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "scribal_font_kerning_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "scribal_font_kerning_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "scribal_font_kerning_owner":"elipses":w -> "scribal_font_kerning":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "scribal_font_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "scribal_font_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "scribal_font_owner":"elipses":w -> "scribal_font":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "scribe":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "scribe_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "scribe_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "scribe_owner":"elipses":w -> "scribe":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "sign_interpretation_attribute":"elipses":w -> "attribute_value":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "sign_interpretation_attribute":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "sign_interpretation_attribute_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "sign_interpretation_attribute_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "sign_interpretation_attribute_owner":"elipses":w -> "sign_interpretation_attribute":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "sign_interpretation_commentary":"elipses":w -> "attribute":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "sign_interpretation_commentary":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "sign_interpretation_commentary_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "sign_interpretation_commentary_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "sign_interpretation_commentary_owner":"elipses":w -> "sign_interpretation_commentary":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "sign_interpretation_roi":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "sign_interpretation_roi_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "sign_interpretation_roi_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "sign_interpretation_roi_owner":"elipses":w -> "sign_interpretation_roi":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "sign_stream_section":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "sign_stream_section_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "sign_stream_section_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "sign_stream_section_owner":"elipses":w -> "sign_stream_section":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "SQE_image_author":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "text_fragment_data":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "text_fragment_data_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "text_fragment_data_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "text_fragment_data_owner":"elipses":w -> "text_fragment_data":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "text_fragment_to_line":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "text_fragment_to_line_owner":"elipses":w -> "edition_editor":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "text_fragment_to_line_owner":"elipses":w -> "edition":"edition_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "text_fragment_to_line_owner":"elipses":w -> "text_fragment_to_line":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "user_contributions":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "user_email_token":"user_id":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "users_system_roles":"elipses":w -> "user":"user_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "artefact_data" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>artefact_data</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">25,575 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/artefact_data.html"
+    target="_top"
+    tooltip="artefact_data"
+  ];
   "artefact_data_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>artefact_data_owner</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">28,192 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">26,365 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="../../tables/artefact_data_owner.html"
     target="_top"
     tooltip="artefact_data_owner"
+  ];
+  "artefact_group_data" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>artefact_group_data</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/artefact_group_data.html"
+    target="_top"
+    tooltip="artefact_group_data"
   ];
   "artefact_group_data_owner" [
    label=<
@@ -121,6 +210,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="artefact_group_data_owner"
   ];
+  "artefact_group_member" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>artefact_group_member</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/artefact_group_member.html"
+    target="_top"
+    tooltip="artefact_group_member"
+  ];
   "artefact_group_member_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -131,6 +231,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     URL="../../tables/artefact_group_member_owner.html"
     target="_top"
     tooltip="artefact_group_member_owner"
+  ];
+  "artefact_position" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>artefact_position</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/artefact_position.html"
+    target="_top"
+    tooltip="artefact_position"
   ];
   "artefact_position_owner" [
    label=<
@@ -143,27 +254,60 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="artefact_position_owner"
   ];
+  "artefact_shape" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>artefact_shape</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">23,787 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/artefact_shape.html"
+    target="_top"
+    tooltip="artefact_shape"
+  ];
   "artefact_shape_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>artefact_shape_owner</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">27,810 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">27,067 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="../../tables/artefact_shape_owner.html"
     target="_top"
     tooltip="artefact_shape_owner"
+  ];
+  "artefact_stack" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>artefact_stack</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">22,700 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/artefact_stack.html"
+    target="_top"
+    tooltip="artefact_stack"
   ];
   "artefact_stack_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>artefact_stack_owner</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">22,671 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">21,756 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="../../tables/artefact_stack_owner.html"
     target="_top"
     tooltip="artefact_stack_owner"
+  ];
+  "artefact_status" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>artefact_status</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/artefact_status.html"
+    target="_top"
+    tooltip="artefact_status"
   ];
   "artefact_status_owner" [
    label=<
@@ -176,6 +320,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="artefact_status_owner"
   ];
+  "attribute" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>attribute</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">9 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">3 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/attribute.html"
+    target="_top"
+    tooltip="attribute"
+  ];
   "attribute_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -186,6 +341,28 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     URL="../../tables/attribute_owner.html"
     target="_top"
     tooltip="attribute_owner"
+  ];
+  "attribute_value" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>attribute_value</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">44 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">3 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/attribute_value.html"
+    target="_top"
+    tooltip="attribute_value"
+  ];
+  "attribute_value_css" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>attribute_value_css</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/attribute_value_css.html"
+    target="_top"
+    tooltip="attribute_value_css"
   ];
   "attribute_value_css_owner" [
    label=<
@@ -203,7 +380,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>attribute_value_owner</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">81,292 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">85,314 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="../../tables/attribute_value_owner.html"
     target="_top"
@@ -216,7 +393,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
       <TR><TD PORT="edition_id" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="114" HEIGHT="16">edition_id</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="manuscript_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="114" HEIGHT="16">manuscript_id</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1,645 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">35 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1,645 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">33 &gt;</TD></TR>
     </TABLE>>
     URL="../../tables/edition.html"
     target="_top"
@@ -227,7 +404,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>edition_editor</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1,645 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">33 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1,645 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">30 &gt;</TD></TR>
     </TABLE>>
     URL="../../tables/edition_editor.html"
     target="_top"
@@ -251,6 +428,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="edition_editor_request"
   ];
+  "font_file" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>font_file</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/font_file.html"
+    target="_top"
+    tooltip="font_file"
+  ];
   "font_file_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -267,7 +455,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>iaa_edition_catalog_author</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">39,537 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">38,546 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="../../tables/iaa_edition_catalog_author.html"
     target="_top"
@@ -278,7 +466,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>iaa_edition_catalog_to_text_fragment_confirmation</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">15,403 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">15,364 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="../../tables/iaa_edition_catalog_to_text_fragment_confirmation.html"
     target="_top"
@@ -289,11 +477,21 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>image_catalog_author</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">41,829 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">40,781 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="../../tables/image_catalog_author.html"
     target="_top"
     tooltip="image_catalog_author"
+  ];
+  "image_text_fragment_match_catalogue" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>image_text_fragment_match_catalogue</B></TD><TD ALIGN="RIGHT">[view]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+    </TABLE>>
+    URL="../../tables/image_text_fragment_match_catalogue.html"
+    target="_top"
+    tooltip="image_text_fragment_match_catalogue"
   ];
   "image_to_image_map_author" [
    label=<
@@ -306,16 +504,38 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="image_to_image_map_author"
   ];
+  "line_data" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>line_data</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">54,784 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/line_data.html"
+    target="_top"
+    tooltip="line_data"
+  ];
   "line_data_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>line_data_owner</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">53,405 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">54,780 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="../../tables/line_data_owner.html"
     target="_top"
     tooltip="line_data_owner"
+  ];
+  "line_to_sign" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>line_to_sign</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1,730,080 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/line_to_sign.html"
+    target="_top"
+    tooltip="line_to_sign"
   ];
   "line_to_sign_owner" [
    label=<
@@ -344,11 +564,22 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>manuscript</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1,645 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">5 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1,645 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">6 &gt;</TD></TR>
     </TABLE>>
     URL="../../tables/manuscript.html"
     target="_top"
     tooltip="manuscript"
+  ];
+  "manuscript_data" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>manuscript_data</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1,371 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/manuscript_data.html"
+    target="_top"
+    tooltip="manuscript_data"
   ];
   "manuscript_data_owner" [
    label=<
@@ -361,6 +592,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="manuscript_data_owner"
   ];
+  "manuscript_metrics" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>manuscript_metrics</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1,371 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/manuscript_metrics.html"
+    target="_top"
+    tooltip="manuscript_metrics"
+  ];
   "manuscript_metrics_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -371,6 +613,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     URL="../../tables/manuscript_metrics_owner.html"
     target="_top"
     tooltip="manuscript_metrics_owner"
+  ];
+  "manuscript_to_text_fragment" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>manuscript_to_text_fragment</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">11,152 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/manuscript_to_text_fragment.html"
+    target="_top"
+    tooltip="manuscript_to_text_fragment"
   ];
   "manuscript_to_text_fragment_owner" [
    label=<
@@ -383,49 +636,38 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="manuscript_to_text_fragment_owner"
   ];
-  "parallel_group_pair_owner" [
+  "parallel_word" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>parallel_group_pair_owner</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>parallel_word</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
     </TABLE>>
-    URL="../../tables/parallel_group_pair_owner.html"
+    URL="../../tables/parallel_word.html"
     target="_top"
-    tooltip="parallel_group_pair_owner"
+    tooltip="parallel_word"
   ];
-  "parallel_group_pair_to_type_owner" [
+  "parallel_word_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>parallel_group_pair_to_type_owner</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>parallel_word_owner</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
       <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
-    URL="../../tables/parallel_group_pair_to_type_owner.html"
+    URL="../../tables/parallel_word_owner.html"
     target="_top"
-    tooltip="parallel_group_pair_to_type_owner"
+    tooltip="parallel_word_owner"
   ];
-  "parallel_sign_stream_section_owner" [
+  "position_in_stream" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>parallel_sign_stream_section_owner</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>position_in_stream</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1,719,529 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2 &gt;</TD></TR>
     </TABLE>>
-    URL="../../tables/parallel_sign_stream_section_owner.html"
+    URL="../../tables/position_in_stream.html"
     target="_top"
-    tooltip="parallel_sign_stream_section_owner"
-  ];
-  "parallel_type_owner" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>parallel_type_owner</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
-    </TABLE>>
-    URL="../../tables/parallel_type_owner.html"
-    target="_top"
-    tooltip="parallel_type_owner"
+    tooltip="position_in_stream"
   ];
   "position_in_stream_owner" [
    label=<
@@ -437,6 +679,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     URL="../../tables/position_in_stream_owner.html"
     target="_top"
     tooltip="position_in_stream_owner"
+  ];
+  "position_in_text_fragment_stream" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>position_in_text_fragment_stream</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">10,407 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/position_in_text_fragment_stream.html"
+    target="_top"
+    tooltip="position_in_text_fragment_stream"
   ];
   "position_in_text_fragment_stream_owner" [
    label=<
@@ -459,6 +712,28 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="recent_edition_catalog_to_col_confirmation"
   ];
+  "scribal_font" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>scribal_font</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">4 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/scribal_font.html"
+    target="_top"
+    tooltip="scribal_font"
+  ];
+  "scribal_font_glyph_metrics" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>scribal_font_glyph_metrics</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/scribal_font_glyph_metrics.html"
+    target="_top"
+    tooltip="scribal_font_glyph_metrics"
+  ];
   "scribal_font_glyph_metrics_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -469,6 +744,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     URL="../../tables/scribal_font_glyph_metrics_owner.html"
     target="_top"
     tooltip="scribal_font_glyph_metrics_owner"
+  ];
+  "scribal_font_kerning" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>scribal_font_kerning</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/scribal_font_kerning.html"
+    target="_top"
+    tooltip="scribal_font_kerning"
   ];
   "scribal_font_kerning_owner" [
    label=<
@@ -492,6 +778,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="scribal_font_owner"
   ];
+  "scribe" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>scribe</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/scribe.html"
+    target="_top"
+    tooltip="scribe"
+  ];
   "scribe_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -502,6 +799,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     URL="../../tables/scribe_owner.html"
     target="_top"
     tooltip="scribe_owner"
+  ];
+  "sign_interpretation_attribute" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>sign_interpretation_attribute</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2,606,879 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/sign_interpretation_attribute.html"
+    target="_top"
+    tooltip="sign_interpretation_attribute"
   ];
   "sign_interpretation_attribute_owner" [
    label=<
@@ -514,6 +822,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="sign_interpretation_attribute_owner"
   ];
+  "sign_interpretation_commentary" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>sign_interpretation_commentary</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/sign_interpretation_commentary.html"
+    target="_top"
+    tooltip="sign_interpretation_commentary"
+  ];
   "sign_interpretation_commentary_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -525,6 +844,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="sign_interpretation_commentary_owner"
   ];
+  "sign_interpretation_roi" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>sign_interpretation_roi</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/sign_interpretation_roi.html"
+    target="_top"
+    tooltip="sign_interpretation_roi"
+  ];
   "sign_interpretation_roi_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -535,6 +865,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     URL="../../tables/sign_interpretation_roi_owner.html"
     target="_top"
     tooltip="sign_interpretation_roi_owner"
+  ];
+  "sign_stream_section" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>sign_stream_section</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">327,795 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">4 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/sign_stream_section.html"
+    target="_top"
+    tooltip="sign_stream_section"
   ];
   "sign_stream_section_owner" [
    label=<
@@ -552,11 +893,22 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>SQE_image_author</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">97,205 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">99,702 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="../../tables/SQE_image_author.html"
     target="_top"
     tooltip="SQE_image_author"
+  ];
+  "text_fragment_data" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>text_fragment_data</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">11,169 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/text_fragment_data.html"
+    target="_top"
+    tooltip="text_fragment_data"
   ];
   "text_fragment_data_owner" [
    label=<
@@ -569,12 +921,23 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="text_fragment_data_owner"
   ];
+  "text_fragment_to_line" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>text_fragment_to_line</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">54,560 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="../../tables/text_fragment_to_line.html"
+    target="_top"
+    tooltip="text_fragment_to_line"
+  ];
   "text_fragment_to_line_owner" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>text_fragment_to_line_owner</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">53,405 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="../../tables/text_fragment_to_line_owner.html"
     target="_top"
@@ -587,7 +950,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
       <TR><TD PORT="user_id" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="142" HEIGHT="16">user_id</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="email" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="142" HEIGHT="16">email</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">11 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">41 &gt;</TD></TR>
     </TABLE>>
     URL="../../tables/user.html"
     target="_top"
@@ -617,5 +980,16 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     URL="../../tables/user_email_token.html"
     target="_top"
     tooltip="user_email_token"
+  ];
+  "users_system_roles" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT"><B>users_system_roles</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+    </TABLE>>
+    URL="../../tables/users_system_roles.html"
+    target="_top"
+    tooltip="users_system_roles"
   ];
 }

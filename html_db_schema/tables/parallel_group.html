@@ -74,19 +74,6 @@
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
                     <h1>parallel_group</h1><p><span id="recordNumber">0</span> rows</p><br />
-                    <div class="box box-primary">
-                        <div class="box-header with-border">
-                            <i class="fa fa-file-text-o"></i>
-                            <h3 id="Description" class="box-title">Description</h3>
-                            <div class="box-tools pull-right">
-                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div><!-- /.box-header -->
-                        <div class="box-body clearfix">
-                            <p>Provides a unique identifier for groups of sign_stream_sections representing parallel chunks of text</p>
-                        </div><!-- /.box-body -->
-                    </div>
                 </section>
                 <!-- Main content -->
                 <section class="content">
@@ -125,16 +112,8 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="parallel_group_pair.parallel_group_a_id references parallel_group.parallel_group_id via fk_parallel_group_pair_parallel_group_a"><a href='parallel_group_pair.html'>parallel_group_pair</a><span class='relatedKey'>.parallel_group_a_id</span></td>
-                                                <td class="constraint detail">fk_parallel_group_pair_parallel_group_a<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td title="parallel_group_pair.parallel_group_b_id references parallel_group.parallel_group_id via fk_parallel_group_pair_parallel_group_b"><a href='parallel_group_pair.html'>parallel_group_pair</a><span class='relatedKey'>.parallel_group_b_id</span></td>
-                                                <td class="constraint detail">fk_parallel_group_pair_parallel_group_b<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td title="parallel_sign_stream_section.parallel_group_id references parallel_group.parallel_group_id via fk_par_sss_to_parallel_group"><a href='parallel_sign_stream_section.html'>parallel_sign_stream_section</a><span class='relatedKey'>.parallel_group_id</span></td>
-                                                <td class="constraint detail">fk_par_sss_to_parallel_group<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                                <td title="parallel_word.parallel_group_id references parallel_group.parallel_group_id via fk_par_word_to_group"><a href='parallel_word.html'>parallel_word</a><span class='relatedKey'>.parallel_group_id</span></td>
+                                                <td class="constraint detail">fk_par_word_to_group<span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
@@ -142,7 +121,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Unique identifier</p></td>
+                                    <td></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -197,21 +176,18 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="../../tables/parallel_group_pair.html" target="_top" title="parallel_group_pair" alt="" coords="429,5,676,157">
-<area shape="rect" id="node2" href="../../tables/parallel_group.html" target="_top" title="parallel_group" alt="" coords="5,61,343,160">
-<area shape="rect" id="node3" href="../../tables/parallel_sign_stream_section.html" target="_top" title="parallel_sign_stream_section" alt="" coords="387,175,719,327">
+<area shape="rect" id="node1" href="../../tables/parallel_word.html" target="_top" title="parallel_word" alt="" coords="367,5,569,216">
+<area shape="rect" id="node2" href="../../tables/parallel_group.html" target="_top" title="parallel_group" alt="" coords="5,61,323,160">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="oneDegreeImg" data="../diagrams/tables/parallel_group.1degree.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="../../tables/parallel_group_pair.html" target="_top" title="parallel_group_pair" alt="" coords="429,175,676,327">
-<area shape="rect" id="node2" href="../../tables/parallel_group.html" target="_top" title="parallel_group" alt="" coords="5,201,343,300">
-<area shape="rect" id="node3" href="../../tables/parallel_group_pair_owner.html" target="_top" title="parallel_group_pair_owner" alt="" coords="803,145,1105,233">
-<area shape="rect" id="node4" href="../../tables/parallel_group_pair_to_type.html" target="_top" title="parallel_group_pair_to_type" alt="" coords="797,251,1111,339">
-<area shape="rect" id="node5" href="../../tables/parallel_sign_stream_section.html" target="_top" title="parallel_sign_stream_section" alt="" coords="387,5,719,157">
-<area shape="rect" id="node6" href="../../tables/sign_stream_section.html" target="_top" title="sign_stream_section" alt="" coords="46,37,302,125">
-<area shape="rect" id="node7" href="../../tables/parallel_sign_stream_section_owner.html" target="_top" title="parallel_sign_stream_section_owner" alt="" coords="763,8,1145,96">
+<area shape="rect" id="node1" href="../../tables/parallel_word.html" target="_top" title="parallel_word" alt="" coords="539,55,741,265">
+<area shape="rect" id="node2" href="../../tables/user.html" target="_top" title="user" alt="" coords="5,97,133,185">
+<area shape="rect" id="node3" href="../../tables/parallel_group.html" target="_top" title="parallel_group" alt="" coords="177,111,495,209">
+<area shape="rect" id="node4" href="../../tables/sign_stream_section.html" target="_top" title="sign_stream_section" alt="" coords="223,5,449,93">
+<area shape="rect" id="node5" href="../../tables/parallel_word_owner.html" target="_top" title="parallel_word_owner" alt="" coords="785,57,1011,145">
 </map>
                                         <a name='diagram'><object type="image/svg+xml" id="twodegreesDegreeImg" data="../diagrams/tables/parallel_group.2degrees.svg" class="diagram" border="0" align="left"></object></a>
                                     </div>
