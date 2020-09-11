@@ -1,0 +1,3 @@
+Removed the concept of numeric_value from the sign_interpretation_attribute table.
+
+Added fields to attribute to mark them as editable, deletable/removable, repeatable, multi-selectable.
