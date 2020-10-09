@@ -1434,7 +1434,7 @@ SET character_set_client = utf8;
   `iaa_edition_catalog_to_text_fragment_id` tinyint NOT NULL,
   `confirmed` tinyint NOT NULL,
   `user_id` tinyint NOT NULL,
-  `MAX(``time``)` tinyint NOT NULL
+  `time` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
@@ -2857,8 +2857,8 @@ DELIMITER ;
 /*!50001 SET character_set_results     = utf8mb4 */;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `recent_edition_catalog_to_col_confirmation` AS select `iaa_edition_catalog_to_text_fragment_confirmation`.`iaa_edition_catalog_to_text_fragment_id` AS `iaa_edition_catalog_to_text_fragment_id`,`iaa_edition_catalog_to_text_fragment_confirmation`.`confirmed` AS `confirmed`,`iaa_edition_catalog_to_text_fragment_confirmation`.`user_id` AS `user_id`,max(`iaa_edition_catalog_to_text_fragment_confirmation`.`time`) AS `MAX(``time``)` from `iaa_edition_catalog_to_text_fragment_confirmation` group by `iaa_edition_catalog_to_text_fragment_confirmation`.`iaa_edition_catalog_to_text_fragment_id` */;
+/*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
+/*!50001 VIEW `recent_edition_catalog_to_col_confirmation` AS select `t1`.`iaa_edition_catalog_to_text_fragment_id` AS `iaa_edition_catalog_to_text_fragment_id`,`t1`.`confirmed` AS `confirmed`,`t1`.`user_id` AS `user_id`,`t1`.`time` AS `time` from (`iaa_edition_catalog_to_text_fragment_confirmation` `t1` left join `iaa_edition_catalog_to_text_fragment_confirmation` `t2` on(`t1`.`iaa_edition_catalog_to_text_fragment_id` = `t2`.`iaa_edition_catalog_to_text_fragment_id` and (`t1`.`time` < `t2`.`time` or `t1`.`time` = `t2`.`time` and `t1`.`confirmed` > `t2`.`confirmed`))) where `t2`.`iaa_edition_catalog_to_text_fragment_id` is null group by `t1`.`iaa_edition_catalog_to_text_fragment_id` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

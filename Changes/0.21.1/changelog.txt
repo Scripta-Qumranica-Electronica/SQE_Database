@@ -1,0 +1,1 @@
+This update addresses the image/edition catalogue functionality and adds a view to help the reporting system to always provide information from the most up-to-date record.
