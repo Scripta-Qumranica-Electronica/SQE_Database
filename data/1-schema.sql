@@ -2030,6 +2030,21 @@ CREATE TABLE `user_contributions` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `user_data_store`
+--
+
+DROP TABLE IF EXISTS `user_data_store`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_data_store` (
+  `user_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `data` longtext NOT NULL COMMENT 'A JSON object storing non-system critical information related to a user account.',
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `user_data_store_to_user_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='This table provides an area to store non-system critical information related to a user account.  It may be used by front end consumers to store application specific information. It is not intended for backend usage or integration with other data in the database.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `user_email_token`
 --
 

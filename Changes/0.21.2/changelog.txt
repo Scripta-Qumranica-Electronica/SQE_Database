@@ -1,0 +1,1 @@
+Added the user_data_store table, which is an open ended user data store intended for a frontend to store user settings and other such application related information.  It is not intended for backend usage or integration with other data in the database.
