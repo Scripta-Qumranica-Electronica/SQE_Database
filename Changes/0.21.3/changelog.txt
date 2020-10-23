@@ -1,0 +1,1 @@
+This update adds further image data for the University of Cambridge Digital Library and for the qumranica iiif server.  It also provides the first updates to begin using the new IAA iiif server with several images from 4Q177 (IAA plate 289).
