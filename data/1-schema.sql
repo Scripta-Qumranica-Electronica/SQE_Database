@@ -521,6 +521,21 @@ CREATE TABLE `attribute_value_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `db_version`
+--
+
+DROP TABLE IF EXISTS `db_version`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `db_version` (
+  `version` varchar(255) NOT NULL DEFAULT '' COMMENT 'The version designation of the database update.',
+  `started` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'The date at which the database update was started.',
+  `completed` datetime DEFAULT NULL COMMENT 'The time at which the version update was completed.',
+  PRIMARY KEY (`version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='This table stores information about the development version history of the database.  It indicates when each version update was carried out.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `edition`
 --
 
@@ -1167,6 +1182,56 @@ CREATE TABLE `manuscript_to_text_fragment_owner` (
   CONSTRAINT `fk_manuscript_to_text_fragment_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`),
   CONSTRAINT `fk_mttfo_to_manuscript_to_text_fragment` FOREIGN KEY (`manuscript_to_text_fragment_id`) REFERENCES `manuscript_to_text_fragment` (`manuscript_to_text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `materialized_sign_stream`
+--
+
+DROP TABLE IF EXISTS `materialized_sign_stream`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `materialized_sign_stream` (
+  `materlialized_sign_stream_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `initial_sign_interpretation_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The id of the first sign interpretation in DAG of sign interpretations.',
+  `materialized_text` mediumtext DEFAULT NULL COMMENT 'A concatenated string of the character values in the DAG beginning with the initial_sign_interpretation_id.  These values can be related to their sign_interpretation_id by finding the index of a given character within the string and looking up that index value in the table materialized_sign_stream_indices.',
+  PRIMARY KEY (`materlialized_sign_stream_id`),
+  KEY `materialized_sign_stream_to_initial_sign_interpretation_id` (`initial_sign_interpretation_id`),
+  CONSTRAINT `materialized_sign_stream_to_initial_sign_interpretation_id` FOREIGN KEY (`initial_sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='This table is used to store every variant sequence for each possible sign stream DAG.  The sign interpretation id can be found by searching the materialized_sign_stream_indices table for the index of a charachter with the materialized_text string.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `materialized_sign_stream_indices`
+--
+
+DROP TABLE IF EXISTS `materialized_sign_stream_indices`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `materialized_sign_stream_indices` (
+  `materialized_sign_stream_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The ID of the materialized sign stream.',
+  `index` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The index of a character within a materialized sign stream.',
+  `sign_interpretation_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The sign interpretation id of the character at the location in the index column within the materialized sign stream string.',
+  PRIMARY KEY (`materialized_sign_stream_id`,`index`),
+  KEY `materialized_sign_stream_index_to_sign_interpretation_id` (`sign_interpretation_id`),
+  CONSTRAINT `materialized_sign_stream_index_to_materialized_sign_stream_id` FOREIGN KEY (`materialized_sign_stream_id`) REFERENCES `materialized_sign_stream` (`materlialized_sign_stream_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `materialized_sign_stream_index_to_sign_interpretation_id` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='This table is used to find specific sign interpretation IDs based on the index of a character within a string stored in the materialized_sign_stream table.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `materialized_sign_stream_schedule`
+--
+
+DROP TABLE IF EXISTS `materialized_sign_stream_schedule`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `materialized_sign_stream_schedule` (
+  `initial_sign_interpretation_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The initial sign interpretation id for the stream that needs to be materialized.',
+  `time_initiated` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'The date that a materialization was requested.',
+  PRIMARY KEY (`initial_sign_interpretation_id`),
+  CONSTRAINT `materialized_sign_stream_schedule_to_sign_interpretation_id` FOREIGN KEY (`initial_sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table is used for a scheduler to determine which sign streams will need to be materialized into the materialized_sign_stream and materialized_sign_stream_index tables.  It is meant to be read by a scheduler that will create the materialized sign stream for all entries in this table (the entries should be deleted once the materialization is complete).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2128,6 +2193,27 @@ DELIMITER ;
 --
 -- Dumping routines for database 'SQE'
 --
+/*!50003 DROP FUNCTION IF EXISTS `current_db_version` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` FUNCTION `current_db_version`() RETURNS varchar(255) CHARSET latin1
+    READS SQL DATA
+    DETERMINISTIC
+    SQL SECURITY INVOKER
+    COMMENT 'Returns the latest fully loaded version identifier for development updates to the database schema.'
+RETURN (SELECT version FROM db_version WHERE completed IS NOT NULL ORDER BY completed DESC LIMIT 1) ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP FUNCTION IF EXISTS `set_to_json_array` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
