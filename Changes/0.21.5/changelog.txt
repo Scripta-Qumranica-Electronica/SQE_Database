@@ -1,0 +1,1 @@
+Patch to add edition id support to the materialized sign streams and to hande cascading deletes for those tables.
