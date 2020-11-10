@@ -1,0 +1,3 @@
+Updated the database to support materialization of the sign stream DAGs for the purpose of doing certain searches and other simplifications.
+
+Added a version table so that we can know which database updates were carried and and when the were completed.
