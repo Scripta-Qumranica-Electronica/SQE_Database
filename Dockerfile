@@ -12,7 +12,7 @@ ENV MYSQL_DATABASE=SQE
 COPY ./geom_transform.c /tmp/geom_transform.c
 COPY ./nested_geom_transform.c /tmp/nested_geom_transform.c
 RUN apt-get update \
-    && apt-get install -y gcc libmariadb-dev \
+    && apt-get install -y gcc libmariadb-dev mariadb-plugin-oqgraph \
     && gcc -shared -o /usr/lib/mysql/plugin/geom_transform.so /tmp/geom_transform.c  -I/usr/include/mariadb -fPIC -O3 \
     && gcc -shared -o /usr/lib/mysql/plugin/nested_geom_transform.so /tmp/nested_geom_transform.c -I/usr/include/mariadb -fPIC -O3 \
     && apt-get remove -y gcc libmysqlclient-dev \
