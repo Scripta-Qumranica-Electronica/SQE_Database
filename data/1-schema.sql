@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: SQE
 -- ------------------------------------------------------
--- Server version	10.3.23-MariaDB-1:10.3.23+maria~focal
+-- Server version	10.3.26-MariaDB-1:10.3.26+maria~focal
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -1325,7 +1325,7 @@ DROP TABLE IF EXISTS `position_in_stream`;
 CREATE TABLE `position_in_stream` (
   `position_in_stream_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `sign_interpretation_id` int(11) unsigned NOT NULL,
-  `next_sign_interpretation_id` int(11) unsigned DEFAULT NULL,
+  `next_sign_interpretation_id` int(11) unsigned NOT NULL DEFAULT 0,
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`position_in_stream_id`),
   KEY `fk_position_in_stream_to_sign_interpretation` (`sign_interpretation_id`),
@@ -1872,6 +1872,44 @@ CREATE TABLE `sign_interpretation_roi_owner` (
   CONSTRAINT `fk_sign_interpretation_roi_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_sign_interpretation_roi_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sign_stream`
+--
+
+DROP TABLE IF EXISTS `sign_stream`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sign_stream` (
+  `latch` varchar(32) DEFAULT NULL,
+  `origid` bigint(20) unsigned DEFAULT NULL,
+  `destid` bigint(20) unsigned DEFAULT NULL,
+  `weight` double DEFAULT NULL,
+  `seq` bigint(20) unsigned DEFAULT NULL,
+  `linkid` bigint(20) unsigned DEFAULT NULL,
+  KEY `latch` (`latch`,`origid`,`destid`) USING HASH,
+  KEY `latch_2` (`latch`,`destid`,`origid`) USING HASH
+) ENGINE=OQGRAPH DEFAULT CHARSET=latin1 `data_table`='position_in_stream' `origid`='sign_interpretation_id' `destid`='next_sign_interpretation_id';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sign_stream_reverse`
+--
+
+DROP TABLE IF EXISTS `sign_stream_reverse`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sign_stream_reverse` (
+  `latch` varchar(32) DEFAULT NULL,
+  `origid` bigint(20) unsigned DEFAULT NULL,
+  `destid` bigint(20) unsigned DEFAULT NULL,
+  `weight` double DEFAULT NULL,
+  `seq` bigint(20) unsigned DEFAULT NULL,
+  `linkid` bigint(20) unsigned DEFAULT NULL,
+  KEY `latch` (`latch`,`origid`,`destid`) USING HASH,
+  KEY `latch_2` (`latch`,`destid`,`origid`) USING HASH
+) ENGINE=OQGRAPH DEFAULT CHARSET=latin1 `data_table`='position_in_stream' `origid`='next_sign_interpretation_id' `destid`='sign_interpretation_id';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

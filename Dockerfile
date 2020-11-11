@@ -30,6 +30,10 @@ RUN ["/usr/local/bin/docker-entrypoint.sh", "mysqld", "--datadir", "/initialized
 ## Second build stage
 FROM mariadb:10.3
 
+# Install OQGraph
+RUN apt-get update \
+    && apt-get install -y mariadb-plugin-oqgraph
+
 ## Copy data from last build stage
 COPY --from=builder /initialized-db /var/lib/mysql
 COPY --from=builder /usr/lib/mysql/plugin/geom_transform.so /usr/lib/mysql/plugin/
