@@ -655,16 +655,17 @@ DROP TABLE IF EXISTS `iaa_edition_catalog`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `iaa_edition_catalog` (
   `iaa_edition_catalog_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `manuscript` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Standard designation of the manuscript.',
-  `edition_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name of the publication in which the editio princeps appears.',
+  `manuscript` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Standard designation of the manuscript.',
+  `edition_name` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name of the publication in which the editio princeps appears.',
   `edition_volume` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Volume of the publication in which the editio princeps appears.',
   `edition_location_1` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'First tier identifier (usually a page number).',
   `edition_location_2` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Second tier identifier (usually a fragment/column designation).',
   `edition_side` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT 'Side designation in editio princeps.',
   `manuscript_id` int(11) unsigned DEFAULT NULL COMMENT 'Id of the manuscript within the SQE database.',
-  `comment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Extra comments.',
+  `comment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'Extra comments.',
+  `comment_hash` char(56) GENERATED ALWAYS AS (sha2(`comment`,224)) VIRTUAL,
   PRIMARY KEY (`iaa_edition_catalog_id`),
-  UNIQUE KEY `unique_edition_entry` (`edition_location_1`,`edition_location_2`,`edition_name`,`edition_side`,`edition_volume`,`manuscript`) USING BTREE,
+  UNIQUE KEY `unique_edition_entry` (`edition_location_1`,`edition_location_2`,`edition_name`,`edition_side`,`edition_volume`,`manuscript`,`comment_hash`) USING BTREE,
   KEY `fk_edition_catalog_to_manuscript_id` (`manuscript_id`) USING BTREE,
   CONSTRAINT `fk_edition_catalog_to_manuscript_id` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=40041 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table contains the IAA data for the editio princeps reference for all of their images.';
@@ -1197,10 +1198,10 @@ CREATE TABLE `materialized_sign_stream` (
   `initial_sign_interpretation_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The id of the first sign interpretation in DAG of sign interpretations.',
   `materialized_text` mediumtext DEFAULT NULL COMMENT 'A concatenated string of the character values in the DAG beginning with the initial_sign_interpretation_id.  These values can be related to their sign_interpretation_id by finding the index of a given character within the string and looking up that index value in the table materialized_sign_stream_indices.',
   PRIMARY KEY (`materlialized_sign_stream_id`),
-  UNIQUE KEY `unique_edition_sign_interpretation` (`edition_id`,`initial_sign_interpretation_id`) USING BTREE,
   KEY `materialized_sign_stream_to_initial_sign_interpretation_id` (`initial_sign_interpretation_id`),
+  KEY `fk_materialized_sign_stream_to_edition_id` (`edition_id`),
   CONSTRAINT `fk_materialized_sign_stream_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `materialized_sign_stream_to_initial_sign_interpretation_id` FOREIGN KEY (`initial_sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_materialized_sign_stream_to_sign_interpretation_id` FOREIGN KEY (`initial_sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='This table is used to store every variant sequence for each possible sign stream DAG.  The sign interpretation id can be found by searching the materialized_sign_stream_indices table for the index of a character with the materialized_text string.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
