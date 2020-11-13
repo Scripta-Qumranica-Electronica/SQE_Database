@@ -1,7 +1,7 @@
 {
   "name": "database",
   "description": "Scripta Qumranica Electronica - Database",
-  "version": "0.21.9",
+  "version": "0.21.10",
   "scripts": {
     "backup": "node ./scripts/backup-db.js",
     "clean": "node ./scripts/sanitize-db.js",
