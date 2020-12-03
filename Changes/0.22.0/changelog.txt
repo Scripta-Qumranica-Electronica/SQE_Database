@@ -1,0 +1,14 @@
+This update brings in several major changes:
+
+1. The sign_interpretation system is slightly updated so that the character and is_variant fields no longer appear in that table (this makes character value updates trivial and makes the system more consistent).
+
+    a. The sign_interpretation_character table now contains only its unique id, the linked sign_interpretation, and the character value.
+    b. The sign_interpretation_owner table is standard but contains a `priority` column, which indicates the ranking of this linked sign_interpretation in comparison to other sign_interpretations of the same sign.
+
+2. Views have been added to the main database entities in order to easily compile all relevant information (including NULLs) in order to simply querious and make them more robust to future database changes.
+
+    a. the artefact entity
+    b. the manuscript entity
+    c. the text fragment entity
+    d. the line entity
+    e. the sign entity (not aggregate)
