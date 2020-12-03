@@ -1,8 +1,8 @@
--- MySQL dump 10.18  Distrib 10.3.26-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.18  Distrib 10.3.27-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: SQE
 -- ------------------------------------------------------
--- Server version	10.3.26-MariaDB-1:10.3.26+maria~focal
+-- Server version	10.3.27-MariaDB-1:10.3.27+maria~focal
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -393,6 +393,41 @@ CREATE TABLE `artefact_status_owner` (
   CONSTRAINT `fk_artefact_status_owner_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary table structure for view `artefact_view`
+--
+
+DROP TABLE IF EXISTS `artefact_view`;
+/*!50001 DROP VIEW IF EXISTS `artefact_view`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `artefact_view` (
+  `edition_id` tinyint NOT NULL,
+  `artefact_id` tinyint NOT NULL,
+  `name` tinyint NOT NULL,
+  `data_creator_id` tinyint NOT NULL,
+  `data_editor_id` tinyint NOT NULL,
+  `region_in_sqe_image` tinyint NOT NULL,
+  `sqe_image_id` tinyint NOT NULL,
+  `url` tinyint NOT NULL,
+  `suffix` tinyint NOT NULL,
+  `proxy` tinyint NOT NULL,
+  `filename` tinyint NOT NULL,
+  `shape_creator_id` tinyint NOT NULL,
+  `shape_editor_id` tinyint NOT NULL,
+  `z_index` tinyint NOT NULL,
+  `scale` tinyint NOT NULL,
+  `rotate` tinyint NOT NULL,
+  `translate_x` tinyint NOT NULL,
+  `translate_y` tinyint NOT NULL,
+  `position_creator_id` tinyint NOT NULL,
+  `position_editor_id` tinyint NOT NULL,
+  `work_status_message` tinyint NOT NULL,
+  `status_creator_id` tinyint NOT NULL,
+  `status_editor_id` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `attribute`
@@ -1020,6 +1055,23 @@ CREATE TABLE `line_to_sign_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Temporary table structure for view `line_view`
+--
+
+DROP TABLE IF EXISTS `line_view`;
+/*!50001 DROP VIEW IF EXISTS `line_view`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `line_view` (
+  `edition_id` tinyint NOT NULL,
+  `line_id` tinyint NOT NULL,
+  `name` tinyint NOT NULL,
+  `data_creator_id` tinyint NOT NULL,
+  `data_editor_id` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `main_action`
 --
 
@@ -1144,6 +1196,29 @@ CREATE TABLE `manuscript_metrics_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Temporary table structure for view `manuscript_text_fragment_line_sign_view`
+--
+
+DROP TABLE IF EXISTS `manuscript_text_fragment_line_sign_view`;
+/*!50001 DROP VIEW IF EXISTS `manuscript_text_fragment_line_sign_view`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `manuscript_text_fragment_line_sign_view` (
+  `edition_id` tinyint NOT NULL,
+  `manuscript_id` tinyint NOT NULL,
+  `text_fragment_id` tinyint NOT NULL,
+  `manuscript_text_fragment_creator_id` tinyint NOT NULL,
+  `manuscript_text_fragment_editor_id` tinyint NOT NULL,
+  `line_id` tinyint NOT NULL,
+  `text_fragment_to_line_creator_id` tinyint NOT NULL,
+  `text_fragment_to_line_editor_id` tinyint NOT NULL,
+  `sign_id` tinyint NOT NULL,
+  `line_to_sign_creator_id` tinyint NOT NULL,
+  `line_to_sign_editor_id` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Table structure for table `manuscript_to_text_fragment`
 --
 
@@ -1184,6 +1259,31 @@ CREATE TABLE `manuscript_to_text_fragment_owner` (
   CONSTRAINT `fk_mttfo_to_manuscript_to_text_fragment` FOREIGN KEY (`manuscript_to_text_fragment_id`) REFERENCES `manuscript_to_text_fragment` (`manuscript_to_text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary table structure for view `manuscript_view`
+--
+
+DROP TABLE IF EXISTS `manuscript_view`;
+/*!50001 DROP VIEW IF EXISTS `manuscript_view`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `manuscript_view` (
+  `edition_id` tinyint NOT NULL,
+  `manuscript_id` tinyint NOT NULL,
+  `name` tinyint NOT NULL,
+  `data_creator_id` tinyint NOT NULL,
+  `data_editor_id` tinyint NOT NULL,
+  `x_origin` tinyint NOT NULL,
+  `y_origin` tinyint NOT NULL,
+  `width` tinyint NOT NULL,
+  `height` tinyint NOT NULL,
+  `pixels_per_inch` tinyint NOT NULL,
+  `scribal_font_id` tinyint NOT NULL,
+  `metrics_creator_id` tinyint NOT NULL,
+  `metrics_editor_id` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `materialized_sign_stream`
@@ -1730,10 +1830,7 @@ DROP TABLE IF EXISTS `sign_interpretation`;
 CREATE TABLE `sign_interpretation` (
   `sign_interpretation_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `sign_id` int(10) unsigned NOT NULL COMMENT 'Id of the sign being described.',
-  `is_variant` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean set to true when current entry is a variant interpretation of a sign.',
-  `character` char(1) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'This may be left null for signs that are not interpreted as characters (e.g., control signs like line start/line end or material features of any sort), otherwise it is a single letter.',
   PRIMARY KEY (`sign_interpretation_id`),
-  UNIQUE KEY `unique_sign_id_is_variant_sign` (`is_variant`,`character`,`sign_id`) USING BTREE,
   KEY `fk_sign_interpretation_to_sign_idx` (`sign_id`) USING BTREE,
   CONSTRAINT `fk_sign_interpretation_to_sign` FOREIGN KEY (`sign_id`) REFERENCES `sign` (`sign_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1733925 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table describes the interpretation of signs in an edition.  Currently this includes both characters, spaces, and formatting marks, it could perhaps also include other elements that one might want to define as a sign.';
@@ -1782,6 +1879,46 @@ CREATE TABLE `sign_interpretation_attribute_owner` (
   CONSTRAINT `fk_sign_interpretation_attribute_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`),
   CONSTRAINT `fk_sign_interpretation_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sign_interpretation_character`
+--
+
+DROP TABLE IF EXISTS `sign_interpretation_character`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sign_interpretation_character` (
+  `sign_interpretation_character_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `sign_interpretation_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The id of the sign interpretation that this character is assigned to.',
+  `character` char(1) NOT NULL DEFAULT '' COMMENT 'The character value of the sign interpretation (may be empty).',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`sign_interpretation_character_id`),
+  UNIQUE KEY `unique_sign_interpretation_character` (`character`,`sign_interpretation_id`) USING BTREE,
+  KEY `fk_sign_interpretation_character_to_sign_interpretation` (`sign_interpretation_id`),
+  KEY `fk_sign_interpretation_character_to_creator` (`creator_id`),
+  CONSTRAINT `fk_sign_interpretation_character_to_creator` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`),
+  CONSTRAINT `fk_sign_interpretation_character_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=3503370 DEFAULT CHARSET=utf8mb4 COMMENT='This table provides a character value for a sign interpretation.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sign_interpretation_character_owner`
+--
+
+DROP TABLE IF EXISTS `sign_interpretation_character_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sign_interpretation_character_owner` (
+  `sign_interpretation_character_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The sign interpretation character that is assigned to an edition.',
+  `edition_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The id of the edition to which this value has been assigned.',
+  `edition_editor_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The id of the editor who assigned this value to the edition.',
+  `priority` tinyint(4) NOT NULL DEFAULT 0 COMMENT 'The priority of the sign interpretation (a higher value has a higher priority), default value is 0.',
+  PRIMARY KEY (`sign_interpretation_character_id`,`edition_id`),
+  KEY `fk_sign_interpretation_character_owner_to_edition` (`edition_id`),
+  CONSTRAINT `fk_sign_interpretation_character_owner_to_character` FOREIGN KEY (`sign_interpretation_character_id`) REFERENCES `sign_interpretation_character` (`sign_interpretation_character_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_sign_interpretation_character_owner_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='This table assigns a particular sign interpretation character to a specific edition.  The priority field is used to set the hierarchical priority of this sign interpretation in relation to any other possible variant sign interpretations.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1874,6 +2011,42 @@ CREATE TABLE `sign_interpretation_roi_owner` (
   CONSTRAINT `fk_sign_interpretation_roi_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary table structure for view `sign_interpretation_view`
+--
+
+DROP TABLE IF EXISTS `sign_interpretation_view`;
+/*!50001 DROP VIEW IF EXISTS `sign_interpretation_view`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `sign_interpretation_view` (
+  `sign_id` tinyint NOT NULL,
+  `sign_interpretation_id` tinyint NOT NULL,
+  `edition_id` tinyint NOT NULL,
+  `attribute_value_id` tinyint NOT NULL,
+  `sequence` tinyint NOT NULL,
+  `attribute_creator_id` tinyint NOT NULL,
+  `attribute_editor_id` tinyint NOT NULL,
+  `character` tinyint NOT NULL,
+  `priority` tinyint NOT NULL,
+  `character_creator_id` tinyint NOT NULL,
+  `character_editor_id` tinyint NOT NULL,
+  `commentary` tinyint NOT NULL,
+  `commentary_attribute_id` tinyint NOT NULL,
+  `commentary_creator_id` tinyint NOT NULL,
+  `commentary_editor_id` tinyint NOT NULL,
+  `exceptional` tinyint NOT NULL,
+  `values_set` tinyint NOT NULL,
+  `artefact_id` tinyint NOT NULL,
+  `translate_x` tinyint NOT NULL,
+  `translate_y` tinyint NOT NULL,
+  `stance_rotation` tinyint NOT NULL,
+  `path` tinyint NOT NULL,
+  `roi_creator_id` tinyint NOT NULL,
+  `roi_editor_id` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `sign_stream`
@@ -2097,6 +2270,23 @@ CREATE TABLE `text_fragment_to_line_owner` (
   CONSTRAINT `fk_text_fragment_to_line_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary table structure for view `text_fragment_view`
+--
+
+DROP TABLE IF EXISTS `text_fragment_view`;
+/*!50001 DROP VIEW IF EXISTS `text_fragment_view`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `text_fragment_view` (
+  `edition_id` tinyint NOT NULL,
+  `text_fragment_id` tinyint NOT NULL,
+  `name` tinyint NOT NULL,
+  `data_creator_id` tinyint NOT NULL,
+  `data_editor_id` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `user`
@@ -2972,6 +3162,25 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Final view structure for view `artefact_view`
+--
+
+/*!50001 DROP TABLE IF EXISTS `artefact_view`*/;
+/*!50001 DROP VIEW IF EXISTS `artefact_view`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
+/*!50001 VIEW `artefact_view` AS select `SQE`.`artefact_data_owner`.`edition_id` AS `edition_id`,`SQE`.`artefact`.`artefact_id` AS `artefact_id`,`SQE`.`artefact_data`.`name` AS `name`,`SQE`.`artefact_data`.`creator_id` AS `data_creator_id`,`SQE`.`artefact_data_owner`.`edition_editor_id` AS `data_editor_id`,`as`.`region_in_sqe_image` AS `region_in_sqe_image`,`as`.`sqe_image_id` AS `sqe_image_id`,`as`.`url` AS `url`,`as`.`suffix` AS `suffix`,`as`.`proxy` AS `proxy`,`as`.`filename` AS `filename`,`as`.`creator_id` AS `shape_creator_id`,`as`.`edition_editor_id` AS `shape_editor_id`,`ap`.`z_index` AS `z_index`,`ap`.`scale` AS `scale`,`ap`.`rotate` AS `rotate`,`ap`.`translate_x` AS `translate_x`,`ap`.`translate_y` AS `translate_y`,`ap`.`creator_id` AS `position_creator_id`,`ap`.`edition_editor_id` AS `position_editor_id`,`astat`.`work_status_message` AS `work_status_message`,`astat`.`creator_id` AS `status_creator_id`,`astat`.`edition_editor_id` AS `status_editor_id` from (((((`SQE`.`artefact` join `SQE`.`artefact_data` on(`SQE`.`artefact`.`artefact_id` = `SQE`.`artefact_data`.`artefact_id`)) join `SQE`.`artefact_data_owner` on(`SQE`.`artefact_data`.`artefact_data_id` = `SQE`.`artefact_data_owner`.`artefact_data_id`)) left join (select `SQE`.`artefact_shape`.`artefact_id` AS `artefact_id`,`SQE`.`artefact_shape`.`region_in_sqe_image` AS `region_in_sqe_image`,`SQE`.`artefact_shape`.`sqe_image_id` AS `sqe_image_id`,`SQE`.`artefact_shape`.`creator_id` AS `creator_id`,`SQE`.`SQE_image`.`filename` AS `filename`,`SQE`.`image_urls`.`url` AS `url`,`SQE`.`image_urls`.`suffix` AS `suffix`,`SQE`.`image_urls`.`proxy` AS `proxy`,`SQE`.`artefact_shape_owner`.`edition_id` AS `edition_id`,`SQE`.`artefact_shape_owner`.`edition_editor_id` AS `edition_editor_id` from (((`SQE`.`artefact_shape` join `SQE`.`artefact_shape_owner` on(`SQE`.`artefact_shape`.`artefact_shape_id` = `SQE`.`artefact_shape_owner`.`artefact_shape_id`)) left join `SQE`.`SQE_image` on(`SQE`.`artefact_shape`.`sqe_image_id` = `SQE`.`SQE_image`.`sqe_image_id`)) left join `SQE`.`image_urls` on(`SQE`.`SQE_image`.`image_urls_id` = `SQE`.`image_urls`.`image_urls_id`))) `as` on(`as`.`artefact_id` = `SQE`.`artefact`.`artefact_id` and `as`.`edition_id` = `SQE`.`artefact_data_owner`.`edition_id`)) left join (select `SQE`.`artefact_position`.`artefact_id` AS `artefact_id`,`SQE`.`artefact_position`.`z_index` AS `z_index`,`SQE`.`artefact_position`.`scale` AS `scale`,`SQE`.`artefact_position`.`rotate` AS `rotate`,`SQE`.`artefact_position`.`translate_x` AS `translate_x`,`SQE`.`artefact_position`.`translate_y` AS `translate_y`,`SQE`.`artefact_position`.`creator_id` AS `creator_id`,`SQE`.`artefact_position_owner`.`edition_id` AS `edition_id`,`SQE`.`artefact_position_owner`.`edition_editor_id` AS `edition_editor_id` from (`SQE`.`artefact_position` join `SQE`.`artefact_position_owner` on(`SQE`.`artefact_position`.`artefact_position_id` = `SQE`.`artefact_position_owner`.`artefact_position_id`))) `ap` on(`ap`.`artefact_id` = `SQE`.`artefact`.`artefact_id` and `ap`.`edition_id` = `SQE`.`artefact_data_owner`.`edition_id`)) left join (select `SQE`.`artefact_status`.`artefact_id` AS `artefact_id`,`SQE`.`work_status`.`work_status_message` AS `work_status_message`,`SQE`.`artefact_status`.`creator_id` AS `creator_id`,`SQE`.`artefact_status_owner`.`edition_id` AS `edition_id`,`SQE`.`artefact_status_owner`.`edition_editor_id` AS `edition_editor_id` from ((`SQE`.`artefact_status` join `SQE`.`artefact_status_owner` on(`SQE`.`artefact_status`.`artefact_status_id` = `SQE`.`artefact_status_owner`.`artefact_status_id`)) join `SQE`.`work_status` on(`SQE`.`artefact_status`.`work_status_id` = `SQE`.`work_status`.`work_status_id`))) `astat` on(`astat`.`artefact_id` = `SQE`.`artefact`.`artefact_id` and `astat`.`edition_id` = `SQE`.`artefact_data_owner`.`edition_id`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
 -- Final view structure for view `image_text_fragment_match_catalogue`
 --
 
@@ -2991,6 +3200,63 @@ DELIMITER ;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 
 --
+-- Final view structure for view `line_view`
+--
+
+/*!50001 DROP TABLE IF EXISTS `line_view`*/;
+/*!50001 DROP VIEW IF EXISTS `line_view`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
+/*!50001 VIEW `line_view` AS select `line_data_owner`.`edition_id` AS `edition_id`,`line`.`line_id` AS `line_id`,`line_data`.`name` AS `name`,`line_data`.`creator_id` AS `data_creator_id`,`line_data_owner`.`edition_editor_id` AS `data_editor_id` from ((`line` join `line_data` on(`line`.`line_id` = `line_data`.`line_id`)) join `line_data_owner` on(`line_data`.`line_data_id` = `line_data_owner`.`line_data_id`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `manuscript_text_fragment_line_sign_view`
+--
+
+/*!50001 DROP TABLE IF EXISTS `manuscript_text_fragment_line_sign_view`*/;
+/*!50001 DROP VIEW IF EXISTS `manuscript_text_fragment_line_sign_view`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
+/*!50001 VIEW `manuscript_text_fragment_line_sign_view` AS select `manuscript_to_text_fragment_owner`.`edition_id` AS `edition_id`,`manuscript`.`manuscript_id` AS `manuscript_id`,`manuscript_to_text_fragment`.`text_fragment_id` AS `text_fragment_id`,`manuscript_to_text_fragment`.`creator_id` AS `manuscript_text_fragment_creator_id`,`manuscript_to_text_fragment_owner`.`edition_editor_id` AS `manuscript_text_fragment_editor_id`,`text_fragment_to_line`.`line_id` AS `line_id`,`text_fragment_to_line`.`creator_id` AS `text_fragment_to_line_creator_id`,`text_fragment_to_line_owner`.`edition_editor_id` AS `text_fragment_to_line_editor_id`,`line_to_sign`.`sign_id` AS `sign_id`,`line_to_sign`.`creator_id` AS `line_to_sign_creator_id`,`line_to_sign_owner`.`edition_editor_id` AS `line_to_sign_editor_id` from ((((((`manuscript` join `manuscript_to_text_fragment` on(`manuscript`.`manuscript_id` = `manuscript_to_text_fragment`.`manuscript_id`)) join `manuscript_to_text_fragment_owner` on(`manuscript_to_text_fragment`.`manuscript_to_text_fragment_id` = `manuscript_to_text_fragment_owner`.`manuscript_to_text_fragment_id`)) join `text_fragment_to_line` on(`manuscript_to_text_fragment`.`text_fragment_id` = `text_fragment_to_line`.`text_fragment_id`)) join `text_fragment_to_line_owner` on(`text_fragment_to_line_owner`.`text_fragment_to_line_id` = `text_fragment_to_line`.`text_fragment_to_line_id` and `text_fragment_to_line_owner`.`edition_id` = `manuscript_to_text_fragment_owner`.`edition_id`)) join `line_to_sign` on(`text_fragment_to_line`.`line_id` = `line_to_sign`.`line_id`)) join `line_to_sign_owner` on(`line_to_sign_owner`.`line_to_sign_id` = `line_to_sign`.`line_to_sign_id` and `line_to_sign_owner`.`edition_id` = `manuscript_to_text_fragment_owner`.`edition_id`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `manuscript_view`
+--
+
+/*!50001 DROP TABLE IF EXISTS `manuscript_view`*/;
+/*!50001 DROP VIEW IF EXISTS `manuscript_view`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
+/*!50001 VIEW `manuscript_view` AS select `manuscript_data_owner`.`edition_id` AS `edition_id`,`manuscript`.`manuscript_id` AS `manuscript_id`,`manuscript_data`.`name` AS `name`,`manuscript_data`.`creator_id` AS `data_creator_id`,`manuscript_data_owner`.`edition_editor_id` AS `data_editor_id`,`manuscript_metrics`.`x_origin` AS `x_origin`,`manuscript_metrics`.`y_origin` AS `y_origin`,`manuscript_metrics`.`width` AS `width`,`manuscript_metrics`.`height` AS `height`,`manuscript_metrics`.`pixels_per_inch` AS `pixels_per_inch`,`manuscript_metrics`.`scribal_font_id` AS `scribal_font_id`,`manuscript_metrics`.`creator_id` AS `metrics_creator_id`,`manuscript_metrics_owner`.`edition_editor_id` AS `metrics_editor_id` from ((((`manuscript` join `manuscript_data` on(`manuscript`.`manuscript_id` = `manuscript_data`.`manuscript_id`)) join `manuscript_data_owner` on(`manuscript_data`.`manuscript_data_id` = `manuscript_data_owner`.`manuscript_data_id`)) join `manuscript_metrics` on(`manuscript`.`manuscript_id` = `manuscript_metrics`.`manuscript_id`)) join `manuscript_metrics_owner` on(`manuscript_metrics_owner`.`manuscript_metrics_id` = `manuscript_metrics`.`manuscript_metrics_id` and `manuscript_metrics_owner`.`edition_id` = `manuscript_data_owner`.`edition_id`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
 -- Final view structure for view `recent_edition_catalog_to_col_confirmation`
 --
 
@@ -3005,6 +3271,44 @@ DELIMITER ;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
 /*!50001 VIEW `recent_edition_catalog_to_col_confirmation` AS select `t1`.`iaa_edition_catalog_to_text_fragment_id` AS `iaa_edition_catalog_to_text_fragment_id`,`t1`.`confirmed` AS `confirmed`,`t1`.`user_id` AS `user_id`,`t1`.`time` AS `time` from (`iaa_edition_catalog_to_text_fragment_confirmation` `t1` left join `iaa_edition_catalog_to_text_fragment_confirmation` `t2` on(`t1`.`iaa_edition_catalog_to_text_fragment_id` = `t2`.`iaa_edition_catalog_to_text_fragment_id` and (`t1`.`time` < `t2`.`time` or `t1`.`time` = `t2`.`time` and `t1`.`confirmed` > `t2`.`confirmed`))) where `t2`.`iaa_edition_catalog_to_text_fragment_id` is null group by `t1`.`iaa_edition_catalog_to_text_fragment_id` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `sign_interpretation_view`
+--
+
+/*!50001 DROP TABLE IF EXISTS `sign_interpretation_view`*/;
+/*!50001 DROP VIEW IF EXISTS `sign_interpretation_view`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
+/*!50001 VIEW `sign_interpretation_view` AS select `SQE`.`sign_interpretation`.`sign_id` AS `sign_id`,`SQE`.`sign_interpretation`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_attribute_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_attribute`.`attribute_value_id` AS `attribute_value_id`,`SQE`.`sign_interpretation_attribute`.`sequence` AS `sequence`,`SQE`.`sign_interpretation_attribute`.`creator_id` AS `attribute_creator_id`,`SQE`.`sign_interpretation_attribute_owner`.`edition_editor_id` AS `attribute_editor_id`,`sic`.`character` AS `character`,`sic`.`priority` AS `priority`,`sic`.`creator_id` AS `character_creator_id`,`sic`.`edition_editor_id` AS `character_editor_id`,`sico`.`commentary` AS `commentary`,`sico`.`attribute_id` AS `commentary_attribute_id`,`sico`.`creator_id` AS `commentary_creator_id`,`sico`.`edition_editor_id` AS `commentary_editor_id`,`sir`.`exceptional` AS `exceptional`,`sir`.`values_set` AS `values_set`,`sir`.`artefact_id` AS `artefact_id`,`sir`.`translate_x` AS `translate_x`,`sir`.`translate_y` AS `translate_y`,`sir`.`stance_rotation` AS `stance_rotation`,`sir`.`path` AS `path`,`sir`.`creator_id` AS `roi_creator_id`,`sir`.`edition_editor_id` AS `roi_editor_id` from (((((`SQE`.`sign_interpretation` join `SQE`.`sign_interpretation_attribute` on(`SQE`.`sign_interpretation`.`sign_interpretation_id` = `SQE`.`sign_interpretation_attribute`.`sign_interpretation_id`)) join `SQE`.`sign_interpretation_attribute_owner` on(`SQE`.`sign_interpretation_attribute`.`sign_interpretation_attribute_id` = `SQE`.`sign_interpretation_attribute_owner`.`sign_interpretation_attribute_id`)) left join (select `SQE`.`sign_interpretation_character`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_character`.`character` AS `character`,`SQE`.`sign_interpretation_character`.`creator_id` AS `creator_id`,`SQE`.`sign_interpretation_character_owner`.`priority` AS `priority`,`SQE`.`sign_interpretation_character_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_character_owner`.`edition_editor_id` AS `edition_editor_id` from (`SQE`.`sign_interpretation_character` join `SQE`.`sign_interpretation_character_owner` on(`SQE`.`sign_interpretation_character`.`sign_interpretation_character_id` = `SQE`.`sign_interpretation_character_owner`.`sign_interpretation_character_id`))) `sic` on(`sic`.`sign_interpretation_id` = `SQE`.`sign_interpretation`.`sign_interpretation_id` and `sic`.`edition_id` = `SQE`.`sign_interpretation_attribute_owner`.`edition_id`)) left join (select `SQE`.`sign_interpretation_commentary`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_commentary`.`attribute_id` AS `attribute_id`,`SQE`.`sign_interpretation_commentary`.`commentary` AS `commentary`,`SQE`.`sign_interpretation_commentary`.`creator_id` AS `creator_id`,`SQE`.`sign_interpretation_commentary_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_commentary_owner`.`edition_editor_id` AS `edition_editor_id` from (`SQE`.`sign_interpretation_commentary` join `SQE`.`sign_interpretation_commentary_owner` on(`SQE`.`sign_interpretation_commentary`.`sign_interpretation_commentary_id` = `SQE`.`sign_interpretation_commentary_owner`.`sign_interpretation_commentary_id`))) `sico` on(`sico`.`sign_interpretation_id` = `SQE`.`sign_interpretation`.`sign_interpretation_id` and `sico`.`edition_id` = `SQE`.`sign_interpretation_attribute_owner`.`edition_id`)) left join (select `SQE`.`sign_interpretation_roi`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_roi`.`values_set` AS `values_set`,`SQE`.`sign_interpretation_roi`.`exceptional` AS `exceptional`,`SQE`.`sign_interpretation_roi`.`creator_id` AS `creator_id`,`SQE`.`roi_position`.`artefact_id` AS `artefact_id`,`SQE`.`roi_position`.`translate_x` AS `translate_x`,`SQE`.`roi_position`.`translate_y` AS `translate_y`,`SQE`.`roi_position`.`stance_rotation` AS `stance_rotation`,`SQE`.`roi_shape`.`path` AS `path`,`SQE`.`sign_interpretation_roi_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_roi_owner`.`edition_editor_id` AS `edition_editor_id` from (((`SQE`.`sign_interpretation_roi` join `SQE`.`sign_interpretation_roi_owner` on(`SQE`.`sign_interpretation_roi`.`sign_interpretation_roi_id` = `SQE`.`sign_interpretation_roi_owner`.`sign_interpretation_roi_id`)) join `SQE`.`roi_position` on(`SQE`.`sign_interpretation_roi`.`roi_position_id` = `SQE`.`roi_position`.`roi_position_id`)) join `SQE`.`roi_shape` on(`SQE`.`sign_interpretation_roi`.`roi_shape_id` = `SQE`.`roi_shape`.`roi_shape_id`))) `sir` on(`sir`.`sign_interpretation_id` = `SQE`.`sign_interpretation`.`sign_interpretation_id` and `sir`.`edition_id` = `SQE`.`sign_interpretation_attribute_owner`.`edition_id`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `text_fragment_view`
+--
+
+/*!50001 DROP TABLE IF EXISTS `text_fragment_view`*/;
+/*!50001 DROP VIEW IF EXISTS `text_fragment_view`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
+/*!50001 VIEW `text_fragment_view` AS select `text_fragment_data_owner`.`edition_id` AS `edition_id`,`text_fragment`.`text_fragment_id` AS `text_fragment_id`,`text_fragment_data`.`name` AS `name`,`text_fragment_data`.`creator_id` AS `data_creator_id`,`text_fragment_data_owner`.`edition_editor_id` AS `data_editor_id` from ((`text_fragment` join `text_fragment_data` on(`text_fragment`.`text_fragment_id` = `text_fragment_data`.`text_fragment_id`)) join `text_fragment_data_owner` on(`text_fragment_data`.`text_fragment_data_id` = `text_fragment_data_owner`.`text_fragment_data_id`)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
