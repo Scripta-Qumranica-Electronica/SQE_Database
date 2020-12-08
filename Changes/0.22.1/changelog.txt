@@ -1,0 +1,2 @@
+This update adds many images that had escaped the first import of image data from the new IAA images server.
+It removes the single "virtual" artefact that had been created for every edition, we are not using that system anymore.
