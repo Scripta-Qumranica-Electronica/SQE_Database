@@ -1,0 +1,3 @@
+Fixed foreign key issues in sign_interpretation_attribute_owner and sign_interpretation_character_owner.
+Added mirror flag for artefact position.
+Added glyph shapes for scribal fonts.
