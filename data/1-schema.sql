@@ -268,7 +268,7 @@ CREATE TABLE `artefact_shape` (
   `artefact_shape_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `artefact_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The id of the artefact to which this shape belongs.',
   `sqe_image_id` int(10) unsigned DEFAULT NULL COMMENT 'This points to the master image (see SQE_image table) in which this artefact is found.',
-  `region_in_sqe_image` geometry NOT NULL COMMENT 'This is the exact polygon of the artefact’s location within the master image’s coordinate system, but alwaya at a resolution of 1215 PPI. If the master image is not 1215 PPI it should be scaled to that resolution before the srtefact is drawn upon it.',
+  `region_in_sqe_image` geometry COMMENT 'This is the exact polygon of the artefact’s location within the master image’s coordinate system, but alwaya at a resolution of 1215 PPI. If the master image is not 1215 PPI it should be scaled to that resolution before the artefact is drawn upon it.',
   `region_in_sqe_image_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_in_sqe_image`,512)) STORED COMMENT 'This is a quick hash of the region_in_sqe_image polygon for the purpose of uniqueness constraints.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`artefact_shape_id`) USING BTREE,
