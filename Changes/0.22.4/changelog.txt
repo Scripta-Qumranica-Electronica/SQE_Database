@@ -1,0 +1,1 @@
+Updates to better support creation of scribal font information.

@@ -268,7 +268,7 @@ CREATE TABLE `artefact_shape` (
   `artefact_shape_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `artefact_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The id of the artefact to which this shape belongs.',
   `sqe_image_id` int(10) unsigned DEFAULT NULL COMMENT 'This points to the master image (see SQE_image table) in which this artefact is found.',
-  `region_in_sqe_image` geometry COMMENT 'This is the exact polygon of the artefact’s location within the master image’s coordinate system, but alwaya at a resolution of 1215 PPI. If the master image is not 1215 PPI it should be scaled to that resolution before the artefact is drawn upon it.',
+  `region_in_sqe_image` geometry DEFAULT NULL COMMENT 'This is the exact polygon of the artefact’s location within the master image’s coordinate system, but alwaya at a resolution of 1215 PPI. If the master image is not 1215 PPI it should be scaled to that resolution before the artefact is drawn upon it.',
   `region_in_sqe_image_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_in_sqe_image`,512)) STORED COMMENT 'This is a quick hash of the region_in_sqe_image polygon for the purpose of uniqueness constraints.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`artefact_shape_id`) USING BTREE,
@@ -650,6 +650,7 @@ DROP TABLE IF EXISTS `font_file`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `font_file` (
   `font_file_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `scribal_font_id` int(11) unsigned NOT NULL,
   `font_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'A human readable name',
   `is_public` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Flag to mark whether the file may be used also by others',
   `font_binary_data` longblob DEFAULT NULL COMMENT 'The font data to be sent as file to the front end',
@@ -658,7 +659,9 @@ CREATE TABLE `font_file` (
   PRIMARY KEY (`font_file_id`),
   UNIQUE KEY `font_name_idx` (`font_name`),
   KEY `fk_font_file_to_creator_id` (`creator_id`),
-  CONSTRAINT `fk_font_file_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  KEY `fk_font_file_to_scribal_font` (`scribal_font_id`),
+  CONSTRAINT `fk_font_file_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_font_file_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains a font file to be used for reconstructed text or overlays';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1653,13 +1656,7 @@ DROP TABLE IF EXISTS `scribal_font`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `scribal_font` (
   `scribal_font_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
-  `font_file_id` int(10) unsigned NOT NULL COMMENT 'Reference to the font file.',
-  `default_word_space` smallint(5) unsigned DEFAULT 85 COMMENT 'The default space in pixel to be set between two words',
-  `default_interlinear_space` smallint(5) unsigned DEFAULT 280 COMMENT 'The default space between two lines in pixel',
-  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`scribal_font_id`),
-  KEY `fk_scribal_font_to_creator_id` (`creator_id`),
-  CONSTRAINT `fk_scribal_font_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  PRIMARY KEY (`scribal_font_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Defines a font found in the scrolls. It connects to a font file and is referred by glyph info';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1748,6 +1745,47 @@ CREATE TABLE `scribal_font_kerning_owner` (
   CONSTRAINT `fk_sfk_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_sfk_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `scribal_font_metrics`
+--
+
+DROP TABLE IF EXISTS `scribal_font_metrics`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `scribal_font_metrics` (
+  `scribal_font_metrics_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `scribal_font_id` int(11) unsigned NOT NULL,
+  `default_word_space` smallint(5) unsigned NOT NULL DEFAULT 85 COMMENT 'The default space in pixel to be set between two words',
+  `default_interlinear_space` smallint(5) unsigned NOT NULL DEFAULT 280 COMMENT 'The default space between two lines in pixel',
+  `creator_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`scribal_font_metrics_id`),
+  KEY `fk_scribal_font_metrics_to_scribal_font` (`scribal_font_id`),
+  KEY `fk_scribal_font_metrics_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_scribal_font_metrics_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_scribal_font_metrics_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='This table stores information about the default spacing for a scribal font.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `scribal_font_metrics_owner`
+--
+
+DROP TABLE IF EXISTS `scribal_font_metrics_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `scribal_font_metrics_owner` (
+  `scribal_font_metrics_id` int(11) unsigned NOT NULL,
+  `edition_id` int(11) unsigned NOT NULL,
+  `edition_editor_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`scribal_font_metrics_id`,`edition_id`),
+  KEY `fk_scribal_font_metrics_owner_to_edition_id` (`edition_id`),
+  KEY `fk_scribal_font_metrics_owner_to_edition_editor_id` (`edition_editor_id`),
+  CONSTRAINT `fk_scribal_font_metrics_owner_to_edition_editor_id` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_scribal_font_metrics_owner_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_scribal_font_metrics_owner_to_scribal_font_metrics` FOREIGN KEY (`scribal_font_metrics_id`) REFERENCES `scribal_font_metrics` (`scribal_font_metrics_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
