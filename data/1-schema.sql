@@ -1668,7 +1668,7 @@ DROP TABLE IF EXISTS `scribal_font_glyph_metrics`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `scribal_font_glyph_metrics` (
-  `scribal_font_glyph_metrics_id` int(10) unsigned NOT NULL COMMENT 'Unique identifier',
+  `scribal_font_glyph_metrics_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
   `scribal_font_id` int(10) unsigned NOT NULL COMMENT 'Reference to scribal font',
   `unicode_char` char(1) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Char of font',
   `width` double GENERATED ALWAYS AS (st_x(st_pointn(st_exteriorring(st_envelope(`shape`)),2)) - st_x(st_pointn(st_exteriorring(st_envelope(`shape`)),0))) VIRTUAL COMMENT 'Width of glyph',
@@ -1712,7 +1712,7 @@ DROP TABLE IF EXISTS `scribal_font_kerning`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `scribal_font_kerning` (
-  `scribal_font_kerning_id` int(10) unsigned NOT NULL COMMENT 'Unique identifier',
+  `scribal_font_kerning_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
   `scribal_font_id` int(10) unsigned NOT NULL COMMENT 'Reference to scribal font',
   `first_unicode_char` char(1) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Charcode of the first glyph',
   `second_unicode_char` char(1) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Charcode of the second glyph',

@@ -1,0 +1,1 @@
+This update patches some errors in the auto generated PK for scribal font tables.
