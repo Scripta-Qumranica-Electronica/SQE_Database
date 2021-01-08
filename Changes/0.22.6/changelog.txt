@@ -1,0 +1,1 @@
+Remove /Rec and /Vrs from plates and fix all references so that recto/verso can be properly addressed.
