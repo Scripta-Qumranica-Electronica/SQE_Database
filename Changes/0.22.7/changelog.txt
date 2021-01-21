@@ -1,0 +1,3 @@
+Attempt to fix the slowness of some queries in the database.  Ingo suggests that it is a problem with the text_fragment_data table, which is rebuild in this version of the database.
+
+Fix for some image references that pointed to the old URL filenames (this is deterministic and does not cause any problems if run multiple times).

@@ -1,3 +1,9 @@
+-- Set the version of this update (CURRENT_DATABASE_VERSION)
+SELECT @VER := "0.22.6";
+
+INSERT INTO `db_version` (version)
+VALUES (@VER);
+
 UPDATE SQE_image
 JOIN image_catalog USING(image_catalog_id)
 JOIN image_catalog updated_image 
@@ -37,3 +43,8 @@ WHERE catalog_number_1 LIKE "%/Rec%";
 UPDATE image_catalog
 SET catalog_number_1 = REPLACE(catalog_number_1, "/Vrs", "")
 WHERE catalog_number_1 LIKE "%/Vrs%";
+
+-- Record the completion of the update
+UPDATE `db_version`
+SET completed = current_timestamp()
+WHERE version = @VER;

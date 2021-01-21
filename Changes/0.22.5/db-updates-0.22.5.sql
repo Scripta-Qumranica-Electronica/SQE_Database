@@ -1,5 +1,5 @@
 -- Set the version of this update (CURRENT_DATABASE_VERSION)
-SELECT @VER := "CURRENT_DATABASE_VERSION";
+SELECT @VER := "0.22.5";
 
 INSERT INTO `db_version` (version)
 VALUES (@VER);
