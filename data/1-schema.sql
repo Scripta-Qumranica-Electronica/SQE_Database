@@ -70,7 +70,7 @@ DROP TABLE IF EXISTS `artefact`;
 CREATE TABLE `artefact` (
   `artefact_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`artefact_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26821 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Every virtual manuscript is made up from artefacts.  The artefact is a polygon region of an image which the editor deems to constitute a coherent piece of material (different editors may come to different conclusions on what makes up an artefact).  This may correspond to what the editors of an editio princeps have designated a “fragment”, but often may not, since the columns and fragments in those publications are often made up of joins of various types.  Joined fragments should not, as a rule, be defined as a single artefact within the SQE system.  Rather, each component of a join should be a separate artefact, and those artefacts can then be positioned properly with each other via the artefact_position table.';
+) ENGINE=InnoDB AUTO_INCREMENT=27988 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Every virtual manuscript is made up from artefacts.  The artefact is a polygon region of an image which the editor deems to constitute a coherent piece of material (different editors may come to different conclusions on what makes up an artefact).  This may correspond to what the editors of an editio princeps have designated a “fragment”, but often may not, since the columns and fragments in those publications are often made up of joins of various types.  Joined fragments should not, as a rule, be defined as a single artefact within the SQE system.  Rather, each component of a join should be a separate artefact, and those artefacts can then be positioned properly with each other via the artefact_position table.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -91,7 +91,7 @@ CREATE TABLE `artefact_data` (
   KEY `fk_artefact_data_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_artefact_data_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_data_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=26821 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This stores metadata about the artefact.';
+) ENGINE=InnoDB AUTO_INCREMENT=27988 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This stores metadata about the artefact.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -234,7 +234,7 @@ CREATE TABLE `artefact_position` (
   KEY `fk_artefact_position_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_artefact_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_position_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1168 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -254,7 +254,7 @@ CREATE TABLE `artefact_position_owner` (
   CONSTRAINT `fk_artefact_position_owner_to_artefact` FOREIGN KEY (`artefact_position_id`) REFERENCES `artefact_position` (`artefact_position_id`),
   CONSTRAINT `fk_artefact_position_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_artefact_position_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1168 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -279,7 +279,7 @@ CREATE TABLE `artefact_shape` (
   CONSTRAINT `fk_artefact_shape_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_shape_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_shape_to_sqe_image` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=36482 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the region of the artefact in the coordinate system of its image. The image must first be scaled to the PPI defined in manuscript_metrics (1215 PPI by default).';
+) ENGINE=InnoDB AUTO_INCREMENT=37649 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the region of the artefact in the coordinate system of its image. The image must first be scaled to the PPI defined in manuscript_metrics (1215 PPI by default).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -372,7 +372,7 @@ CREATE TABLE `artefact_status` (
   CONSTRAINT `fk_artefact_status_to_artefact_id` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_status_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_status_to_work_status_id` FOREIGN KEY (`work_status_id`) REFERENCES `work_status` (`work_status_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='The artefact status is a user definable placeholder to store information about how state of work on defining the artefact.';
+) ENGINE=InnoDB AUTO_INCREMENT=1168 DEFAULT CHARSET=latin1 COMMENT='The artefact status is a user definable placeholder to store information about how state of work on defining the artefact.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1630,7 +1630,7 @@ CREATE TABLE `roi_position` (
   PRIMARY KEY (`roi_position_id`),
   KEY `fk_roi_position_to_artefact` (`artefact_id`),
   CONSTRAINT `fk_roi_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ROI’s are linked to artefacts.  To get the location of the ROI in the coordinate system of the “virtual manuscript, one must first apply the roi_position and then the position of the linked artefact. This can by done via the UDF nested_geom_transform.';
+) ENGINE=InnoDB AUTO_INCREMENT=24130 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ROI’s are linked to artefacts.  To get the location of the ROI in the coordinate system of the “virtual manuscript, one must first apply the roi_position and then the position of the linked artefact. This can by done via the UDF nested_geom_transform.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1644,7 +1644,7 @@ CREATE TABLE `roi_shape` (
   `roi_shape_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `path` geometry DEFAULT NULL COMMENT 'This is a POLYGON geometry describing the shape of the ROI. It is its own 0,0 coordinate system and is correlated with a location in an artefact via a translation (without scale or rotation) in the roi_position table. Its resolution is the same as the artefact, 1215 PPI.',
   PRIMARY KEY (`roi_shape_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the ROI in its own coordinate system. The roi_position table situates the polygon in the coordinate system of the artefact.';
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the ROI in its own coordinate system. The roi_position table situates the polygon in the coordinate system of the artefact.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1670,9 +1670,9 @@ DROP TABLE IF EXISTS `scribal_font_glyph_metrics`;
 CREATE TABLE `scribal_font_glyph_metrics` (
   `scribal_font_glyph_metrics_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
   `scribal_font_id` int(10) unsigned NOT NULL COMMENT 'Reference to scribal font',
-  `unicode_char` char(1) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Char of font',
-  `width` double GENERATED ALWAYS AS (st_x(st_pointn(st_exteriorring(st_envelope(`shape`)),2)) - st_x(st_pointn(st_exteriorring(st_envelope(`shape`)),0))) VIRTUAL COMMENT 'Width of glyph',
-  `height` double GENERATED ALWAYS AS (st_y(st_pointn(st_exteriorring(st_envelope(`shape`)),2)) - st_y(st_pointn(st_exteriorring(st_envelope(`shape`)),0))) VIRTUAL COMMENT 'Height of glyph',
+  `unicode_char` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'Char of font',
+  `width` double GENERATED ALWAYS AS (st_x(st_pointn(st_exteriorring(st_envelope(`shape`)),3)) - st_x(st_pointn(st_exteriorring(st_envelope(`shape`)),1))) VIRTUAL COMMENT 'Width of glyph',
+  `height` double GENERATED ALWAYS AS (st_y(st_pointn(st_exteriorring(st_envelope(`shape`)),4)) - st_y(st_pointn(st_exteriorring(st_envelope(`shape`)),2))) VIRTUAL COMMENT 'Height of glyph',
   `y_offset` smallint(6) NOT NULL DEFAULT -200 COMMENT 'Vertical offset glyph (thought to stand on line)',
   `shape` geometry NOT NULL DEFAULT st_geometryfromtext('MULTIPOLYGON(((0 0,200 0,200 100,0 100,0 0)))') COMMENT 'The vector glyph shape of the character',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
@@ -1681,7 +1681,7 @@ CREATE TABLE `scribal_font_glyph_metrics` (
   KEY `fk_scribal_font_glyph_metrics_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_scribal_font_glyph_metrics_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sfg_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains the bounding box and position metrics of a scribal font. Only used to calculate ROIs not yet set by the user.';
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains the bounding box and position metrics of a scribal font. Only used to calculate ROIs not yet set by the user.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1714,17 +1714,17 @@ DROP TABLE IF EXISTS `scribal_font_kerning`;
 CREATE TABLE `scribal_font_kerning` (
   `scribal_font_kerning_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
   `scribal_font_id` int(10) unsigned NOT NULL COMMENT 'Reference to scribal font',
-  `first_unicode_char` char(1) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Charcode of the first glyph',
-  `second_unicode_char` char(1) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Charcode of the second glyph',
+  `first_unicode_char` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'Charcode of the first glyph',
+  `second_unicode_char` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'Charcode of the second glyph',
   `kerning_x` smallint(6) NOT NULL DEFAULT 0 COMMENT 'Horizontal kerning',
   `kerning_y` smallint(6) NOT NULL DEFAULT 0 COMMENT 'Vertical kerning',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`scribal_font_kerning_id`),
-  UNIQUE KEY `char_idx` (`scribal_font_id`,`first_unicode_char`,`second_unicode_char`),
+  UNIQUE KEY `unique_scribal_font_kerning` (`scribal_font_id`,`first_unicode_char`,`second_unicode_char`,`kerning_x`,`kerning_y`) USING BTREE,
   KEY `fk_scribal_font_kerning_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_scribal_font_kerning_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sfk_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains kerning of glyph of a scribal font. Only used to calculated the position of signs not yet positioned by the user';
+) ENGINE=InnoDB AUTO_INCREMENT=730 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains kerning of glyph of a scribal font. Only used to calculated the position of signs not yet positioned by the user';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1765,7 +1765,7 @@ CREATE TABLE `scribal_font_metrics` (
   KEY `fk_scribal_font_metrics_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_scribal_font_metrics_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_scribal_font_metrics_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='This table stores information about the default spacing for a scribal font.';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='This table stores information about the default spacing for a scribal font.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2029,7 +2029,7 @@ CREATE TABLE `sign_interpretation_roi` (
   CONSTRAINT `fk_sign_area_to_roi_shape` FOREIGN KEY (`roi_shape_id`) REFERENCES `roi_shape` (`roi_shape_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sign_interpretation_roi_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sign_sign_roi_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table links a sign_interpretation to the ROI or ROIs it describes.';
+) ENGINE=InnoDB AUTO_INCREMENT=24130 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table links a sign_interpretation to the ROI or ROIs it describes.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2432,7 +2432,7 @@ CREATE TABLE `work_status` (
   `work_status_message` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT 'A status message on the ccurrent state of work.',
   PRIMARY KEY (`work_status_id`),
   UNIQUE KEY `unique_status_message` (`work_status_message`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores user-definable work status messages that can be applied to various data tables. They are used to indicate the current status of editor curation for the data entry.';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores user-definable work status messages that can be applied to various data tables. They are used to indicate the current status of editor curation for the data entry.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

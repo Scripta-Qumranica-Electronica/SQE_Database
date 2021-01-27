@@ -1,0 +1,4 @@
+Update font related tables so that the single char columns use a binary colation (so that initial/medial and final Hebrew letter forms are unique).
+Fix the unique constraint on the scribal font kerning table.
+Fixed the width and height virtual columns in the font glyph metric table.
+Loaded testing positional data for reconstructed text of edition 894.
