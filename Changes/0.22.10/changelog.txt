@@ -1,0 +1,3 @@
+Import IIIF image manifests directly into the database.
+Enable linking of imaged objects to editions.
+Add an "archive" flag to editions (so they can be safely deleted)
