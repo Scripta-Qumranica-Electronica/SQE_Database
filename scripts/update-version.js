@@ -29,7 +29,6 @@ try {
 } catch (err) {
     console.error(chalk.red(`✗ Could not updated the file ${sqlUpdateFile} to database version to ${args.t}.`))
     console.log(err)
-    process.exit(1)
 }
 
 process.exit(0)
