@@ -1,0 +1,2 @@
+Add tables for storing image settings (contrast, brightness, etc.) and for selected the preferred display image.
+Patch for image_catalog to have a creator_id.
