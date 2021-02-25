@@ -1,0 +1,3 @@
+Added font and reconstructed signs for edition id 899 (4Q54).
+
+Added a table for storing cached text transcription JSON objects.
