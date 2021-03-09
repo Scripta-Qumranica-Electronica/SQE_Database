@@ -1,8 +1,8 @@
--- MySQL dump 10.18  Distrib 10.3.27-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.19  Distrib 10.3.28-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: SQE
 -- ------------------------------------------------------
--- Server version	10.3.27-MariaDB-1:10.3.27+maria~focal
+-- Server version	10.3.28-MariaDB-1:10.3.28+maria~focal
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -655,7 +655,7 @@ DROP TABLE IF EXISTS `cached_text_fragment`;
 CREATE TABLE `cached_text_fragment` (
   `edition_id` int(11) unsigned NOT NULL,
   `text_fragment_id` int(11) unsigned NOT NULL,
-  `transcription_json` longtext /*!100301 COMPRESSED*/ COLLATE utf8mb4_bin NOT NULL DEFAULT '',
+  `transcription_json` longtext /*!100301 COMPRESSED*/ COLLATE utf8mb4_bin DEFAULT NULL,
   `transcription_date` datetime NOT NULL,
   PRIMARY KEY (`edition_id`,`text_fragment_id`),
   KEY `fk_cached_text_fragment_to_text_fragment_id` (`text_fragment_id`),
@@ -1685,7 +1685,7 @@ CREATE TABLE `qwb_ref` (
   `qwb_scroll_name` varchar(16) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'The precise name of the scroll in the QWB database',
   `qwb_fragment_name` varchar(40) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'The precise name of the fragment or column in the QWB database',
   `qwb_line_name` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT 'The precise line designation in the QWB database',
-  `text` varchar(255) GENERATED ALWAYS AS (concat(`qwb_scroll_name`,'%',if(locate('frg',`qwb_fragment_name`) > 0,`qwb_fragment_name`,concat('col. ',`qwb_fragment_name`)),'%',`qwb_line_name`)) STORED,
+  `text` varchar(255) COLLATE utf8mb4_unicode_ci GENERATED ALWAYS AS (concat(`qwb_scroll_name`,'%',if(locate('frg',`qwb_fragment_name`) > 0,`qwb_fragment_name`,concat('col. ',`qwb_fragment_name`)),'%',`qwb_line_name`)) STORED,
   PRIMARY KEY (`qwb_ref_id`),
   KEY `qwb_ref_text_index` (`text`)
 ) ENGINE=InnoDB AUTO_INCREMENT=65536 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table creates a connection between the references in the QWB database and the textual references within the SQE text system.';
