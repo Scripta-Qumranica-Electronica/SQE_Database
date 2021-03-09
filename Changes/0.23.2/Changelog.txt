@@ -1,0 +1,1 @@
+Update the cached_text_fragment table so that transcription_json may be null. Setting transcription_json to null lets the system know that the cache must be rerbuilt.
