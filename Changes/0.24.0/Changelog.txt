@@ -1,0 +1,3 @@
+Altered the image to image map table so that it uses separate scale, rotate, and transform values instead of a transform matrix.
+
+Filled in the info in the image to image map about the images that need to be rotate in relation to the main image.
