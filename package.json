@@ -13,6 +13,6 @@
     "fs-extra": "^7.0.1",
     "mariadb": "^2.0.1-beta",
     "md5-file": "^4.0.0",
-    "minimist": "^1.2.2"
+    "minimist": "^1.2.3"
   }
 }
