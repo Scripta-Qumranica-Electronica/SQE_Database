@@ -1,0 +1,3 @@
+Changed the image to image map table to use scale, rotate, and translate instead of a single transform matrix.
+
+Added the proper mappings for all currently available IAA images.
