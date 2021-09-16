@@ -91,7 +91,7 @@ const sanitizeDB = async () => {
     SET foreign_key_checks = 1;
     `
 
-    deleteFromTables.push({query: pool.query(query), table: 'custom', tname: 'ROI\'s'})
+    deleteFromTables.push({query: query, table: 'custom', tname: 'ROI\'s'})
 
     // Spin up the delete processes
     for (table of ownedTables) {
@@ -122,7 +122,7 @@ const sanitizeDB = async () => {
 
         SET foreign_key_checks = 1;
         `
-        deleteFromTables.push({query: pool.query(query), table: table, tname: tname})
+        deleteFromTables.push({query: query, table: table, tname: tname})
     }
 
 
@@ -147,7 +147,7 @@ const sanitizeDB = async () => {
 
         SET foreign_key_checks = 1;
         `
-    deleteFromTables.push({query: pool.query(query), table: 'custom', tname: 'edition_editor'})
+    deleteFromTables.push({query: query, table: 'custom', tname: 'edition_editor'})
 
     // Remove all but default users
     console.log(chalk.blue(`Sanitizing users.`))
@@ -165,7 +165,7 @@ const sanitizeDB = async () => {
 
         SET foreign_key_checks = 1;
         `
-    deleteFromTables.push({query: pool.query(query), table: 'custom', tname: 'user'})
+    deleteFromTables.push({query: query, table: 'custom', tname: 'user'})
 
     // Clear out blacklisted tables
     for (table of tableBlackList) {
@@ -177,13 +177,13 @@ const sanitizeDB = async () => {
 
             SET foreign_key_checks = 1;
             `
-        deleteFromTables.push({query: pool.query(query), table: 'blacklist', tname: table})
+        deleteFromTables.push({query: query, table: 'blacklist', tname: table})
     }
 
     // Wait for the delete processes to finish and catch any errors
     for (let i = 0, process; (process = deleteFromTables[i]); i++) {
         try {
-            await process.query
+            await pool.query(process.query)
             console.log(chalk.green(`✓ Finished sanitizing ${process.table}, ${process.tname}.`))
         } catch(err) {
             console.error(`Error sanitizing ${process.table} and ${process.tname}`)

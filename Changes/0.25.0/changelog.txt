@@ -1,0 +1,1 @@
+Some things were fixed in real time on the production server. This release brings the development image back up to parity with the changes on the production server.

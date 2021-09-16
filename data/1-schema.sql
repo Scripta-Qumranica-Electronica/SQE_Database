@@ -36,13 +36,14 @@ CREATE TABLE `SQE_image` (
   `image_catalog_id` int(11) unsigned DEFAULT 0 COMMENT 'Id of the image in the image catalogue.',
   `is_recto` tinyint(1) unsigned NOT NULL DEFAULT 1 COMMENT 'Notes wether the original image is thought to show rect0 (1) or verso (0) of the fragment. This can be taken as default value for recto/verso-relation in artefact_stack',
   `manifest` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
-  PRIMARY KEY (`sqe_image_id`),
+  PRIMARY KEY (`sqe_image_id`) USING BTREE,
   UNIQUE KEY `url_UNIQUE` (`image_urls_id`,`filename`) USING BTREE,
-  KEY `fk_image_to_catalog` (`image_catalog_id`),
+  KEY `fk_image_to_catalog` (`image_catalog_id`) USING BTREE,
+  KEY `filename_idx` (`filename`) USING BTREE,
   CONSTRAINT `fk_image_to_catalog` FOREIGN KEY (`image_catalog_id`) REFERENCES `image_catalog` (`image_catalog_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_image_to_url` FOREIGN KEY (`image_urls_id`) REFERENCES `image_urls` (`image_urls_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `CONSTRAINT_1` CHECK (`manifest` is null or json_valid(`manifest`))
-) ENGINE=InnoDB AUTO_INCREMENT=194133 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table defines an image.  It contains referencing data to access the image via iiif servers, it also stores metadata relating to the image itself, such as sizing, resolution, image color range, etc.  It also maintains a link to the institutional referencing system, and the referencing of the editio princeps (as provided by the imaging institution).';
+) ENGINE=InnoDB AUTO_INCREMENT=195870 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table defines an image.  It contains referencing data to access the image via iiif servers, it also stores metadata relating to the image itself, such as sizing, resolution, image color range, etc.  It also maintains a link to the institutional referencing system, and the referencing of the editio princeps (as provided by the imaging institution).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -55,8 +56,8 @@ DROP TABLE IF EXISTS `SQE_image_author`;
 CREATE TABLE `SQE_image_author` (
   `sqe_image_id` int(11) unsigned NOT NULL DEFAULT 0,
   `user_id` int(11) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`sqe_image_id`),
-  KEY `SQE_image_owner_to_scroll_version_id` (`user_id`),
+  PRIMARY KEY (`sqe_image_id`) USING BTREE,
+  KEY `SQE_image_owner_to_scroll_version_id` (`user_id`) USING BTREE,
   CONSTRAINT `fk_SQE_image_author_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_SQE_image_owner_to_sqe_image_id` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -104,6 +105,27 @@ CREATE TABLE `SQE_image_settings_owner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `area_group`
+--
+
+DROP TABLE IF EXISTS `area_group`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `area_group` (
+  `area_group_id` int(10) unsigned NOT NULL,
+  `area_id` int(10) unsigned NOT NULL,
+  `move_direction` set('x','y') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `commentary` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `z_index` tinyint(4) DEFAULT NULL,
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`area_group_id`) USING BTREE,
+  KEY `fk_area_group_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_area_group_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `artefact`
 --
 
@@ -112,8 +134,8 @@ DROP TABLE IF EXISTS `artefact`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `artefact` (
   `artefact_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`artefact_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28048 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Every virtual manuscript is made up from artefacts.  The artefact is a polygon region of an image which the editor deems to constitute a coherent piece of material (different editors may come to different conclusions on what makes up an artefact).  This may correspond to what the editors of an editio princeps have designated a “fragment”, but often may not, since the columns and fragments in those publications are often made up of joins of various types.  Joined fragments should not, as a rule, be defined as a single artefact within the SQE system.  Rather, each component of a join should be a separate artefact, and those artefacts can then be positioned properly with each other via the artefact_position table.';
+  PRIMARY KEY (`artefact_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=41830 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Every virtual manuscript is made up from artefacts.  The artefact is a polygon region of an image which the editor deems to constitute a coherent piece of material (different editors may come to different conclusions on what makes up an artefact).  This may correspond to what the editors of an editio princeps have designated a “fragment”, but often may not, since the columns and fragments in those publications are often made up of joins of various types.  Joined fragments should not, as a rule, be defined as a single artefact within the SQE system.  Rather, each component of a join should be a separate artefact, and those artefacts can then be positioned properly with each other via the artefact_position table.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -128,13 +150,13 @@ CREATE TABLE `artefact_data` (
   `artefact_id` int(10) unsigned NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'This is a human readable designation for the artefact. Multiple artefacts are allowed to share the same name, even in a single manuscript, though this is not advised.  The artefact as a distinct entity is made unique by its artefact_id.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`artefact_data_id`),
+  PRIMARY KEY (`artefact_data_id`) USING BTREE,
   UNIQUE KEY `unique_artefact_id_artefact_data_name` (`artefact_id`,`name`) USING BTREE,
-  KEY `fk_artefact_data_to_artefact` (`artefact_id`),
+  KEY `fk_artefact_data_to_artefact` (`artefact_id`) USING BTREE,
   KEY `fk_artefact_data_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_artefact_data_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_data_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=28048 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This stores metadata about the artefact.';
+) ENGINE=InnoDB AUTO_INCREMENT=41868 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This stores metadata about the artefact.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -148,9 +170,9 @@ CREATE TABLE `artefact_data_owner` (
   `artefact_data_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`artefact_data_id`,`edition_id`),
-  KEY `fk_artefact_data_owner_to_scroll_version_id` (`edition_editor_id`),
-  KEY `fk_artefact_data_to_edition` (`edition_id`),
+  PRIMARY KEY (`artefact_data_id`,`edition_id`) USING BTREE,
+  KEY `fk_artefact_data_owner_to_scroll_version_id` (`edition_editor_id`) USING BTREE,
+  KEY `fk_artefact_data_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_artefact_data_owner_to_artefact_data_id` FOREIGN KEY (`artefact_data_id`) REFERENCES `artefact_data` (`artefact_data_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_data_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_artefact_data_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
@@ -167,7 +189,7 @@ DROP TABLE IF EXISTS `artefact_group`;
 CREATE TABLE `artefact_group` (
   `artefact_group_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`artefact_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='This table holds the abstract IDs for the artefact group.  An artefact group consists of a name (see artefact_group_name) and a list of members (see artefact_group_member).  It is up to the user to determine what an artefact group is meant to do functionally.  Typically we assume that when one member of a group is transformed, all members of the group will also be transformed accordingly.  The responsibility for such operations, however, lies downstream from the database (i.e., there are no database triggers involved with artefact groups).';
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='This table holds the abstract IDs for the artefact group.  An artefact group consists of a name (see artefact_group_name) and a list of members (see artefact_group_member).  It is up to the user to determine what an artefact group is meant to do functionally.  Typically we assume that when one member of a group is transformed, all members of the group will also be transformed accordingly.  The responsibility for such operations, however, lies downstream from the database (i.e., there are no database triggers involved with artefact groups).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -313,13 +335,13 @@ CREATE TABLE `artefact_position` (
   `translate_y_non_null` int(11) GENERATED ALWAYS AS (coalesce(`translate_y`,-2147483648)) VIRTUAL COMMENT 'This is a generated column for the sake of uniqueness constraints.  It reads the lowest possible value of an int instead of NULL, since that value is basically never going to be used (no scroll or manuscript has pages of such a length).',
   `mirrored` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'A boolean flag.  A value of 1 means that the artefact should appear mirrored.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`artefact_position_id`),
+  PRIMARY KEY (`artefact_position_id`) USING BTREE,
   UNIQUE KEY `fk_unique_artefact_position` (`artefact_id`,`rotate`,`scale`,`translate_x_non_null`,`translate_y_non_null`,`z_index`,`mirrored`) USING BTREE,
-  KEY `fk_artefact_position_to_artefact` (`artefact_id`),
+  KEY `fk_artefact_position_to_artefact` (`artefact_id`) USING BTREE,
   KEY `fk_artefact_position_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_artefact_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_position_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1228 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=627 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,13 +355,13 @@ CREATE TABLE `artefact_position_owner` (
   `artefact_position_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`artefact_position_id`,`edition_id`),
-  KEY `fk_artefact_position_owner_to_scroll_version` (`edition_editor_id`),
-  KEY `fk_artefact_position_to_edition` (`edition_id`),
+  PRIMARY KEY (`artefact_position_id`,`edition_id`) USING BTREE,
+  KEY `fk_artefact_position_owner_to_scroll_version` (`edition_editor_id`) USING BTREE,
+  KEY `fk_artefact_position_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_artefact_position_owner_to_artefact` FOREIGN KEY (`artefact_position_id`) REFERENCES `artefact_position` (`artefact_position_id`),
   CONSTRAINT `fk_artefact_position_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_artefact_position_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1228 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=627 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -364,7 +386,7 @@ CREATE TABLE `artefact_shape` (
   CONSTRAINT `fk_artefact_shape_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_shape_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_shape_to_sqe_image` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=37709 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the region of the artefact in the coordinate system of its image. The image must first be scaled to the PPI defined in manuscript_metrics (1215 PPI by default).';
+) ENGINE=InnoDB AUTO_INCREMENT=52568 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the region of the artefact in the coordinate system of its image. The image must first be scaled to the PPI defined in manuscript_metrics (1215 PPI by default).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -378,9 +400,9 @@ CREATE TABLE `artefact_shape_owner` (
   `artefact_shape_id` int(11) unsigned NOT NULL DEFAULT 0,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`artefact_shape_id`,`edition_id`),
-  KEY `fk_artefact_shape_owner_to_scroll_version` (`edition_editor_id`),
-  KEY `fk_artefact_shape_to_edition` (`edition_id`),
+  PRIMARY KEY (`artefact_shape_id`,`edition_id`) USING BTREE,
+  KEY `fk_artefact_shape_owner_to_scroll_version` (`edition_editor_id`) USING BTREE,
+  KEY `fk_artefact_shape_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_artefact_shape_owner_to_artefact_shape` FOREIGN KEY (`artefact_shape_id`) REFERENCES `artefact_shape` (`artefact_shape_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_shape_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_artefact_shape_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
@@ -406,10 +428,10 @@ CREATE TABLE `artefact_stack` (
   `reason` enum('RECTO_VERSO','FOUND_IN_A_STACK','PART_OF_A_WAD','RECONSTRUCTED_STACK') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'RECTO_VERSO',
   `shared` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'True if the given region of artefact_B represents a region which appears on the surface of artefact_A (bleeding through, ink glued to the next layer).',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`artefact_stack_id`),
+  PRIMARY KEY (`artefact_stack_id`) USING BTREE,
   UNIQUE KEY `unique_artefact_stack` (`A_is_verso`,`artefact_A_id`,`artefact_B_id`,`artefact_B_offset`(25),`B_is_verso`,`layer_A`,`layer_B`,`reason`,`shared`) USING BTREE,
-  KEY `fk_af_stack_A_to_artefact_idx` (`artefact_A_id`),
-  KEY `fk_af_stack_B_to_artefact_idx` (`artefact_B_id`),
+  KEY `fk_af_stack_A_to_artefact_idx` (`artefact_A_id`) USING BTREE,
+  KEY `fk_af_stack_B_to_artefact_idx` (`artefact_B_id`) USING BTREE,
   KEY `fk_artefact_stack_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_af_stack_A_to_artefact` FOREIGN KEY (`artefact_A_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_af_stack_B_to_artefact` FOREIGN KEY (`artefact_B_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -428,10 +450,10 @@ CREATE TABLE `artefact_stack_owner` (
   `artefact_stack_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`artefact_stack_id`,`edition_id`),
-  KEY `fk_artefact_data_owner_to_scroll_version_id` (`edition_editor_id`),
-  KEY `fk_artefact_stack_owner_to_artefact_stack_idx` (`artefact_stack_id`),
-  KEY `fk_artefact_stack_to_edition` (`edition_id`),
+  PRIMARY KEY (`artefact_stack_id`,`edition_id`) USING BTREE,
+  KEY `fk_artefact_data_owner_to_scroll_version_id` (`edition_editor_id`) USING BTREE,
+  KEY `fk_artefact_stack_owner_to_artefact_stack_idx` (`artefact_stack_id`) USING BTREE,
+  KEY `fk_artefact_stack_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_artefact_stack_owner_to_artefact_stack` FOREIGN KEY (`artefact_stack_id`) REFERENCES `artefact_stack` (`artefact_stack_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_stack_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_artefact_stack_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
@@ -450,14 +472,14 @@ CREATE TABLE `artefact_status` (
   `work_status_id` int(11) unsigned NOT NULL DEFAULT 1,
   `artefact_id` int(11) unsigned NOT NULL,
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`artefact_status_id`),
+  PRIMARY KEY (`artefact_status_id`) USING BTREE,
   UNIQUE KEY `unique_artefact_status` (`artefact_id`,`work_status_id`) USING BTREE,
-  KEY `fk_artefact_status_to_work_status_id` (`work_status_id`),
+  KEY `fk_artefact_status_to_work_status_id` (`work_status_id`) USING BTREE,
   KEY `fk_artefact_status_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_artefact_status_to_artefact_id` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_status_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_status_to_work_status_id` FOREIGN KEY (`work_status_id`) REFERENCES `work_status` (`work_status_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1168 DEFAULT CHARSET=latin1 COMMENT='The artefact status is a user definable placeholder to store information about how state of work on defining the artefact.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='The artefact status is a user definable placeholder to store information about how state of work on defining the artefact.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -471,13 +493,13 @@ CREATE TABLE `artefact_status_owner` (
   `artefact_status_id` int(11) unsigned NOT NULL,
   `edition_id` int(11) unsigned NOT NULL,
   `edition_editor_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`artefact_status_id`,`edition_id`),
-  KEY `fk_artefact_status_owner_to_edition_id` (`edition_id`),
-  KEY `fk_artefact_status_owner_to_edition_editor_id` (`edition_editor_id`),
+  PRIMARY KEY (`artefact_status_id`,`edition_id`) USING BTREE,
+  KEY `fk_artefact_status_owner_to_edition_id` (`edition_id`) USING BTREE,
+  KEY `fk_artefact_status_owner_to_edition_editor_id` (`edition_editor_id`) USING BTREE,
   CONSTRAINT `fk_artefact_status_owner_to_artefact_status_id` FOREIGN KEY (`artefact_status_id`) REFERENCES `artefact_status` (`artefact_status_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_status_owner_to_edition_editor_id` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_status_owner_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -535,7 +557,7 @@ CREATE TABLE `attribute` (
   `removable` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'This flag functions as a boolean (0: false, 1: true) determining whether a this type of attribute can be removed from a sign interpretation.  A sign interpretation that has a character value (not NULL) must have the LETTER attribute_value (which is a SIGN_TYPE attribute), such an attribute cannot be removed from the sign interpretation, it can only be edited.',
   `repeatable` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'This flag functions as a boolean (0: false, 1: true) determining whether an attribute_value of this attribute type may be added more than once to the same sign interpretation.',
   `batch_editable` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'This flag functions as a boolean (0: false, 1: true) to determine whether this attribute is intended to be set for multiple entities at the same time.',
-  PRIMARY KEY (`attribute_id`),
+  PRIMARY KEY (`attribute_id`) USING BTREE,
   UNIQUE KEY `attribute_name_index` (`name`),
   KEY `fk_attribute_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_attribute_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -553,9 +575,9 @@ CREATE TABLE `attribute_owner` (
   `attribute_id` int(11) unsigned NOT NULL DEFAULT 0,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`attribute_id`,`edition_id`),
-  KEY `fk_attribute_to_scroll_version` (`edition_editor_id`),
-  KEY `fk_attribute_to_edition` (`edition_id`),
+  PRIMARY KEY (`attribute_id`,`edition_id`) USING BTREE,
+  KEY `fk_attribute_to_scroll_version` (`edition_editor_id`) USING BTREE,
+  KEY `fk_attribute_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_attribute_owner_to_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_attribute_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_attribute_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
@@ -575,9 +597,9 @@ CREATE TABLE `attribute_value` (
   `string_value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'A unique string value that can be applied as an attribute to a sign interpretation.',
   `description` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'A concise description of the attribute value.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`attribute_value_id`),
+  PRIMARY KEY (`attribute_value_id`) USING BTREE,
   UNIQUE KEY `unique_attribute_and_value` (`attribute_id`,`string_value`) USING BTREE,
-  KEY `fk_att_val_to_att_idx` (`attribute_id`),
+  KEY `fk_att_val_to_att_idx` (`attribute_id`) USING BTREE,
   KEY `fk_attribute_value_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_att_val_to_att` FOREIGN KEY (`attribute_id`) REFERENCES `attribute` (`attribute_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_attribute_value_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -596,9 +618,9 @@ CREATE TABLE `attribute_value_css` (
   `attribute_value_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'The attribute value to be formatted with this CSS code.',
   `css` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The CSS descriptor(s) to apply to sign interpretations with the linked attribute value.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`attribute_value_css_id`),
+  PRIMARY KEY (`attribute_value_css_id`) USING BTREE,
   UNIQUE KEY `unique_attribute_value_css` (`attribute_value_id`,`css`) USING BTREE,
-  KEY `fk_attribute_value_css_to_attribute_value` (`attribute_value_id`),
+  KEY `fk_attribute_value_css_to_attribute_value` (`attribute_value_id`) USING BTREE,
   KEY `fk_attribute_value_css_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_attribute_value_css_to_attribute_value` FOREIGN KEY (`attribute_value_id`) REFERENCES `attribute_value` (`attribute_value_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_attribute_value_css_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -616,9 +638,9 @@ CREATE TABLE `attribute_value_css_owner` (
   `attribute_value_css_id` int(11) unsigned NOT NULL DEFAULT 0,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`attribute_value_css_id`,`edition_id`),
-  KEY `fk_attribute_value_css_owner_to_scroll_version` (`edition_editor_id`),
-  KEY `fk_attribute_value_css_to_edition` (`edition_id`),
+  PRIMARY KEY (`attribute_value_css_id`,`edition_id`) USING BTREE,
+  KEY `fk_attribute_value_css_owner_to_scroll_version` (`edition_editor_id`) USING BTREE,
+  KEY `fk_attribute_value_css_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_attribute_value_css_owner_to_attribute_value_css` FOREIGN KEY (`attribute_value_css_id`) REFERENCES `attribute_value_css` (`attribute_value_css_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_attribute_value_css_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_attribute_value_css_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
@@ -636,9 +658,9 @@ CREATE TABLE `attribute_value_owner` (
   `attribute_value_id` int(11) unsigned NOT NULL DEFAULT 0,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`attribute_value_id`,`edition_id`),
-  KEY `fk_attribute_value_to_scroll_version` (`edition_editor_id`),
-  KEY `fk_attribute_value_to_edition` (`edition_id`),
+  PRIMARY KEY (`attribute_value_id`,`edition_id`) USING BTREE,
+  KEY `fk_attribute_value_to_scroll_version` (`edition_editor_id`) USING BTREE,
+  KEY `fk_attribute_value_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_attribute_value_owner_to_attribute_value` FOREIGN KEY (`attribute_value_id`) REFERENCES `attribute_value` (`attribute_value_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_attribute_value_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_attribute_value_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
@@ -695,7 +717,7 @@ CREATE TABLE `edition` (
   `collaborators` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Each edition may have a set list of collaborators.  If NULL, then the API will automatically construct a list of collaborators based on the edition_editors.',
   `public` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'A boolean signalling whether this edition has been made publicly viewable or not. Public relates only to viewing rights, not to write or admin. As the system is currently constructed all public editions should also be locked.',
   `archived` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'This allows an edition to be safely deleted. By setting archived to 1, the edition should no longer show up in user queries.',
-  PRIMARY KEY (`edition_id`),
+  PRIMARY KEY (`edition_id`) USING BTREE,
   KEY `fk_edition_to_manuscript` (`manuscript_id`) USING BTREE,
   CONSTRAINT `fk_edition_to_manuscript` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1646 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table provides the anchor for a complete scholarly edition of a manuscript.  It also maintains the locked and public status of the edition.';
@@ -716,9 +738,9 @@ CREATE TABLE `edition_editor` (
   `may_lock` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean whether the editor is allowed to lock the edition.',
   `may_read` tinyint(3) unsigned NOT NULL DEFAULT 1 COMMENT 'Boolean whether the editor is allowed to read the edition. No editors may ever be deleted from an edition, but revoking read access to an editor is the SQE equivalent to fully removing the editor from work on an edition.',
   `is_admin` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean whether an editor is an admin. An admin must have read permission. Only an admin may change the permissions of other editors, including revoking admin status (including for herself). Each edition must have at least one admin. Only an admin may publish or delete an edition.',
-  PRIMARY KEY (`edition_editor_id`),
-  UNIQUE KEY `edition_user_idx` (`edition_id`,`user_id`),
-  KEY `fk_edition_editor_to_user` (`user_id`),
+  PRIMARY KEY (`edition_editor_id`) USING BTREE,
+  UNIQUE KEY `edition_user_idx` (`edition_id`,`user_id`) USING BTREE,
+  KEY `fk_edition_editor_to_user` (`user_id`) USING BTREE,
   CONSTRAINT `fk_edition_editor_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_edition_editor_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=1646 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Each edition has one or more edition editors, which are the individual users working on that edition.  Each edition editor has individual access rights that are specified here.';
@@ -744,12 +766,56 @@ CREATE TABLE `edition_editor_request` (
   KEY `edition_editor_request_to_admin_user_id` (`admin_user_id`),
   KEY `edition_editor_request_to_edition_id` (`edition_id`),
   KEY `edition_editor_request_to_token` (`token`),
-  CONSTRAINT `edition_editor_request_to_admin_user_id` FOREIGN KEY (`admin_user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `edition_editor_request_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `edition_editor_request_to_editor_user_id` FOREIGN KEY (`editor_user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `edition_editor_request_to_token` FOREIGN KEY (`token`) REFERENCES `user_email_token` (`token`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `edition_editor_request_to_admin_user_id` FOREIGN KEY (`admin_user_id`) REFERENCES `user` (`user_id`),
+  CONSTRAINT `edition_editor_request_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `edition_editor_request_to_editor_user_id` FOREIGN KEY (`editor_user_id`) REFERENCES `user` (`user_id`),
+  CONSTRAINT `edition_editor_request_to_token` FOREIGN KEY (`token`) REFERENCES `user_email_token` (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the data for a request for a user to become an editor of an edition. It contains details about the permissions associated with the request.';
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary table structure for view `edition_iaa_manifest`
+--
+
+DROP TABLE IF EXISTS `edition_iaa_manifest`;
+/*!50001 DROP VIEW IF EXISTS `edition_iaa_manifest`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `edition_iaa_manifest` (
+  `sqe_image_id` tinyint NOT NULL,
+  `edition_id` tinyint NOT NULL,
+  `iaa_metadata_id` tinyint NOT NULL,
+  `old_iaa_filename` tinyint NOT NULL,
+  `image_urls_id` tinyint NOT NULL,
+  `filename` tinyint NOT NULL,
+  `native_width` tinyint NOT NULL,
+  `native_height` tinyint NOT NULL,
+  `dpi` tinyint NOT NULL,
+  `type` tinyint NOT NULL,
+  `wavelength_start` tinyint NOT NULL,
+  `wavelength_end` tinyint NOT NULL,
+  `is_master` tinyint NOT NULL,
+  `image_catalog_id` tinyint NOT NULL,
+  `is_recto` tinyint NOT NULL,
+  `manifest` tinyint NOT NULL,
+  `material` tinyint NOT NULL,
+  `publication_number` tinyint NOT NULL,
+  `plate` tinyint NOT NULL,
+  `frag` tinyint NOT NULL,
+  `site` tinyint NOT NULL,
+  `period` tinyint NOT NULL,
+  `composition` tinyint NOT NULL,
+  `copy` tinyint NOT NULL,
+  `manuscript` tinyint NOT NULL,
+  `other_identifications` tinyint NOT NULL,
+  `abbreviation` tinyint NOT NULL,
+  `manuscript_type` tinyint NOT NULL,
+  `composition_type` tinyint NOT NULL,
+  `language` tinyint NOT NULL,
+  `script` tinyint NOT NULL,
+  `publication` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `font_file`
@@ -766,7 +832,7 @@ CREATE TABLE `font_file` (
   `font_binary_data` longblob DEFAULT NULL COMMENT 'The font data to be sent as file to the front end',
   `font_format` enum('woff','woff2','ttf','otf','svg') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'woff' COMMENT 'The font-format of the font_binary_data',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`font_file_id`),
+  PRIMARY KEY (`font_file_id`) USING BTREE,
   UNIQUE KEY `font_name_idx` (`font_name`),
   KEY `fk_font_file_to_creator_id` (`creator_id`),
   KEY `fk_font_file_to_scribal_font` (`scribal_font_id`),
@@ -813,11 +879,11 @@ CREATE TABLE `iaa_edition_catalog` (
   `manuscript_id` int(11) unsigned DEFAULT NULL COMMENT 'Id of the manuscript within the SQE database.',
   `comment` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'Extra comments.',
   `comment_hash` char(56) GENERATED ALWAYS AS (sha2(`comment`,224)) VIRTUAL,
-  PRIMARY KEY (`iaa_edition_catalog_id`),
+  PRIMARY KEY (`iaa_edition_catalog_id`) USING BTREE,
   UNIQUE KEY `unique_edition_entry` (`edition_location_1`,`edition_location_2`,`edition_name`,`edition_side`,`edition_volume`,`manuscript`,`comment_hash`) USING BTREE,
   KEY `fk_edition_catalog_to_manuscript_id` (`manuscript_id`) USING BTREE,
   CONSTRAINT `fk_edition_catalog_to_manuscript_id` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=40041 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table contains the IAA data for the editio princeps reference for all of their images.';
+) ENGINE=InnoDB AUTO_INCREMENT=40128 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table contains the IAA data for the editio princeps reference for all of their images.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -830,8 +896,8 @@ DROP TABLE IF EXISTS `iaa_edition_catalog_author`;
 CREATE TABLE `iaa_edition_catalog_author` (
   `iaa_edition_catalog_id` int(11) unsigned NOT NULL DEFAULT 0,
   `user_id` int(11) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`iaa_edition_catalog_id`),
-  KEY `fk_edition_catalog_owner_to_scroll_version_id` (`user_id`),
+  PRIMARY KEY (`iaa_edition_catalog_id`) USING BTREE,
+  KEY `fk_edition_catalog_owner_to_scroll_version_id` (`user_id`) USING BTREE,
   CONSTRAINT `fk_edition_catalog_owner_to_edition_catalog_id` FOREIGN KEY (`iaa_edition_catalog_id`) REFERENCES `iaa_edition_catalog` (`iaa_edition_catalog_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_iaa_edition_catalog_author_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -848,12 +914,12 @@ CREATE TABLE `iaa_edition_catalog_to_text_fragment` (
   `iaa_edition_catalog_to_text_fragment_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `iaa_edition_catalog_id` int(11) unsigned NOT NULL,
   `text_fragment_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`iaa_edition_catalog_to_text_fragment_id`),
+  PRIMARY KEY (`iaa_edition_catalog_to_text_fragment_id`) USING BTREE,
   UNIQUE KEY `unique_edition_catalog_id_text_fragment_id` (`text_fragment_id`,`iaa_edition_catalog_id`) USING BTREE,
   KEY `fk_edition_catalog_to_text_fragment_to_edition_catalog_id` (`iaa_edition_catalog_id`) USING BTREE,
   CONSTRAINT `fk_edition_catalog_to_text_fragment_to_edition_catalog_id` FOREIGN KEY (`iaa_edition_catalog_id`) REFERENCES `iaa_edition_catalog` (`iaa_edition_catalog_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_edition_catalog_to_text_fragment_to_text_fragment_id` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=18160 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This is a temporary table to curate matches between the image catalog system and the SQE text fragments in a manuscript.  It should eventually be deprecated in favor of matches inferred by spatial overlap on the virtual scroll of a the placement of a ROI linked to text transcription and an artefact linked to an image.';
+) ENGINE=InnoDB AUTO_INCREMENT=18323 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This is a temporary table to curate matches between the image catalog system and the SQE text fragments in a manuscript.  It should eventually be deprecated in favor of matches inferred by spatial overlap on the virtual scroll of a the placement of a ROI linked to text transcription and an artefact linked to an image.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -877,13 +943,17 @@ CREATE TABLE `iaa_edition_catalog_to_text_fragment_confirmation` (
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `prevent_impossible_insert_to_edition_catalog_to_col_confirmation` BEFORE INSERT ON `iaa_edition_catalog_to_text_fragment_confirmation` FOR EACH ROW BEGIN
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 trigger SQE.prevent_impossible_insert_to_edition_catalog_to_col_confirmation
+	before insert
+	on SQE.iaa_edition_catalog_to_text_fragment_confirmation
+	for each row
+	BEGIN
 
 IF new.confirmed = 1
     AND new.user_id IS NULL
@@ -901,13 +971,17 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 TRIGGER `prevent_impossible_update_to_edition_catalog_to_col_confirmation` BEFORE UPDATE ON `iaa_edition_catalog_to_text_fragment_confirmation` FOR EACH ROW BEGIN
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`%`*/ /*!50003 trigger SQE.prevent_impossible_update_to_edition_catalog_to_col_confirmation
+	before update
+	on SQE.iaa_edition_catalog_to_text_fragment_confirmation
+	for each row
+	BEGIN
 
 IF new.confirmed = 1
     AND new.user_id IS NULL
@@ -924,6 +998,37 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Table structure for table `iaa_metadata`
+--
+
+DROP TABLE IF EXISTS `iaa_metadata`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `iaa_metadata` (
+  `iaa_metadata_id` int(10) unsigned NOT NULL,
+  `material` varchar(255) DEFAULT NULL,
+  `publication_number` varchar(255) DEFAULT NULL,
+  `plate` varchar(255) NOT NULL DEFAULT '',
+  `frag` varchar(255) DEFAULT NULL,
+  `site` varchar(255) DEFAULT NULL,
+  `period` varchar(255) DEFAULT NULL,
+  `composition` mediumtext DEFAULT NULL,
+  `copy` varchar(255) DEFAULT NULL,
+  `manuscript` varchar(255) DEFAULT NULL,
+  `other_identifications` mediumtext DEFAULT NULL,
+  `abbreviation` mediumtext DEFAULT NULL,
+  `manuscript_type` varchar(255) DEFAULT NULL,
+  `composition_type` varchar(255) DEFAULT NULL,
+  `language` varchar(255) DEFAULT NULL,
+  `script` varchar(255) DEFAULT NULL,
+  `publication` mediumtext DEFAULT NULL,
+  `extra` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  PRIMARY KEY (`iaa_metadata_id`),
+  UNIQUE KEY `iaa_metadata_unique_plate_frag` (`frag`,`plate`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `image_catalog`
 --
 
@@ -938,11 +1043,12 @@ CREATE TABLE `image_catalog` (
   `catalog_side` tinyint(1) unsigned DEFAULT 0 COMMENT 'Side reference designation, recto = 0, verso = 1.',
   `object_id` varchar(255) GENERATED ALWAYS AS (concat(`institution`,'-',`catalog_number_1`,'-',`catalog_number_2`)) STORED COMMENT 'An autogenerated human readable object identifier based on the institution and catalogue numbers.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`image_catalog_id`),
+  PRIMARY KEY (`image_catalog_id`) USING BTREE,
   UNIQUE KEY `unique_catalog_entry` (`catalog_number_1`,`catalog_number_2`,`catalog_side`,`institution`) USING BTREE,
   KEY `fk_image_catalog_to_creator_id` (`creator_id`),
+  KEY `object-id-index` (`object_id`) USING BTREE,
   CONSTRAINT `fk_image_catalog_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=43481 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The referencing system of the institution providing the images.';
+) ENGINE=InnoDB AUTO_INCREMENT=48947 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The referencing system of the institution providing the images.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -955,8 +1061,8 @@ DROP TABLE IF EXISTS `image_catalog_author`;
 CREATE TABLE `image_catalog_author` (
   `image_catalog_id` int(11) unsigned NOT NULL DEFAULT 0,
   `user_id` int(11) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`image_catalog_id`),
-  KEY `fk_image_catalog_owner_to_scroll_version_id` (`user_id`),
+  PRIMARY KEY (`image_catalog_id`) USING BTREE,
+  KEY `fk_image_catalog_owner_to_scroll_version_id` (`user_id`) USING BTREE,
   CONSTRAINT `fk_image_catalog_author_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_image_catalog_owner_to_image_catalog_id` FOREIGN KEY (`image_catalog_id`) REFERENCES `image_catalog` (`image_catalog_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -979,7 +1085,7 @@ CREATE TABLE `image_catalog_owner` (
   CONSTRAINT `image_catalog_owner_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `image_catalog_owner_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `image_catalog_owner_to_image_catalog` FOREIGN KEY (`image_catalog_id`) REFERENCES `image_catalog` (`image_catalog_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=43481 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=48947 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1029,8 +1135,8 @@ DROP TABLE IF EXISTS `image_to_iaa_edition_catalog`;
 CREATE TABLE `image_to_iaa_edition_catalog` (
   `iaa_edition_catalog_id` int(11) unsigned NOT NULL DEFAULT 0,
   `image_catalog_id` int(11) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`iaa_edition_catalog_id`,`image_catalog_id`),
-  KEY `fk_to_catalog_id` (`image_catalog_id`),
+  PRIMARY KEY (`iaa_edition_catalog_id`,`image_catalog_id`) USING BTREE,
+  KEY `fk_to_catalog_id` (`image_catalog_id`) USING BTREE,
   CONSTRAINT `fk_to_catalog_id` FOREIGN KEY (`image_catalog_id`) REFERENCES `image_catalog` (`image_catalog_id`),
   CONSTRAINT `fk_to_edition_id` FOREIGN KEY (`iaa_edition_catalog_id`) REFERENCES `iaa_edition_catalog` (`iaa_edition_catalog_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Temporary table to link image catalog info with edition info until the SQE_image table is fully populated.  Once that table is populated this one will become redundant.  This was autogenerated from IAA data.';
@@ -1049,13 +1155,16 @@ CREATE TABLE `image_to_image_map` (
   `image2_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Id of the second SQE_image to be mapped.',
   `region_on_image1` polygon NOT NULL COMMENT 'Region on image 1 that can be found in image 2.',
   `region_on_image2` polygon NOT NULL COMMENT 'Region in image 2 that can be found in image 1.',
-  `transform_matrix` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '{"matrix":[[1,0,0],[0,1,0]]}' COMMENT 'Linear affine transform to apply to image 2 in order to align it with image 1.  The format is: “{“matrix”: [[sx cosθ, -sy sinθ, tx],[sx sinθ, sy cosθ, ty]]}”.',
+  `scale` decimal(6,4) NOT NULL DEFAULT 1.0000,
+  `rotate` decimal(6,2) NOT NULL DEFAULT 0.00,
+  `translate_x` int(10) NOT NULL DEFAULT 0,
+  `translate_y` int(10) NOT NULL DEFAULT 0,
   `region1_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_on_image1`,512)) STORED COMMENT 'θ',
   `region2_hash` binary(128) GENERATED ALWAYS AS (sha2(`region_on_image2`,512)) STORED COMMENT 'Polygon hash for uniqueness constraints.',
-  PRIMARY KEY (`image_to_image_map_id`),
-  UNIQUE KEY `unique_image_to_image_map` (`image1_id`,`image2_id`,`region1_hash`,`region2_hash`,`transform_matrix`) USING BTREE,
-  KEY `fk_image1_to_image_id` (`image1_id`),
-  KEY `fk_image2_to_image_id` (`image2_id`),
+  PRIMARY KEY (`image_to_image_map_id`) USING BTREE,
+  UNIQUE KEY `unique_image_to_image_map` (`image1_id`,`image2_id`,`region1_hash`,`region2_hash`,`scale`,`rotate`,`translate_x`,`translate_y`) USING BTREE,
+  KEY `fk_image1_to_image_id` (`image1_id`) USING BTREE,
+  KEY `fk_image2_to_image_id` (`image2_id`) USING BTREE,
   CONSTRAINT `fk_image1_to_image_id` FOREIGN KEY (`image1_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_image2_to_image_id` FOREIGN KEY (`image2_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=71728 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table contains the mapping information to correlate images of the same object via linear affine transformations. The mapping may only invlove a portion of either image as defined in the region_on_imageX columns.';
@@ -1071,8 +1180,8 @@ DROP TABLE IF EXISTS `image_to_image_map_author`;
 CREATE TABLE `image_to_image_map_author` (
   `image_to_image_map_id` int(11) unsigned NOT NULL DEFAULT 0,
   `user_id` int(11) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`image_to_image_map_id`,`user_id`),
-  KEY `fk_image_to_image_map_author_to_image_to_user` (`user_id`),
+  PRIMARY KEY (`image_to_image_map_id`,`user_id`) USING BTREE,
+  KEY `fk_image_to_image_map_author_to_image_to_user` (`user_id`) USING BTREE,
   CONSTRAINT `fk_image_to_image_map_author_to_image_to_image_map` FOREIGN KEY (`image_to_image_map_id`) REFERENCES `image_to_image_map` (`image_to_image_map_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_image_to_image_map_author_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1091,7 +1200,7 @@ CREATE TABLE `image_urls` (
   `suffix` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Special suffux for file name (if applicable).  Usually default.jpg.',
   `proxy` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Specify a proxy address if it is necessary to use a proxy for CORS compliance.',
   `license` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'License for this iiif servers resources.',
-  PRIMARY KEY (`image_urls_id`,`url`)
+  PRIMARY KEY (`image_urls_id`,`url`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='URL’s for the iiif image servers providing our images.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1104,8 +1213,8 @@ DROP TABLE IF EXISTS `line`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `line` (
   `line_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`line_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=54448 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The line is an abstract placeholder which can receive definition via the line_data table.  It must be nested in a text fragment (text_fragment_to_line) and will contain signs (line_to_sign)';
+  PRIMARY KEY (`line_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=54465 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The line is an abstract placeholder which can receive definition via the line_data table.  It must be nested in a text fragment (text_fragment_to_line) and will contain signs (line_to_sign)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1120,9 +1229,9 @@ CREATE TABLE `line_data` (
   `line_id` int(10) unsigned NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation for this line.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`line_data_id`),
+  PRIMARY KEY (`line_data_id`) USING BTREE,
   UNIQUE KEY `unique_line_id_name` (`line_id`,`name`) USING BTREE,
-  KEY `fk_line_data_to_line_idx` (`line_id`),
+  KEY `fk_line_data_to_line_idx` (`line_id`) USING BTREE,
   KEY `fk_line_data_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_line_data_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_line_data_to_line` FOREIGN KEY (`line_id`) REFERENCES `line` (`line_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -1140,9 +1249,9 @@ CREATE TABLE `line_data_owner` (
   `line_data_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`line_data_id`,`edition_id`),
-  KEY `fk_line_data_owner_to_scroll_version_idx` (`edition_editor_id`),
-  KEY `fk_line_data_to_edition` (`edition_id`),
+  PRIMARY KEY (`line_data_id`,`edition_id`) USING BTREE,
+  KEY `fk_line_data_owner_to_scroll_version_idx` (`edition_editor_id`) USING BTREE,
+  KEY `fk_line_data_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_line_data_owner_to_line_data` FOREIGN KEY (`line_data_id`) REFERENCES `line_data` (`line_data_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `fk_line_data_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_line_data_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
@@ -1161,9 +1270,9 @@ CREATE TABLE `line_to_sign` (
   `sign_id` int(10) unsigned NOT NULL,
   `line_id` int(10) unsigned NOT NULL,
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`line_to_sign_id`),
+  PRIMARY KEY (`line_to_sign_id`) USING BTREE,
   UNIQUE KEY `line_sign_idx` (`sign_id`,`line_id`) USING BTREE,
-  KEY `fk_line_to_sign_to_line_idx` (`line_id`),
+  KEY `fk_line_to_sign_to_line_idx` (`line_id`) USING BTREE,
   KEY `fk_line_to_sign_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_line_to_sign_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_line_to_sign_to_line` FOREIGN KEY (`line_id`) REFERENCES `line` (`line_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -1182,9 +1291,9 @@ CREATE TABLE `line_to_sign_owner` (
   `line_to_sign_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`line_to_sign_id`,`edition_id`),
-  KEY `fl_to_sign_owner_to_scroll_version_idx` (`edition_editor_id`),
-  KEY `fk_line_to_sign_to_edition` (`edition_id`),
+  PRIMARY KEY (`line_to_sign_id`,`edition_id`) USING BTREE,
+  KEY `fl_to_sign_owner_to_scroll_version_idx` (`edition_editor_id`) USING BTREE,
+  KEY `fk_line_to_sign_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_line_to_sign_owner_to_line_to_sign` FOREIGN KEY (`line_to_sign_id`) REFERENCES `line_to_sign` (`line_to_sign_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `fk_line_to_sign_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_line_to_sign_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
@@ -1221,10 +1330,10 @@ CREATE TABLE `main_action` (
   `rewinded` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean relaying whether the particular action has been rewound or not.',
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Id of the editor who performed the action.',
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Id of the edition in which the action was performed.',
-  PRIMARY KEY (`main_action_id`),
-  UNIQUE KEY `all_idx` (`main_action_id`,`edition_id`,`edition_editor_id`),
-  KEY `main_action_to_scroll_version_idx` (`edition_editor_id`),
-  KEY `fk_main_action_to_edition` (`edition_id`),
+  PRIMARY KEY (`main_action_id`) USING BTREE,
+  UNIQUE KEY `all_idx` (`main_action_id`,`edition_id`,`edition_editor_id`) USING BTREE,
+  KEY `main_action_to_scroll_version_idx` (`edition_editor_id`) USING BTREE,
+  KEY `fk_main_action_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_main_action_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_main_action_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table recording mutation actions (it can be used for infinite undo).  This table stores the state of the action (rewound or not), the date of the change, and the edition that the action is associated with.  The table single_action links to the entries here and describes the table in which the action occurred, the id of the entry in that table that was involved, and the nature of the action (creating a connection between that entry and the edition of the main_action, or deleting the connection between that entry and the edition of the main_action).';
@@ -1239,7 +1348,7 @@ DROP TABLE IF EXISTS `manuscript`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `manuscript` (
   `manuscript_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`manuscript_id`)
+  PRIMARY KEY (`manuscript_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1694 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The manuscript is an abstract placeholder that is given metadata via the manuscript_data table. This allows multiple editions of the same manuscript to be created, regardless of the naming scheme used. A manuscript will contain one or more text fragments (manuscript_to_text_fragment)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1255,7 +1364,7 @@ CREATE TABLE `manuscript_data` (
   `manuscript_id` int(10) unsigned NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation of the manuscript.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`manuscript_data_id`),
+  PRIMARY KEY (`manuscript_data_id`) USING BTREE,
   UNIQUE KEY `unique_manuscript_id_name` (`manuscript_id`,`name`) USING BTREE,
   KEY `fk_manuscript_to_master_manuscript_idx` (`manuscript_id`) USING BTREE,
   KEY `fk_manuscript_data_to_creator_id` (`creator_id`),
@@ -1275,7 +1384,7 @@ CREATE TABLE `manuscript_data_owner` (
   `manuscript_data_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`manuscript_data_id`,`edition_id`),
+  PRIMARY KEY (`manuscript_data_id`,`edition_id`) USING BTREE,
   KEY `fk_manuscript_data_to_edition` (`edition_id`) USING BTREE,
   KEY `fk_manuscript_owner_scroll_version_idx` (`edition_editor_id`) USING BTREE,
   CONSTRAINT `fk_manuscript_data_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
@@ -1302,14 +1411,13 @@ CREATE TABLE `manuscript_metrics` (
   `scribal_font_id` int(10) unsigned DEFAULT NULL,
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`manuscript_metrics_id`),
-  UNIQUE KEY `unique_manuscript_metrics` (`manuscript_id`,`height`,`pixels_per_inch`,`width`,`x_origin`,`y_origin`) USING BTREE,
   KEY `manuscript_metrics_to_manuscript` (`manuscript_id`),
   KEY `manuscript_metrics_to_scribal_font_fk` (`scribal_font_id`),
   KEY `fk_manuscript_metrics_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_manuscript_metrics_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `manuscript_metrics_to_manuscript` FOREIGN KEY (`manuscript_id`) REFERENCES `manuscript` (`manuscript_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `manuscript_metrics_to_scribal_font_fk` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1372 DEFAULT CHARSET=utf8mb4 COMMENT='This table stores basic information about the gross metrics of a manuscript.  The user is able to specify an  x/y-origin point for the start of the manuscript along with its proposed height and width in millimeters.  The coordinate system begins top left, positive values increase while moving downward on the y-axis and while moving rightward on the x-axis.  The PPI is currently fixed ad 1215 PPI to facilitate comparison of GIS data between manuscripts.  All images should be scaled to this resolution before creating artefacts and ROIs that are placed upon the virtual manuscript.';
+) ENGINE=InnoDB AUTO_INCREMENT=1409 DEFAULT CHARSET=utf8mb4 COMMENT='This table stores basic information about the gross metrics of a manuscript.  The user is able to specify an  x/y-origin point for the start of the manuscript along with its proposed height and width in millimeters.  The coordinate system begins top left, positive values increase while moving downward on the y-axis and while moving rightward on the x-axis.  The PPI is currently fixed ad 1215 PPI to facilitate comparison of GIS data between manuscripts.  All images should be scaled to this resolution before creating artefacts and ROIs that are placed upon the virtual manuscript.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1367,7 +1475,7 @@ CREATE TABLE `manuscript_to_text_fragment` (
   `manuscript_id` int(10) unsigned NOT NULL,
   `text_fragment_id` int(10) unsigned NOT NULL,
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`manuscript_to_text_fragment_id`),
+  PRIMARY KEY (`manuscript_to_text_fragment_id`) USING BTREE,
   UNIQUE KEY `manuscript_text_fragment_idx` (`manuscript_id`,`text_fragment_id`) USING BTREE,
   KEY `fk_manuscript_to_text_fragment_to_text_fragment_idx` (`text_fragment_id`) USING BTREE,
   KEY `fk_manuscript_to_text_fragment_to_creator_id` (`creator_id`),
@@ -1388,7 +1496,7 @@ CREATE TABLE `manuscript_to_text_fragment_owner` (
   `manuscript_to_text_fragment_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`manuscript_to_text_fragment_id`,`edition_id`),
+  PRIMARY KEY (`manuscript_to_text_fragment_id`,`edition_id`) USING BTREE,
   KEY `fk_manuscript_to_text_fragment_owner_to_edition_editor_idx` (`edition_editor_id`) USING BTREE,
   KEY `fk_manuscript_to_text_fragment_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_manuscript_to_text_fragment_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
@@ -1435,11 +1543,11 @@ CREATE TABLE `materialized_sign_stream` (
   `initial_sign_interpretation_id` int(11) unsigned NOT NULL DEFAULT 0 COMMENT 'The id of the first sign interpretation in DAG of sign interpretations.',
   `materialized_text` mediumtext DEFAULT NULL COMMENT 'A concatenated string of the character values in the DAG beginning with the initial_sign_interpretation_id.  These values can be related to their sign_interpretation_id by finding the index of a given character within the string and looking up that index value in the table materialized_sign_stream_indices.',
   PRIMARY KEY (`materlialized_sign_stream_id`),
+  UNIQUE KEY `unique_edition_sign_interpretation` (`edition_id`,`initial_sign_interpretation_id`) USING BTREE,
   KEY `materialized_sign_stream_to_initial_sign_interpretation_id` (`initial_sign_interpretation_id`),
-  KEY `fk_materialized_sign_stream_to_edition_id` (`edition_id`),
   CONSTRAINT `fk_materialized_sign_stream_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_materialized_sign_stream_to_sign_interpretation_id` FOREIGN KEY (`initial_sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='This table is used to store every variant sequence for each possible sign stream DAG.  The sign interpretation id can be found by searching the materialized_sign_stream_indices table for the index of a character with the materialized_text string.';
+  CONSTRAINT `materialized_sign_stream_to_initial_sign_interpretation_id` FOREIGN KEY (`initial_sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=449 DEFAULT CHARSET=utf8mb4 COMMENT='This table is used to store every variant sequence for each possible sign stream DAG.  The sign interpretation id can be found by searching the materialized_sign_stream_indices table for the index of a character with the materialized_text string.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1475,7 +1583,7 @@ CREATE TABLE `materialized_sign_stream_schedule` (
   KEY `fk_materialized_sign_stream_schedule_to_edition_id` (`edition_id`),
   CONSTRAINT `fk_materialized_sign_stream_schedule_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `materialized_sign_stream_schedule_to_sign_interpretation_id` FOREIGN KEY (`initial_sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table is used for a scheduler to determine which sign streams will need to be materialized into the materialized_sign_stream and materialized_sign_stream_index tables.  It is meant to be read by a scheduler that will create the materialized sign stream for all entries in this table (the entries should be deleted once the materialization is complete).';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='This table is used for a scheduler to determine which sign streams will need to be materialized into the materialized_sign_stream and materialized_sign_stream_index tables.  It is meant to be read by a scheduler that will create the materialized sign stream for all entries in this table (the entries should be deleted once the materialization is complete).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1486,52 +1594,177 @@ DROP TABLE IF EXISTS `parallel_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `parallel_group` (
-  `parallel_group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`parallel_group_id`)
+  `parallel_group_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
+  PRIMARY KEY (`parallel_group_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Provides a unique identifier for groups of sign_stream_sections representing parallel chunks of text';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_group_pair`
+--
+
+DROP TABLE IF EXISTS `parallel_group_pair`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_group_pair` (
+  `parallel_group_pair_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
+  `parallel_group_a_id` int(10) unsigned NOT NULL COMMENT 'Refers to the first parallel_group',
+  `parallel_group_b_id` int(10) unsigned NOT NULL COMMENT 'Refers to second parallel_group',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`parallel_group_pair_id`),
+  UNIQUE KEY `parallel_group_pairs__index` (`parallel_group_a_id`,`parallel_group_b_id`),
+  KEY `fk_parallel_group_pair_parallel_group_b` (`parallel_group_b_id`),
+  KEY `fk_parallel_group_pair_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_parallel_group_pair_parallel_group_a` FOREIGN KEY (`parallel_group_a_id`) REFERENCES `parallel_group` (`parallel_group_id`),
+  CONSTRAINT `fk_parallel_group_pair_parallel_group_b` FOREIGN KEY (`parallel_group_b_id`) REFERENCES `parallel_group` (`parallel_group_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Creates a pair of parallel_groups';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_group_pair_owner`
+--
+
+DROP TABLE IF EXISTS `parallel_group_pair_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_group_pair_owner` (
+  `parallel_group_pair_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`parallel_group_pair_id`,`edition_id`),
+  KEY `fk_parallel_group_pair_to_edition` (`edition_id`),
+  KEY `fk_parallel_group_pair_to_edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_par_group_pair_owner_to_pararalle_group_pair` FOREIGN KEY (`parallel_group_pair_id`) REFERENCES `parallel_group_pair` (`parallel_group_pair_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `parallel_word`
+-- Table structure for table `parallel_group_pair_to_type`
 --
 
-DROP TABLE IF EXISTS `parallel_word`;
+DROP TABLE IF EXISTS `parallel_group_pair_to_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `parallel_word` (
-  `parallel_word_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `word_id` int(10) unsigned NOT NULL,
-  `parallel_group_id` int(10) unsigned NOT NULL,
-  `sub_group` tinyint(3) unsigned NOT NULL DEFAULT 0,
+CREATE TABLE `parallel_group_pair_to_type` (
+  `parallel_group_pair_to_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
+  `parallel_group_pair_id` int(10) unsigned NOT NULL COMMENT 'Refers to a parallel_group_pair',
+  `parallel_type_id` int(10) unsigned NOT NULL COMMENT 'Refers to a parallel_type.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`parallel_word_id`),
-  UNIQUE KEY `unique_word_id_parallel_group_id_sup_group` (`parallel_group_id`,`sub_group`,`word_id`) USING BTREE,
-  KEY `fk_par_word_to_group_idx` (`parallel_group_id`),
-  KEY `fk_par_owrd_to_word_idx` (`word_id`),
-  KEY `fk_parallel_word_to_creator_id` (`creator_id`),
-  CONSTRAINT `fk_par_owrd_to_word` FOREIGN KEY (`word_id`) REFERENCES `sign_stream_section` (`sign_stream_section_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_par_word_to_group` FOREIGN KEY (`parallel_group_id`) REFERENCES `parallel_group` (`parallel_group_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_parallel_word_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  PRIMARY KEY (`parallel_group_pair_to_type_id`),
+  UNIQUE KEY `parallel_group_pair_to_type_index` (`parallel_group_pair_id`,`parallel_type_id`),
+  KEY `fk_parallel_group_pair_to_type` (`parallel_type_id`),
+  KEY `fk_parallel_group_pair_to_type_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_parallel_group_pair` FOREIGN KEY (`parallel_group_pair_id`) REFERENCES `parallel_group_pair` (`parallel_group_pair_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_type` FOREIGN KEY (`parallel_type_id`) REFERENCES `parallel_type` (`parallel_type_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_type_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Connexts a parallel_group_pair with a parallel type';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_group_pair_to_type_owner`
+--
+
+DROP TABLE IF EXISTS `parallel_group_pair_to_type_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_group_pair_to_type_owner` (
+  `parallel_group_pair_to_type_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`parallel_group_pair_to_type_id`,`edition_id`),
+  KEY `fk_parallel_group_pair_to_type_to_edition` (`edition_id`),
+  KEY `fk_parallel_group_pair_to_type_to_edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk__group_pair_to_type_owner_to_pararalle_type` FOREIGN KEY (`parallel_group_pair_to_type_id`) REFERENCES `parallel_group_pair_to_type` (`parallel_group_pair_to_type_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_type_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_parallel_group_pair_to_type_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_sign_stream_section`
+--
+
+DROP TABLE IF EXISTS `parallel_sign_stream_section`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_sign_stream_section` (
+  `parallel_sign_stream_section_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
+  `sign_stream_section_id` int(10) unsigned NOT NULL COMMENT 'Reference to sign_stream_section',
+  `parallel_group_id` int(10) unsigned NOT NULL COMMENT 'Reference to parallel_group',
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`parallel_sign_stream_section_id`) USING BTREE,
+  UNIQUE KEY `unique_sign_stream_section_id_parallel_group_id_idx` (`parallel_group_id`,`sign_stream_section_id`),
+  KEY `fk_par_sss_to_word_idx` (`sign_stream_section_id`),
+  KEY `fk_par_sss_to_group_idx` (`parallel_group_id`),
+  KEY `fk_parallel_sign_stream_section_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_par_sss_to_parallel_group` FOREIGN KEY (`parallel_group_id`) REFERENCES `parallel_group` (`parallel_group_id`),
+  CONSTRAINT `fk_par_sss_to_soign_stream_section` FOREIGN KEY (`sign_stream_section_id`) REFERENCES `sign_stream_section` (`sign_stream_section_id`),
+  CONSTRAINT `fk_parallel_sign_stream_section_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table enables a connection to be made between parallel words in two different manuscripts.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `parallel_word_owner`
+-- Table structure for table `parallel_sign_stream_section_owner`
 --
 
-DROP TABLE IF EXISTS `parallel_word_owner`;
+DROP TABLE IF EXISTS `parallel_sign_stream_section_owner`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `parallel_word_owner` (
-  `parallel_word_id` int(10) unsigned NOT NULL,
+CREATE TABLE `parallel_sign_stream_section_owner` (
+  `parallel_sign_stream_section_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`parallel_word_id`,`edition_id`),
-  KEY `fk_par_word_owner_to_sc_idx` (`edition_editor_id`),
-  KEY `fk_parallel_word_to_edition` (`edition_id`),
-  CONSTRAINT `fk_par_word_owner_to_par_word` FOREIGN KEY (`parallel_word_id`) REFERENCES `parallel_word` (`parallel_word_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_parallel_word_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
-  CONSTRAINT `fk_parallel_word_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+  PRIMARY KEY (`parallel_sign_stream_section_id`,`edition_id`) USING BTREE,
+  KEY `fk_par_sss_owner_to_sc_idx` (`edition_editor_id`),
+  KEY `fk_parallel_sss_to_edition` (`edition_id`),
+  CONSTRAINT `fk_par_sss_owner_to_par_sss` FOREIGN KEY (`parallel_sign_stream_section_id`) REFERENCES `parallel_sign_stream_section` (`parallel_sign_stream_section_id`),
+  CONSTRAINT `fk_parallel_sss_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_parallel_sss_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_type`
+--
+
+DROP TABLE IF EXISTS `parallel_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_type` (
+  `parallel_type_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
+  `parent_type_id` int(10) unsigned DEFAULT NULL COMMENT 'Refers to a parent type',
+  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Name of the type.',
+  `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`parallel_type_id`),
+  KEY `fk_parallel_type_to_parent` (`parent_type_id`),
+  KEY `parallel_type_name_index` (`name`),
+  KEY `fk_parallel_type_to_creator_id` (`creator_id`),
+  CONSTRAINT `fk_parallel_type_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_parallel_type_to_parent` FOREIGN KEY (`parent_type_id`) REFERENCES `parallel_type` (`parallel_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Hierarchical list which defines parallel_types';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `parallel_type_owner`
+--
+
+DROP TABLE IF EXISTS `parallel_type_owner`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parallel_type_owner` (
+  `parallel_type_id` int(10) unsigned NOT NULL,
+  `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
+  `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`parallel_type_id`,`edition_id`),
+  KEY `fk_parallel_type_to_edition` (`edition_id`),
+  KEY `fk_parallel_type_to_edition_editor` (`edition_editor_id`),
+  CONSTRAINT `fk_par_type_owner_to_pararalle_type` FOREIGN KEY (`parallel_type_id`) REFERENCES `parallel_type` (`parallel_type_id`),
+  CONSTRAINT `fk_parallel_type_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
+  CONSTRAINT `fk_parallel_type_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1547,8 +1780,8 @@ CREATE TABLE `point_to_point_map` (
   `image_to_image_map_id` int(10) unsigned NOT NULL,
   `point_on_image1` multipoint NOT NULL COMMENT 'This is the list of corresponding points for image 1.',
   `point_on_image2` multipoint NOT NULL COMMENT 'This is the list of corresponding points for image 2.',
-  PRIMARY KEY (`point_to_point_map_id`),
-  KEY `fK_p_to_p_toIm_to_im_idx` (`image_to_image_map_id`),
+  PRIMARY KEY (`point_to_point_map_id`) USING BTREE,
+  KEY `fK_p_to_p_toIm_to_im_idx` (`image_to_image_map_id`) USING BTREE,
   CONSTRAINT `fK_p_to_p_toIm_to_im` FOREIGN KEY (`image_to_image_map_id`) REFERENCES `image_to_image_map` (`image_to_image_map_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds data pertaining to nonlinear transforms between a set of two images. It stores a list of points in one image and the corresponding points in another image.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1565,9 +1798,9 @@ CREATE TABLE `position_in_stream` (
   `sign_interpretation_id` int(11) unsigned NOT NULL,
   `next_sign_interpretation_id` int(11) unsigned NOT NULL DEFAULT 0,
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`position_in_stream_id`),
-  KEY `fk_position_in_stream_to_sign_interpretation` (`sign_interpretation_id`),
-  KEY `fk_position_in_stream_to_next_sign_interpretation` (`next_sign_interpretation_id`),
+  PRIMARY KEY (`position_in_stream_id`) USING BTREE,
+  KEY `fk_position_in_stream_to_sign_interpretation` (`sign_interpretation_id`) USING BTREE,
+  KEY `fk_position_in_stream_to_next_sign_interpretation` (`next_sign_interpretation_id`) USING BTREE,
   KEY `fk_position_in_stream_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_position_in_stream_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_position_in_stream_to_next_sign_interpretation` FOREIGN KEY (`next_sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`),
@@ -1587,9 +1820,9 @@ CREATE TABLE `position_in_stream_owner` (
   `edition_id` int(11) unsigned NOT NULL,
   `edition_editor_id` int(11) unsigned NOT NULL,
   `is_main` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'If true, the next item will be\nfirst in the list of next items. There should \nonly one next item marked this way\nfor each item of this owner.',
-  PRIMARY KEY (`position_in_stream_id`,`edition_id`),
-  KEY `fk_position_in_stream_owner_to_edition_id` (`edition_id`),
-  KEY `fk_position_in_stream_owner_to_edition_editor_id` (`edition_editor_id`),
+  PRIMARY KEY (`position_in_stream_id`,`edition_id`) USING BTREE,
+  KEY `fk_position_in_stream_owner_to_edition_id` (`edition_id`) USING BTREE,
+  KEY `fk_position_in_stream_owner_to_edition_editor_id` (`edition_editor_id`) USING BTREE,
   CONSTRAINT `fk_position_in_stream_owner_to_edition_editor_id` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_position_in_stream_owner_to_edition_id` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_position_in_stream_owner_to_position_in_stream` FOREIGN KEY (`position_in_stream_id`) REFERENCES `position_in_stream` (`position_in_stream_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -1606,7 +1839,7 @@ DROP TABLE IF EXISTS `position_in_stream_to_section_rel`;
 CREATE TABLE `position_in_stream_to_section_rel` (
   `position_in_stream_id` int(11) unsigned NOT NULL,
   `sign_stream_section_id` int(10) unsigned NOT NULL COMMENT 'Reference to sign_stream_section',
-  PRIMARY KEY (`position_in_stream_id`,`sign_stream_section_id`),
+  PRIMARY KEY (`position_in_stream_id`,`sign_stream_section_id`) USING BTREE,
   KEY `fk_position_in_stream_to_section_rel_to_word_id` (`sign_stream_section_id`),
   CONSTRAINT `fk_position_in_stream_to_section_rel_to_position_in_stream` FOREIGN KEY (`position_in_stream_id`) REFERENCES `position_in_stream` (`position_in_stream_id`),
   CONSTRAINT `fk_position_in_stream_to_section_rel_to_word_id` FOREIGN KEY (`sign_stream_section_id`) REFERENCES `sign_stream_section` (`sign_stream_section_id`)
@@ -1625,14 +1858,14 @@ CREATE TABLE `position_in_text_fragment_stream` (
   `text_fragment_id` int(10) unsigned NOT NULL,
   `next_text_fragment_id` int(10) unsigned DEFAULT NULL,
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`position_in_text_fragment_stream_id`),
-  KEY `fk_pitfs_next_to_text_fragment` (`next_text_fragment_id`),
-  KEY `fk_pitfs_to_text_fragment` (`text_fragment_id`),
+  PRIMARY KEY (`position_in_text_fragment_stream_id`) USING BTREE,
+  KEY `fk_pitfs_next_to_text_fragment` (`next_text_fragment_id`) USING BTREE,
+  KEY `fk_pitfs_to_text_fragment` (`text_fragment_id`) USING BTREE,
   KEY `fk_position_in_text_fragment_stream_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_pitfs_next_to_text_fragment` FOREIGN KEY (`next_text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`),
   CONSTRAINT `fk_pitfs_to_text_fragment` FOREIGN KEY (`text_fragment_id`) REFERENCES `text_fragment` (`text_fragment_id`),
   CONSTRAINT `fk_position_in_text_fragment_stream_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=16715 DEFAULT CHARSET=latin1 COMMENT='Gives a stream of fragments in a scroll in the right order';
+) ENGINE=InnoDB AUTO_INCREMENT=16715 DEFAULT CHARSET=utf8mb4 COMMENT='Gives a stream of fragments in a scroll in the right order';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1647,13 +1880,13 @@ CREATE TABLE `position_in_text_fragment_stream_owner` (
   `edition_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL,
   `is_main` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'If true, the next item will be\nfirst in the list of next items. There should\nonly one next item marked this way\nfor each item of this owner.',
-  PRIMARY KEY (`position_in_text_fragment_stream_id`,`edition_id`),
-  KEY `fk_pitfs_owner_to_edition` (`edition_id`),
-  KEY `fk_pitfs_owner_to_editor` (`edition_editor_id`),
+  PRIMARY KEY (`position_in_text_fragment_stream_id`,`edition_id`) USING BTREE,
+  KEY `fk_pitfs_owner_to_edition` (`edition_id`) USING BTREE,
+  KEY `fk_pitfs_owner_to_editor` (`edition_editor_id`) USING BTREE,
   CONSTRAINT `fk_pitfs_owner_pitfs` FOREIGN KEY (`position_in_text_fragment_stream_id`) REFERENCES `position_in_text_fragment_stream` (`position_in_text_fragment_stream_id`),
   CONSTRAINT `fk_pitfs_owner_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_pitfs_owner_to_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1667,8 +1900,8 @@ CREATE TABLE `qwb_biblio` (
   `qwb_biblio_id` int(10) unsigned NOT NULL,
   `biblio_short` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `biblio_long` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`qwb_biblio_id`),
-  UNIQUE KEY `qwb_biblio_id_UNIQUE` (`qwb_biblio_id`)
+  PRIMARY KEY (`qwb_biblio_id`) USING BTREE,
+  UNIQUE KEY `qwb_biblio_id_UNIQUE` (`qwb_biblio_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1688,7 +1921,7 @@ CREATE TABLE `qwb_ref` (
   `text` varchar(255) COLLATE utf8mb4_unicode_ci GENERATED ALWAYS AS (concat(`qwb_scroll_name`,'%',if(locate('frg',`qwb_fragment_name`) > 0,`qwb_fragment_name`,concat('col. ',`qwb_fragment_name`)),'%',`qwb_line_name`)) STORED,
   PRIMARY KEY (`qwb_ref_id`),
   KEY `qwb_ref_text_index` (`text`)
-) ENGINE=InnoDB AUTO_INCREMENT=65536 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table creates a connection between the references in the QWB database and the textual references within the SQE text system.';
+) ENGINE=InnoDB AUTO_INCREMENT=53751 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table creates a connection between the references in the QWB database and the textual references within the SQE text system.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1708,9 +1941,9 @@ CREATE TABLE `qwb_variant` (
   `type` enum('variant','missing','addition') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `commentary` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `qwb_biblio_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`qwb_variant_id`),
-  KEY `fk_qwb_var_to_qwb_data_idx` (`qwb_word_id`),
-  KEY `fk_qwb_var_to_qwb_biblio_idx` (`qwb_biblio_id`),
+  PRIMARY KEY (`qwb_variant_id`) USING BTREE,
+  KEY `fk_qwb_var_to_qwb_data_idx` (`qwb_word_id`) USING BTREE,
+  KEY `fk_qwb_var_to_qwb_biblio_idx` (`qwb_biblio_id`) USING BTREE,
   CONSTRAINT `fk_qwb_var_to_qwb` FOREIGN KEY (`qwb_word_id`) REFERENCES `qwb_word` (`qwb_word_id`),
   CONSTRAINT `fk_qwb_var_to_qwb_biblio` FOREIGN KEY (`qwb_biblio_id`) REFERENCES `qwb_biblio` (`qwb_biblio_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1728,7 +1961,7 @@ CREATE TABLE `qwb_word` (
   `qwb_last_change` datetime NOT NULL DEFAULT '1000-01-01 00:00:00',
   `processing` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`qwb_word_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1760,10 +1993,10 @@ CREATE TABLE `roi_position` (
   `translate_x` int(11) NOT NULL DEFAULT 0 COMMENT 'The translation on the X axis necessary to position the a ROI shape in the artefact''s coordinate system. The artefact coordinate system is the same as the “master imafe” to which it is linked, but always scaled to a resolution of 1215 PPI.',
   `translate_y` int(11) NOT NULL DEFAULT 0 COMMENT 'The translation on the Y axis necessary to position the a ROI shape in the artefact''s coordinate system. The artefact coordinate system is the same as the “master imafe” to which it is linked, but always scaled to a resolution of 1215 PPI.',
   `stance_rotation` smallint(5) unsigned DEFAULT NULL COMMENT 'Any rotation that would be necessary for the sign to have the correct stance on a horizontal plane. This is to be applied whent creating fonts and analyzing the expected script orientation in relation to its actual orientation on an artefact.',
-  PRIMARY KEY (`roi_position_id`),
-  KEY `fk_roi_position_to_artefact` (`artefact_id`),
+  PRIMARY KEY (`roi_position_id`) USING BTREE,
+  KEY `fk_roi_position_to_artefact` (`artefact_id`) USING BTREE,
   CONSTRAINT `fk_roi_position_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=25670 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ROI’s are linked to artefacts.  To get the location of the ROI in the coordinate system of the “virtual manuscript, one must first apply the roi_position and then the position of the linked artefact. This can by done via the UDF nested_geom_transform.';
+) ENGINE=InnoDB AUTO_INCREMENT=23023 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='ROI’s are linked to artefacts.  To get the location of the ROI in the coordinate system of the “virtual manuscript, one must first apply the roi_position and then the position of the linked artefact. This can by done via the UDF nested_geom_transform.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1776,8 +2009,8 @@ DROP TABLE IF EXISTS `roi_shape`;
 CREATE TABLE `roi_shape` (
   `roi_shape_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `path` geometry DEFAULT NULL COMMENT 'This is a POLYGON geometry describing the shape of the ROI. It is its own 0,0 coordinate system and is correlated with a location in an artefact via a translation (without scale or rotation) in the roi_position table. Its resolution is the same as the artefact, 1215 PPI.',
-  PRIMARY KEY (`roi_shape_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1568 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the ROI in its own coordinate system. The roi_position table situates the polygon in the coordinate system of the artefact.';
+  PRIMARY KEY (`roi_shape_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=19483 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds the polygon describing the ROI in its own coordinate system. The roi_position table situates the polygon in the coordinate system of the artefact.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1789,8 +2022,8 @@ DROP TABLE IF EXISTS `scribal_font`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `scribal_font` (
   `scribal_font_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
-  PRIMARY KEY (`scribal_font_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Defines a font found in the scrolls. It connects to a font file and is referred by glyph info';
+  PRIMARY KEY (`scribal_font_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Defines a font found in the scrolls. It connects to a font file and is referred by glyph info';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1803,7 +2036,7 @@ DROP TABLE IF EXISTS `scribal_font_glyph_metrics`;
 CREATE TABLE `scribal_font_glyph_metrics` (
   `scribal_font_glyph_metrics_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
   `scribal_font_id` int(10) unsigned NOT NULL COMMENT 'Reference to scribal font',
-  `unicode_char` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'Char of font',
+  `unicode_char` char(1) COLLATE utf8mb4_bin NOT NULL COMMENT 'Char of font',
   `width` double GENERATED ALWAYS AS (st_x(st_pointn(st_exteriorring(st_envelope(`shape`)),3)) - st_x(st_pointn(st_exteriorring(st_envelope(`shape`)),1))) VIRTUAL COMMENT 'Width of glyph',
   `height` double GENERATED ALWAYS AS (st_y(st_pointn(st_exteriorring(st_envelope(`shape`)),4)) - st_y(st_pointn(st_exteriorring(st_envelope(`shape`)),2))) VIRTUAL COMMENT 'Height of glyph',
   `y_offset` smallint(6) NOT NULL DEFAULT -200 COMMENT 'Vertical offset glyph (thought to stand on line)',
@@ -1814,7 +2047,7 @@ CREATE TABLE `scribal_font_glyph_metrics` (
   KEY `fk_scribal_font_glyph_metrics_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_scribal_font_glyph_metrics_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sfg_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains the bounding box and position metrics of a scribal font. Only used to calculate ROIs not yet set by the user.';
+) ENGINE=InnoDB AUTO_INCREMENT=249 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='Contains the bounding box and position metrics of a scribal font. Only used to calculate ROIs not yet set by the user.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1847,17 +2080,18 @@ DROP TABLE IF EXISTS `scribal_font_kerning`;
 CREATE TABLE `scribal_font_kerning` (
   `scribal_font_kerning_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
   `scribal_font_id` int(10) unsigned NOT NULL COMMENT 'Reference to scribal font',
-  `first_unicode_char` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'Charcode of the first glyph',
-  `second_unicode_char` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT 'Charcode of the second glyph',
+  `first_unicode_char` char(1) COLLATE utf8mb4_bin NOT NULL COMMENT 'Charcode of the first glyph',
+  `second_unicode_char` char(1) COLLATE utf8mb4_bin NOT NULL COMMENT 'Charcode of the second glyph',
   `kerning_x` smallint(6) NOT NULL DEFAULT 0 COMMENT 'Horizontal kerning',
   `kerning_y` smallint(6) NOT NULL DEFAULT 0 COMMENT 'Vertical kerning',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`scribal_font_kerning_id`),
   UNIQUE KEY `unique_scribal_font_kerning` (`scribal_font_id`,`first_unicode_char`,`second_unicode_char`,`kerning_x`,`kerning_y`) USING BTREE,
   KEY `fk_scribal_font_kerning_to_creator_id` (`creator_id`),
+  KEY `to_sf_id` (`scribal_font_id`) USING BTREE,
   CONSTRAINT `fk_scribal_font_kerning_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sfk_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1508 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Contains kerning of glyph of a scribal font. Only used to calculated the position of signs not yet positioned by the user';
+) ENGINE=InnoDB AUTO_INCREMENT=2753 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='Contains kerning of glyph of a scribal font. Only used to calculated the position of signs not yet positioned by the user';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1898,7 +2132,7 @@ CREATE TABLE `scribal_font_metrics` (
   KEY `fk_scribal_font_metrics_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_scribal_font_metrics_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_scribal_font_metrics_to_scribal_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='This table stores information about the default spacing for a scribal font.';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='This table stores information about the default spacing for a scribal font.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1932,8 +2166,8 @@ CREATE TABLE `scribal_font_owner` (
   `scribal_font_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`scribal_font_id`,`edition_id`),
-  KEY `fk_scribal_font_type_to_edition` (`edition_id`),
+  PRIMARY KEY (`scribal_font_id`,`edition_id`) USING BTREE,
+  KEY `fk_scribal_font_type_to_edition` (`edition_id`) USING BTREE,
   KEY `fk_scribal_font_owner_scroll_version_idx` (`edition_editor_id`),
   CONSTRAINT `fk_scribal_font_owner_to_font` FOREIGN KEY (`scribal_font_id`) REFERENCES `scribal_font` (`scribal_font_id`),
   CONSTRAINT `fk_scribal_font_type_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
@@ -1953,7 +2187,7 @@ CREATE TABLE `scribe` (
   `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `commetary` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`scribe_id`),
+  PRIMARY KEY (`scribe_id`) USING BTREE,
   KEY `fk_scribe_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_scribe_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1970,9 +2204,9 @@ CREATE TABLE `scribe_owner` (
   `scribe_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`scribe_id`,`edition_id`),
-  KEY `fk_scribe_owner_to_scroll_version_idx` (`edition_editor_id`),
-  KEY `fk_scribe_to_edition` (`edition_id`),
+  PRIMARY KEY (`scribe_id`,`edition_id`) USING BTREE,
+  KEY `fk_scribe_owner_to_scroll_version_idx` (`edition_editor_id`) USING BTREE,
+  KEY `fk_scribe_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_scribe_owner_to_scribe` FOREIGN KEY (`scribe_id`) REFERENCES `scribe` (`scribe_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_scribe_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
   CONSTRAINT `fk_scribe_to_edition_editor` FOREIGN KEY (`edition_editor_id`) REFERENCES `edition_editor` (`edition_editor_id`)
@@ -1988,8 +2222,8 @@ DROP TABLE IF EXISTS `sign`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sign` (
   `sign_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`sign_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1733943 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This is an abstract placeholder allowing a multiplicity of interpretations to be related to each other by linking to the same sign_id.';
+  PRIMARY KEY (`sign_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1734606 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This is an abstract placeholder allowing a multiplicity of interpretations to be related to each other by linking to the same sign_id.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2002,10 +2236,10 @@ DROP TABLE IF EXISTS `sign_interpretation`;
 CREATE TABLE `sign_interpretation` (
   `sign_interpretation_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `sign_id` int(10) unsigned NOT NULL COMMENT 'Id of the sign being described.',
-  PRIMARY KEY (`sign_interpretation_id`),
+  PRIMARY KEY (`sign_interpretation_id`) USING BTREE,
   KEY `fk_sign_interpretation_to_sign_idx` (`sign_id`) USING BTREE,
   CONSTRAINT `fk_sign_interpretation_to_sign` FOREIGN KEY (`sign_id`) REFERENCES `sign` (`sign_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=1733925 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table describes the interpretation of signs in an edition.  Currently this includes both characters, spaces, and formatting marks, it could perhaps also include other elements that one might want to define as a sign.';
+) ENGINE=InnoDB AUTO_INCREMENT=1734844 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table describes the interpretation of signs in an edition.  Currently this includes both characters, spaces, and formatting marks, it could perhaps also include other elements that one might want to define as a sign.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2021,7 +2255,7 @@ CREATE TABLE `sign_interpretation_attribute` (
   `attribute_value_id` int(10) unsigned NOT NULL COMMENT 'Id of the attribute to apply to this sign interpretation.',
   `sequence` tinyint(4) DEFAULT NULL COMMENT 'Absolute ordering of this record.  This is used to define the order of all records for the same sign_char_id.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`sign_interpretation_attribute_id`),
+  PRIMARY KEY (`sign_interpretation_attribute_id`) USING BTREE,
   UNIQUE KEY `unique_sign_interpretation_attribute_sequence` (`sign_interpretation_id`,`attribute_value_id`,`sequence`),
   KEY `fk_sign_interpretation_attr_to_attr_value_idx` (`attribute_value_id`) USING BTREE,
   KEY `fk_sign_interpretation_attr_to_sign_interpretation_idx` (`sign_interpretation_id`) USING BTREE,
@@ -2043,7 +2277,7 @@ CREATE TABLE `sign_interpretation_attribute_owner` (
   `sign_interpretation_attribute_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`sign_interpretation_attribute_id`,`edition_id`),
+  PRIMARY KEY (`sign_interpretation_attribute_id`,`edition_id`) USING BTREE,
   KEY `fk_sign_attr_owner_to_edition_editor_idx` (`edition_editor_id`) USING BTREE,
   KEY `fk_sign_interpretation_attribute_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_sign_interpretation_attribute_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
@@ -2070,7 +2304,7 @@ CREATE TABLE `sign_interpretation_character` (
   KEY `fk_sign_interpretation_character_to_creator` (`creator_id`),
   CONSTRAINT `fk_sign_interpretation_character_to_creator` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`),
   CONSTRAINT `fk_sign_interpretation_character_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=3503370 DEFAULT CHARSET=utf8mb4 COMMENT='This table provides a character value for a sign interpretation.';
+) ENGINE=InnoDB AUTO_INCREMENT=3503385 DEFAULT CHARSET=utf8mb4 COMMENT='This table provides a character value for a sign interpretation.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2107,7 +2341,7 @@ CREATE TABLE `sign_interpretation_commentary` (
   `attribute_id` int(10) unsigned DEFAULT NULL COMMENT 'Id of the attrivute describing the aspect of this sign interpretation being commented on.',
   `commentary` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Editorial comments.',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`sign_interpretation_commentary_id`),
+  PRIMARY KEY (`sign_interpretation_commentary_id`) USING BTREE,
   KEY `fk_sic_to_attribute_idx` (`attribute_id`) USING BTREE,
   KEY `sign_interpretation_id` (`sign_interpretation_id`) USING BTREE,
   KEY `fk_sign_interpretation_commentary_to_creator_id` (`creator_id`),
@@ -2128,7 +2362,7 @@ CREATE TABLE `sign_interpretation_commentary_owner` (
   `sign_interpretation_commentary_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`sign_interpretation_commentary_id`,`edition_id`),
+  PRIMARY KEY (`sign_interpretation_commentary_id`,`edition_id`) USING BTREE,
   KEY `fk_sic_owner_to_scrollversion_idx` (`edition_editor_id`) USING BTREE,
   KEY `fk_sign_interpretation_commentary_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_sign_interpretation_commentary_onwer_to_scc` FOREIGN KEY (`sign_interpretation_commentary_id`) REFERENCES `sign_interpretation_commentary` (`sign_interpretation_commentary_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -2152,17 +2386,17 @@ CREATE TABLE `sign_interpretation_roi` (
   `values_set` tinyint(3) unsigned NOT NULL DEFAULT 0,
   `exceptional` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean whether this ROI is exceptional (and thus should be excluded from some statistical analyses).',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`sign_interpretation_roi_id`),
+  PRIMARY KEY (`sign_interpretation_roi_id`) USING BTREE,
   UNIQUE KEY `unique_sign_interpretation_shape_position` (`sign_interpretation_id`,`roi_shape_id`,`roi_position_id`) USING BTREE,
-  KEY `fk_sign_area_to_area_idx` (`roi_shape_id`),
-  KEY `fk_sign_area_to_area_position_idx` (`roi_position_id`),
+  KEY `fk_sign_area_to_area_idx` (`roi_shape_id`) USING BTREE,
+  KEY `fk_sign_area_to_area_position_idx` (`roi_position_id`) USING BTREE,
   KEY `fk_sign_area_to_sign_interpretation_idx` (`sign_interpretation_id`) USING BTREE,
   KEY `fk_sign_interpretation_roi_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_sign_area_to_roi_position` FOREIGN KEY (`roi_position_id`) REFERENCES `roi_position` (`roi_position_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sign_area_to_roi_shape` FOREIGN KEY (`roi_shape_id`) REFERENCES `roi_shape` (`roi_shape_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sign_interpretation_roi_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sign_sign_roi_to_sign_interpretation` FOREIGN KEY (`sign_interpretation_id`) REFERENCES `sign_interpretation` (`sign_interpretation_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=25670 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table links a sign_interpretation to the ROI or ROIs it describes.';
+) ENGINE=InnoDB AUTO_INCREMENT=23042 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table links a sign_interpretation to the ROI or ROIs it describes.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2176,8 +2410,8 @@ CREATE TABLE `sign_interpretation_roi_owner` (
   `sign_interpretation_roi_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`sign_interpretation_roi_id`,`edition_id`),
-  KEY `fk_sign_area_owner_to_sv_idx` (`edition_editor_id`),
+  PRIMARY KEY (`sign_interpretation_roi_id`,`edition_id`) USING BTREE,
+  KEY `fk_sign_area_owner_to_sv_idx` (`edition_editor_id`) USING BTREE,
   KEY `fk_sign_interpretation_roi_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_sign_area_owner_to_sign_area` FOREIGN KEY (`sign_interpretation_roi_id`) REFERENCES `sign_interpretation_roi` (`sign_interpretation_roi_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_sign_interpretation_roi_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
@@ -2198,6 +2432,7 @@ SET character_set_client = utf8;
   `sign_interpretation_id` tinyint NOT NULL,
   `edition_id` tinyint NOT NULL,
   `attribute_value_id` tinyint NOT NULL,
+  `sign_interpretation_attribute_id` tinyint NOT NULL,
   `sequence` tinyint NOT NULL,
   `attribute_creator_id` tinyint NOT NULL,
   `attribute_editor_id` tinyint NOT NULL,
@@ -2209,6 +2444,7 @@ SET character_set_client = utf8;
   `commentary_attribute_id` tinyint NOT NULL,
   `commentary_creator_id` tinyint NOT NULL,
   `commentary_editor_id` tinyint NOT NULL,
+  `sign_interpretation_roi_id` tinyint NOT NULL,
   `exceptional` tinyint NOT NULL,
   `values_set` tinyint NOT NULL,
   `artefact_id` tinyint NOT NULL,
@@ -2229,7 +2465,7 @@ DROP TABLE IF EXISTS `sign_stream`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sign_stream` (
-  `latch` varchar(32) DEFAULT NULL,
+  `latch` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `origid` bigint(20) unsigned DEFAULT NULL,
   `destid` bigint(20) unsigned DEFAULT NULL,
   `weight` double DEFAULT NULL,
@@ -2237,7 +2473,7 @@ CREATE TABLE `sign_stream` (
   `linkid` bigint(20) unsigned DEFAULT NULL,
   KEY `latch` (`latch`,`origid`,`destid`) USING HASH,
   KEY `latch_2` (`latch`,`destid`,`origid`) USING HASH
-) ENGINE=OQGRAPH DEFAULT CHARSET=latin1 `data_table`='position_in_stream' `origid`='sign_interpretation_id' `destid`='next_sign_interpretation_id';
+) ENGINE=OQGRAPH DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci `data_table`='position_in_stream' `origid`='sign_interpretation_id' `destid`='next_sign_interpretation_id';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2248,7 +2484,7 @@ DROP TABLE IF EXISTS `sign_stream_reverse`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sign_stream_reverse` (
-  `latch` varchar(32) DEFAULT NULL,
+  `latch` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `origid` bigint(20) unsigned DEFAULT NULL,
   `destid` bigint(20) unsigned DEFAULT NULL,
   `weight` double DEFAULT NULL,
@@ -2256,7 +2492,7 @@ CREATE TABLE `sign_stream_reverse` (
   `linkid` bigint(20) unsigned DEFAULT NULL,
   KEY `latch` (`latch`,`origid`,`destid`) USING HASH,
   KEY `latch_2` (`latch`,`destid`,`origid`) USING HASH
-) ENGINE=OQGRAPH DEFAULT CHARSET=latin1 `data_table`='position_in_stream' `origid`='next_sign_interpretation_id' `destid`='sign_interpretation_id';
+) ENGINE=OQGRAPH DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci `data_table`='position_in_stream' `origid`='next_sign_interpretation_id' `destid`='sign_interpretation_id';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2270,7 +2506,7 @@ CREATE TABLE `sign_stream_section` (
   `sign_stream_section_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique identifier',
   `commentary` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`sign_stream_section_id`),
+  PRIMARY KEY (`sign_stream_section_id`) USING BTREE,
   KEY `fk_sign_stream_section_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_sign_stream_section_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=380474 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='A collection of coherent signs from a stream.';
@@ -2287,7 +2523,7 @@ CREATE TABLE `sign_stream_section_owner` (
   `sign_stream_section_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`sign_stream_section_id`,`edition_id`),
+  PRIMARY KEY (`sign_stream_section_id`,`edition_id`) USING BTREE,
   KEY `fk_sss_owner_to_scroll_version_idx` (`edition_editor_id`),
   KEY `fk_sss_owner_to_edition` (`edition_id`),
   CONSTRAINT `fk_sss_owner_to_edition` FOREIGN KEY (`edition_id`) REFERENCES `edition` (`edition_id`),
@@ -2310,7 +2546,7 @@ CREATE TABLE `sign_stream_section_to_qwb_word` (
   KEY `sss_to_qwb_word_fk` (`qwb_word_id`),
   CONSTRAINT `sss_to_qwb_word_fk` FOREIGN KEY (`qwb_word_id`) REFERENCES `qwb_word` (`qwb_word_id`),
   CONSTRAINT `sss_to_qwb_word_to_sss_fk` FOREIGN KEY (`sign_stream_section_id`) REFERENCES `sign_stream_section` (`sign_stream_section_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Provides n:m connection between qwb words and sections of the sign stream.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Provides n:m connection between qwb words and sections of the sign stream.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2326,10 +2562,73 @@ CREATE TABLE `single_action` (
   `action` enum('add','delete') COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The nature of the action applied.  A link to an edition was either added or deleted.',
   `table` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Table containing the entry that was either added to or deleted from the edition.',
   `id_in_table` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'Id of the record that was added to or deleted from the edition (of the linked main_action) in the “table”_owner table.',
-  PRIMARY KEY (`single_action_id`),
-  KEY `fk_single_action_to_main_idx` (`main_action_id`),
+  PRIMARY KEY (`single_action_id`) USING BTREE,
+  KEY `fk_single_action_to_main_idx` (`main_action_id`) USING BTREE,
+  KEY `single_action_table_idx` (`table`) USING BTREE,
   CONSTRAINT `fk_single_action_to_main` FOREIGN KEY (`main_action_id`) REFERENCES `main_action` (`main_action_id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table joins with the main_action table to record all mutation actions taken regarding each edition.';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary table structure for view `sqe_image_iaa_metadata`
+--
+
+DROP TABLE IF EXISTS `sqe_image_iaa_metadata`;
+/*!50001 DROP VIEW IF EXISTS `sqe_image_iaa_metadata`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE TABLE `sqe_image_iaa_metadata` (
+  `iaa_metadata_id` tinyint NOT NULL,
+  `sqe_image_id` tinyint NOT NULL,
+  `old_iaa_filename` tinyint NOT NULL,
+  `image_urls_id` tinyint NOT NULL,
+  `filename` tinyint NOT NULL,
+  `native_width` tinyint NOT NULL,
+  `native_height` tinyint NOT NULL,
+  `dpi` tinyint NOT NULL,
+  `type` tinyint NOT NULL,
+  `wavelength_start` tinyint NOT NULL,
+  `wavelength_end` tinyint NOT NULL,
+  `is_master` tinyint NOT NULL,
+  `image_catalog_id` tinyint NOT NULL,
+  `is_recto` tinyint NOT NULL,
+  `manifest` tinyint NOT NULL,
+  `material` tinyint NOT NULL,
+  `publication_number` tinyint NOT NULL,
+  `plate` tinyint NOT NULL,
+  `frag` tinyint NOT NULL,
+  `site` tinyint NOT NULL,
+  `period` tinyint NOT NULL,
+  `composition` tinyint NOT NULL,
+  `copy` tinyint NOT NULL,
+  `manuscript` tinyint NOT NULL,
+  `other_identifications` tinyint NOT NULL,
+  `abbreviation` tinyint NOT NULL,
+  `manuscript_type` tinyint NOT NULL,
+  `composition_type` tinyint NOT NULL,
+  `language` tinyint NOT NULL,
+  `script` tinyint NOT NULL,
+  `publication` tinyint NOT NULL,
+  `extra` tinyint NOT NULL
+) ENGINE=MyISAM */;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Table structure for table `sqe_image_to_iaa_metadata`
+--
+
+DROP TABLE IF EXISTS `sqe_image_to_iaa_metadata`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sqe_image_to_iaa_metadata` (
+  `sqe_image_id` int(11) unsigned NOT NULL,
+  `iaa_metadata_id` int(11) unsigned NOT NULL,
+  `old_iaa_filename` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`sqe_image_id`,`iaa_metadata_id`),
+  KEY `fk_iaa_metadata_to_sqe_image_to_iaa_metadata` (`iaa_metadata_id`),
+  CONSTRAINT `fk_iaa_metadata_to_sqe_image_to_iaa_metadata` FOREIGN KEY (`iaa_metadata_id`) REFERENCES `iaa_metadata` (`iaa_metadata_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_sqe_image_to_sqe_image_to_iaa_metadata` FOREIGN KEY (`sqe_image_id`) REFERENCES `SQE_image` (`sqe_image_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2357,7 +2656,7 @@ DROP TABLE IF EXISTS `text_fragment`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `text_fragment` (
   `text_fragment_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`text_fragment_id`)
+  PRIMARY KEY (`text_fragment_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=11177 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='The text_fragment is an abstract placeholder that can be named via text_fragment_data, subsumed in a manuscript (manuscript_to_text_fragment), and joined with the lines that contitute it (text_fragment_to_line).';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2373,7 +2672,7 @@ CREATE TABLE `text_fragment_data` (
   `text_fragment_id` int(10) unsigned NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'NULL' COMMENT 'Name designation for this fragment of text (usually col. x or frg. x).',
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`text_fragment_data_id`),
+  PRIMARY KEY (`text_fragment_data_id`) USING BTREE,
   UNIQUE KEY `unique_text_fragment_id_text_fragment_name` (`text_fragment_id`,`name`) USING BTREE,
   KEY `fk_text_fragment_data_to_text_fragment_idx` (`text_fragment_id`) USING BTREE,
   KEY `fk_text_fragment_data_to_creator_id` (`creator_id`),
@@ -2393,7 +2692,7 @@ CREATE TABLE `text_fragment_data_owner` (
   `text_fragment_data_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`text_fragment_data_id`,`edition_id`),
+  PRIMARY KEY (`text_fragment_data_id`,`edition_id`) USING BTREE,
   KEY `fk_text_fragment_data_owner_to_scroll_version_idx` (`edition_editor_id`) USING BTREE,
   KEY `fk_text_fragment_data_to_edition` (`edition_id`) USING BTREE,
   CONSTRAINT `fk_text_fragment_data_owner_to_text_fragment_data` FOREIGN KEY (`text_fragment_data_id`) REFERENCES `text_fragment_data` (`text_fragment_data_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
@@ -2414,7 +2713,7 @@ CREATE TABLE `text_fragment_to_line` (
   `text_fragment_id` int(10) unsigned NOT NULL,
   `line_id` int(10) unsigned NOT NULL,
   `creator_id` int(11) unsigned NOT NULL DEFAULT 1,
-  PRIMARY KEY (`text_fragment_to_line_id`),
+  PRIMARY KEY (`text_fragment_to_line_id`) USING BTREE,
   UNIQUE KEY `text_fragment_line_idx` (`text_fragment_id`,`line_id`) USING BTREE,
   KEY `fk_text_fragment_to_line_to_line_idx` (`line_id`) USING BTREE,
   KEY `fk_text_fragment_to_line_to_creator_id` (`creator_id`),
@@ -2435,7 +2734,7 @@ CREATE TABLE `text_fragment_to_line_owner` (
   `text_fragment_to_line_id` int(10) unsigned NOT NULL,
   `edition_editor_id` int(10) unsigned NOT NULL DEFAULT 0,
   `edition_id` int(10) unsigned NOT NULL DEFAULT 0,
-  PRIMARY KEY (`text_fragment_to_line_id`,`edition_id`),
+  PRIMARY KEY (`text_fragment_to_line_id`,`edition_id`) USING BTREE,
   KEY `fk_text_fragment_to_line_to_edition` (`edition_id`) USING BTREE,
   KEY `fk_text_fragment_to_linew_owner_to_scroll_version_idx` (`edition_editor_id`) USING BTREE,
   CONSTRAINT `fk_text_fragment_to_line_owner_to_text_fragment_to_line` FOREIGN KEY (`text_fragment_to_line_id`) REFERENCES `text_fragment_to_line` (`text_fragment_to_line_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -2479,7 +2778,7 @@ CREATE TABLE `user` (
   `settings` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `last_scroll_version_id` int(11) unsigned NOT NULL DEFAULT 1,
   `activated` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT 'Boolean for whether a user has authenticaed registration via the emailed token.',
-  PRIMARY KEY (`user_id`),
+  PRIMARY KEY (`user_id`) USING BTREE,
   UNIQUE KEY `unique_user` (`email`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores the data of all registered users,\nCreated by Martin 17/03/03\n\nThe email is the unique identifier for each user (i.d., the username).';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -2496,8 +2795,8 @@ CREATE TABLE `user_contributions` (
   `user_id` int(11) unsigned NOT NULL DEFAULT 0,
   `contribution` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `entry_time` datetime DEFAULT NULL,
-  PRIMARY KEY (`contribution_id`),
-  KEY `fk_user_contributions_to_user` (`user_id`),
+  PRIMARY KEY (`contribution_id`) USING BTREE,
+  KEY `fk_user_contributions_to_user` (`user_id`) USING BTREE,
   CONSTRAINT `fk_user_contributions_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Created by Martin 17/03/29';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -2529,9 +2828,9 @@ CREATE TABLE `user_email_token` (
   `token` char(36) CHARACTER SET utf8mb4 NOT NULL COMMENT 'Unique token the user will provide to verify the requested action.',
   `type` enum('RESET_PASSWORD','ACTIVATE_ACCOUNT','DELETE_EDITION','EDITOR_INVITE') CHARACTER SET utf8mb4 NOT NULL DEFAULT 'RESET_PASSWORD' COMMENT 'The type of action permitted with the specified token.',
   `date_created` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date the token was created or updated.  This is used by an event that clears out all entries from this table that are older than 2 days.',
-  PRIMARY KEY (`token`),
+  PRIMARY KEY (`token`) USING BTREE,
   KEY `date_created_index` (`date_created`) USING BTREE,
-  KEY `fk_user_email_token_to_user` (`user_id`),
+  KEY `fk_user_email_token_to_user` (`user_id`) USING BTREE,
   CONSTRAINT `fk_user_email_token_to_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table holds a list of unique tokens that are sent to the user in order to confirm certain operations in the database.  These tokens are intended to expire and a scheduled event in the database clears out all entries that are over 2 days old.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -2550,7 +2849,7 @@ CREATE TABLE `users_system_roles` (
   KEY `users_system_roles_to_system_roles_id` (`system_roles_id`),
   CONSTRAINT `users_system_roles_to_system_roles_id` FOREIGN KEY (`system_roles_id`) REFERENCES `system_roles` (`system_roles_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `users_system_roles_to_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='This table applies individual system roles to each user.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='This table applies individual system roles to each user.';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2563,7 +2862,7 @@ DROP TABLE IF EXISTS `work_status`;
 CREATE TABLE `work_status` (
   `work_status_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `work_status_message` varchar(255) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT 'A status message on the ccurrent state of work.',
-  PRIMARY KEY (`work_status_id`),
+  PRIMARY KEY (`work_status_id`) USING BTREE,
   UNIQUE KEY `unique_status_message` (`work_status_message`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This table stores user-definable work status messages that can be applied to various data tables. They are used to indicate the current status of editor curation for the data entry.';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -2581,10 +2880,10 @@ DELIMITER ;;
 /*!50003 SET character_set_results = utf8mb4 */ ;;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;;
 /*!50003 SET @saved_time_zone      = @@time_zone */ ;;
-/*!50003 SET time_zone             = 'SYSTEM' */ ;;
-/*!50106 CREATE*/ /*!50117 DEFINER=`root`@`%`*/ /*!50106 EVENT `clear_old_email_tokens` ON SCHEDULE EVERY 1 HOUR STARTS '2019-05-21 16:05:40' ON COMPLETION NOT PRESERVE ENABLE DO DELETE FROM user_email_token 
+/*!50003 SET time_zone             = '+00:00' */ ;;
+/*!50106 CREATE*/ /*!50117 DEFINER=`root`@`localhost`*/ /*!50106 EVENT `clear_old_email_tokens` ON SCHEDULE EVERY 1 HOUR STARTS '2019-05-21 16:05:40' ON COMPLETION NOT PRESERVE ENABLE DO DELETE FROM user_email_token
 WHERE user_id IN (
     SELECT user_id
     FROM user_email_token
@@ -2605,13 +2904,13 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`%` FUNCTION `current_db_version`() RETURNS varchar(255) CHARSET latin1
+CREATE DEFINER=`root`@`%` FUNCTION `current_db_version`() RETURNS varchar(255) CHARSET utf8mb4
     READS SQL DATA
     DETERMINISTIC
     SQL SECURITY INVOKER
@@ -2626,11 +2925,11 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `set_to_json_array`(my_set VARCHAR(250)) RETURNS varchar(250) CHARSET utf8
     DETERMINISTIC
@@ -2650,11 +2949,11 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` FUNCTION `SPLIT_STRING`(x VARCHAR(255), delim VARCHAR(12), pos INT) RETURNS varchar(255) CHARSET utf8
     DETERMINISTIC
@@ -2671,13 +2970,13 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`%` PROCEDURE `add_commentary`()
+CREATE DEFINER=`root`@`localhost` PROCEDURE `add_commentary`()
 BEGIN
 
     DECLARE v_finished INTEGER DEFAULT 0;
@@ -2701,7 +3000,7 @@ BEGIN
         END IF;
 
         SET @prepstmt = CONCAT('ALTER TABLE SQE','.',v_table,'  ADD COLUMN commentary LONGTEXT;');
-  
+
 		PREPARE stmt FROM @prepstmt;
         EXECUTE stmt;
         DEALLOCATE PREPARE stmt;
@@ -2721,30 +3020,30 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
 CREATE DEFINER=`SQE`@`localhost` PROCEDURE `cursor_proc`()
 BEGIN
    DECLARE art_id INT UNSIGNED DEFAULT 0;
-   
-   DECLARE exit_loop BOOLEAN;         
-   
+
+   DECLARE exit_loop BOOLEAN;
+
    DECLARE artefact_cursor CURSOR FOR
      SELECT artefact_id FROM artefact;
-   
+
    DECLARE CONTINUE HANDLER FOR NOT FOUND SET exit_loop = TRUE;
-   
+
    OPEN artefact_cursor;
-   
+
    artefact_loop: LOOP
-     
+
      FETCH  artefact_cursor INTO art_id;
-     
-     
+
+
      IF exit_loop THEN
          CLOSE artefact_cursor;
          LEAVE artefact_loop;
@@ -2761,20 +3060,18 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`SQE`@`localhost` PROCEDURE `getCatalogAndEdition`(param_plate VARCHAR(45), param_fragment VARCHAR(45), param_side TINYINT(1))
-    DETERMINISTIC
-    SQL SECURITY INVOKER
-select image_catalog.image_catalog_id, edition_catalog.edition_catalog_id 
-from image_catalog 
-left join image_to_edition_catalog USING(image_catalog_id) 
+CREATE DEFINER=`SQE`@`localhost` PROCEDURE `getCatalogAndEdition`(IN param_plate varchar(45), IN param_fragment varchar(45), IN param_side tinyint(1))
+select image_catalog.image_catalog_id, edition_catalog.edition_catalog_id
+from image_catalog
+left join image_to_edition_catalog USING(image_catalog_id)
 left join edition_catalog USING(edition_catalog_id)
-where image_catalog.catalog_number_1 = param_plate AND image_catalog.catalog_number_2 = param_fragment 
+where image_catalog.catalog_number_1 = param_plate AND image_catalog.catalog_number_2 = param_fragment
 AND image_catalog.catalog_side = param_side ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2785,17 +3082,15 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
 CREATE DEFINER=`SQE`@`localhost` PROCEDURE `getMasterImageListings`()
-    DETERMINISTIC
-    SQL SECURITY INVOKER
 select edition_catalog.composition, image_catalog.institution, image_catalog.catalog_number_1, image_catalog.catalog_number_2,  edition_catalog.edition_name, edition_catalog.edition_volume, edition_catalog.edition_location_1, edition_catalog.edition_location_2, SQE_image.sqe_image_id
-from SQE_image 
+from SQE_image
 left join image_catalog USING(image_catalog_id)
 left join edition_catalog USING(edition_catalog_id)
 where SQE_image.is_master=1 AND image_catalog.catalog_side=0 order by edition_catalog.composition ;;
@@ -2808,11 +3103,11 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getScrollArtefacts`(scroll_id VARCHAR(128), side TINYINT)
     DETERMINISTIC
@@ -2827,14 +3122,13 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`%` PROCEDURE `getScrollDimensions`(scroll_id_num int unsigned, version_id int unsigned)
-    DETERMINISTIC
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getScrollDimensions`(IN scroll_id_num int unsigned, IN version_id int unsigned)
 select artefact_id,
 MAX(JSON_EXTRACT(transform_matrix, '$.matrix[0][2]') + ((ST_X(ST_PointN(ST_ExteriorRing(ST_ENVELOPE(region_in_sqe_image)), 2)) - ST_X(ST_PointN(ST_ExteriorRing(ST_ENVELOPE(region_in_sqe_image)), 1))) * (1215 / SQE_image.dpi))) as max_x,
 MAX(JSON_EXTRACT(transform_matrix, '$.matrix[1][2]') + ((ST_Y(ST_PointN(ST_ExteriorRing(ST_ENVELOPE(region_in_sqe_image)), 3)) - ST_Y(ST_PointN(ST_ExteriorRing(ST_ENVELOPE(region_in_sqe_image)), 1))) * (1215 / SQE_image.dpi))) as max_y from artefact_position join artefact_position_owner using(artefact_position_id) join artefact_shape using(artefact_id) join artefact_shape_owner using(artefact_shape_id) join SQE_image USING(sqe_image_id) join image_catalog using(image_catalog_id) where artefact_position.scroll_id=scroll_id_num and artefact_position_owner.scroll_version_id = version_id and artefact_shape_owner.scroll_version_id = version_id and image_catalog.catalog_side=0 ;;
@@ -2847,15 +3141,13 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`bronson`@`localhost` PROCEDURE `getScrollHeight`(scroll_id_num int unsigned, version_id int unsigned)
-    DETERMINISTIC
-    SQL SECURITY INVOKER
+CREATE DEFINER=`bronson`@`localhost` PROCEDURE `getScrollHeight`(IN scroll_id_num int unsigned, IN version_id int unsigned)
 select artefact_id, MAX(JSON_EXTRACT(transform_matrix, '$.matrix[1][2]') + ((ST_Y(ST_PointN(ST_ExteriorRing(ST_ENVELOPE(region_in_sqe_image)), 3)) - ST_Y(ST_PointN(ST_ExteriorRing(ST_ENVELOPE(region_in_sqe_image)), 1))) * (1215 / SQE_image.dpi))) as max_y from artefact_position join artefact_position_owner using(artefact_position_id) join artefact_shape using(artefact_id) join artefact_shape_owner using(artefact_shape_id) join SQE_image USING(sqe_image_id) join image_catalog using(image_catalog_id) where artefact_position.scroll_id=scroll_id_num and artefact_position_owner.scroll_version_id = version_id and artefact_shape_owner.scroll_version_id = version_id and image_catalog.catalog_side=0 ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2866,15 +3158,13 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`bronson`@`localhost` PROCEDURE `getScrollVersionArtefacts`(scroll_id_num int unsigned, version_id int unsigned)
-    DETERMINISTIC
-    SQL SECURITY INVOKER
+CREATE DEFINER=`bronson`@`localhost` PROCEDURE `getScrollVersionArtefacts`(IN scroll_id_num int unsigned, IN version_id int unsigned)
 SELECT distinct artefact.artefact_id as id, ST_AsText(ST_Envelope(artefact.region_in_master_image)) as rect, ST_AsText(artefact.region_in_master_image) as poly, ST_AsText(artefact.position_in_scroll) as pos, image_urls.url as url, image_urls.suffix as suffix, SQE_image.filename as filename, SQE_image.dpi as dpi, artefact.rotation as rotation from artefact_owner join artefact using(artefact_id) join scroll_version using(scroll_version_id) inner join SQE_image USING(sqe_image_id) inner join image_urls USING(image_urls_id) inner join image_catalog using(image_catalog_id) where artefact.scroll_id=scroll_id_num and artefact_owner.scroll_version_id = version_id and image_catalog.catalog_side=0 ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2885,15 +3175,13 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`bronson`@`localhost` PROCEDURE `getScrollWidth`(scroll_id_num int unsigned, version_id int unsigned)
-    DETERMINISTIC
-    SQL SECURITY INVOKER
+CREATE DEFINER=`bronson`@`localhost` PROCEDURE `getScrollWidth`(IN scroll_id_num int unsigned, IN version_id int unsigned)
 select artefact_id, MAX(JSON_EXTRACT(transform_matrix, '$.matrix[0][2]') + ((ST_X(ST_PointN(ST_ExteriorRing(ST_ENVELOPE(region_in_sqe_image)), 2)) - ST_X(ST_PointN(ST_ExteriorRing(ST_ENVELOPE(region_in_sqe_image)), 1))) * (1215 / SQE_image.dpi))) as max_x from artefact_position join artefact_position_owner using(artefact_position_id) join artefact_shape using(artefact_id) join artefact_shape_owner using(artefact_shape_id) join SQE_image USING(sqe_image_id) join image_catalog using(image_catalog_id) where artefact_position.scroll_id=scroll_id_num and artefact_position_owner.scroll_version_id = version_id and artefact_shape_owner.scroll_version_id = version_id and image_catalog.catalog_side=0 ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2904,19 +3192,17 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_fragment`(
-								IN scroll_id INTEGER,
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_fragment`(IN scroll_id INTEGER,
 								INOUT column_name VARCHAR(45),
 								OUT column_count INTEGER,
 								OUT column_id INTEGER,
-								INOUT full_output LONGTEXT
-							)
+								INOUT full_output LONGTEXT)
     DETERMINISTIC
 BEGIN
 	
@@ -2944,16 +3230,14 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_fragment_text`(
-						IN scroll_name VARCHAR(45),
-						IN column_name VARCHAR(45)
-					)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_fragment_text`(IN scroll_name VARCHAR(45),
+						IN column_name VARCHAR(45))
 get_fragment_text:BEGIN
 	DECLARE next_id_var		INTEGER;
 	DECLARE break_type_var	INTEGER;
@@ -3043,17 +3327,15 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_line_text`(
-						IN scroll_name VARCHAR(45),
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_line_text`(IN scroll_name VARCHAR(45),
 						IN column_name VARCHAR(45),
-						IN line_name   VARCHAR(45)
-					)
+						IN line_name   VARCHAR(45))
 get_line_text:BEGIN
 	DECLARE next_id_var		INTEGER;
 	DECLARE break_type_var	INTEGER;
@@ -3114,17 +3396,15 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_line_text_html`(
-						IN scroll_name VARCHAR(45),
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_line_text_html`(IN scroll_name VARCHAR(45),
 						IN column_name VARCHAR(45),
-						IN line_name   VARCHAR(45)
-					)
+						IN line_name   VARCHAR(45))
 get_line_text:BEGIN
 	DECLARE next_id_var		INTEGER;
 	DECLARE break_type_var	INTEGER;
@@ -3183,17 +3463,15 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_scroll`(
-								INOUT scroll_name	VARCHAR(50),
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_scroll`(INOUT scroll_name	VARCHAR(50),
 								OUT scroll_id INTEGER,
-								INOUT full_output LONGTEXT
-								)
+								INOUT full_output LONGTEXT)
     DETERMINISTIC
 BEGIN
 	SELECT `scroll`.scroll_id
@@ -3214,16 +3492,14 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_sign_json`(
-						IN 		next_id_var INTEGER	,
-						INOUT full_output LONGTEXT
-						)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_sign_json`(IN 		next_id_var INTEGER	,
+						INOUT full_output LONGTEXT)
 BEGIN
 	SET @output_text ='';
 	SET @is_last = 0;
@@ -3271,16 +3547,14 @@ DELIMITER ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `nyewe2w234556`(
-						IN 		next_id_var INTEGER	,
-						INOUT full_output LONGTEXT
-						)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `nyewe2w234556`(IN 		next_id_var INTEGER	,
+						INOUT full_output LONGTEXT)
 BEGIN
 	SET @output_text ='';
 	SET @is_last = 0;
@@ -3354,6 +3628,25 @@ DELIMITER ;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 
 --
+-- Final view structure for view `edition_iaa_manifest`
+--
+
+/*!50001 DROP TABLE IF EXISTS `edition_iaa_manifest`*/;
+/*!50001 DROP VIEW IF EXISTS `edition_iaa_manifest`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `edition_iaa_manifest` AS select `edition_artefact_shape`.`sqe_image_id` AS `sqe_image_id`,`edition_artefact_shape`.`edition_id` AS `edition_id`,`sqe_image_iaa_metadata`.`iaa_metadata_id` AS `iaa_metadata_id`,`sqe_image_iaa_metadata`.`old_iaa_filename` AS `old_iaa_filename`,`sqe_image_iaa_metadata`.`image_urls_id` AS `image_urls_id`,`sqe_image_iaa_metadata`.`filename` AS `filename`,`sqe_image_iaa_metadata`.`native_width` AS `native_width`,`sqe_image_iaa_metadata`.`native_height` AS `native_height`,`sqe_image_iaa_metadata`.`dpi` AS `dpi`,`sqe_image_iaa_metadata`.`type` AS `type`,`sqe_image_iaa_metadata`.`wavelength_start` AS `wavelength_start`,`sqe_image_iaa_metadata`.`wavelength_end` AS `wavelength_end`,`sqe_image_iaa_metadata`.`is_master` AS `is_master`,`sqe_image_iaa_metadata`.`image_catalog_id` AS `image_catalog_id`,`sqe_image_iaa_metadata`.`is_recto` AS `is_recto`,`sqe_image_iaa_metadata`.`manifest` AS `manifest`,`sqe_image_iaa_metadata`.`material` AS `material`,`sqe_image_iaa_metadata`.`publication_number` AS `publication_number`,`sqe_image_iaa_metadata`.`plate` AS `plate`,`sqe_image_iaa_metadata`.`frag` AS `frag`,`sqe_image_iaa_metadata`.`site` AS `site`,`sqe_image_iaa_metadata`.`period` AS `period`,`sqe_image_iaa_metadata`.`composition` AS `composition`,`sqe_image_iaa_metadata`.`copy` AS `copy`,`sqe_image_iaa_metadata`.`manuscript` AS `manuscript`,`sqe_image_iaa_metadata`.`other_identifications` AS `other_identifications`,`sqe_image_iaa_metadata`.`abbreviation` AS `abbreviation`,`sqe_image_iaa_metadata`.`manuscript_type` AS `manuscript_type`,`sqe_image_iaa_metadata`.`composition_type` AS `composition_type`,`sqe_image_iaa_metadata`.`language` AS `language`,`sqe_image_iaa_metadata`.`script` AS `script`,`sqe_image_iaa_metadata`.`publication` AS `publication` from (((select `SQE`.`artefact_shape`.`sqe_image_id` AS `sqe_image_id`,`SQE`.`artefact_shape_owner`.`edition_id` AS `edition_id` from (`SQE`.`artefact_shape_owner` join `SQE`.`artefact_shape` on(`SQE`.`artefact_shape_owner`.`artefact_shape_id` = `SQE`.`artefact_shape`.`artefact_shape_id`)) group by `SQE`.`artefact_shape_owner`.`edition_id`)) `edition_artefact_shape` join `SQE`.`sqe_image_iaa_metadata` on(`edition_artefact_shape`.`sqe_image_id` = `sqe_image_iaa_metadata`.`sqe_image_id`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
 -- Final view structure for view `image_text_fragment_match_catalogue`
 --
 
@@ -3366,7 +3659,7 @@ DELIMITER ;
 /*!50001 SET character_set_results     = utf8mb4 */;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `image_text_fragment_match_catalogue` AS select `image_catalog`.`image_catalog_id` AS `image_catalog_id`,`image_catalog`.`institution` AS `institution`,`image_catalog`.`catalog_number_1` AS `catalog_number_1`,`image_catalog`.`catalog_number_2` AS `catalog_number_2`,`image_catalog`.`catalog_side` AS `catalog_side`,`image_catalog`.`object_id` AS `object_id`,`image_urls`.`image_urls_id` AS `image_urls_id`,`image_urls`.`url` AS `url`,`image_urls`.`proxy` AS `proxy`,`image_urls`.`suffix` AS `suffix`,`image_urls`.`license` AS `license`,`SQE_image`.`filename` AS `filename`,`iaa_edition_catalog`.`iaa_edition_catalog_id` AS `iaa_edition_catalog_id`,`iaa_edition_catalog`.`manuscript_id` AS `manuscript_id`,`iaa_edition_catalog`.`edition_name` AS `edition_name`,`iaa_edition_catalog`.`edition_volume` AS `edition_volume`,`iaa_edition_catalog`.`edition_location_1` AS `edition_location_1`,`iaa_edition_catalog`.`edition_location_2` AS `edition_location_2`,`iaa_edition_catalog`.`edition_side` AS `edition_side`,`iaa_edition_catalog`.`comment` AS `comment`,`iaa_edition_catalog_to_text_fragment`.`iaa_edition_catalog_to_text_fragment_id` AS `iaa_edition_catalog_to_text_fragment_id`,`iaa_edition_catalog_to_text_fragment`.`text_fragment_id` AS `text_fragment_id`,`text_fragment_data`.`name` AS `name`,`manuscript_data`.`name` AS `manuscript_name`,`edition`.`edition_id` AS `edition_id` from ((((((((((`image_catalog` join `SQE_image` on(`SQE_image`.`image_catalog_id` = `image_catalog`.`image_catalog_id` and `SQE_image`.`is_master` = 1)) join `image_urls` on(`SQE_image`.`image_urls_id` = `image_urls`.`image_urls_id`)) join `image_to_iaa_edition_catalog` on(`image_to_iaa_edition_catalog`.`image_catalog_id` = `image_catalog`.`image_catalog_id`)) join `iaa_edition_catalog` on(`image_to_iaa_edition_catalog`.`iaa_edition_catalog_id` = `iaa_edition_catalog`.`iaa_edition_catalog_id`)) join `iaa_edition_catalog_to_text_fragment` on(`image_to_iaa_edition_catalog`.`iaa_edition_catalog_id` = `iaa_edition_catalog_to_text_fragment`.`iaa_edition_catalog_id`)) join `text_fragment_data` on(`iaa_edition_catalog_to_text_fragment`.`text_fragment_id` = `text_fragment_data`.`text_fragment_id`)) join `text_fragment_data_owner` on(`text_fragment_data`.`text_fragment_data_id` = `text_fragment_data_owner`.`text_fragment_data_id`)) join `manuscript_data` on(`iaa_edition_catalog`.`manuscript_id` = `manuscript_data`.`manuscript_id`)) join `manuscript_data_owner` on(`manuscript_data`.`manuscript_data_id` = `manuscript_data_owner`.`manuscript_data_id`)) join `edition` on(`edition`.`edition_id` = `text_fragment_data_owner`.`edition_id` and `edition`.`edition_id` = `manuscript_data_owner`.`edition_id`)) where `edition`.`public` = 1 */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
@@ -3381,9 +3674,9 @@ DELIMITER ;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8 */;
-/*!50001 SET character_set_results     = utf8 */;
-/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
 /*!50001 VIEW `line_view` AS select `line_data_owner`.`edition_id` AS `edition_id`,`line`.`line_id` AS `line_id`,`line_data`.`name` AS `name`,`line_data`.`creator_id` AS `data_creator_id`,`line_data_owner`.`edition_editor_id` AS `data_editor_id` from ((`line` join `line_data` on(`line`.`line_id` = `line_data`.`line_id`)) join `line_data_owner` on(`line_data`.`line_data_id` = `line_data_owner`.`line_data_id`)) */;
@@ -3400,9 +3693,9 @@ DELIMITER ;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8 */;
-/*!50001 SET character_set_results     = utf8 */;
-/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
 /*!50001 VIEW `manuscript_text_fragment_line_sign_view` AS select `manuscript_to_text_fragment_owner`.`edition_id` AS `edition_id`,`manuscript`.`manuscript_id` AS `manuscript_id`,`manuscript_to_text_fragment`.`text_fragment_id` AS `text_fragment_id`,`manuscript_to_text_fragment`.`creator_id` AS `manuscript_text_fragment_creator_id`,`manuscript_to_text_fragment_owner`.`edition_editor_id` AS `manuscript_text_fragment_editor_id`,`text_fragment_to_line`.`line_id` AS `line_id`,`text_fragment_to_line`.`creator_id` AS `text_fragment_to_line_creator_id`,`text_fragment_to_line_owner`.`edition_editor_id` AS `text_fragment_to_line_editor_id`,`line_to_sign`.`sign_id` AS `sign_id`,`line_to_sign`.`creator_id` AS `line_to_sign_creator_id`,`line_to_sign_owner`.`edition_editor_id` AS `line_to_sign_editor_id` from ((((((`manuscript` join `manuscript_to_text_fragment` on(`manuscript`.`manuscript_id` = `manuscript_to_text_fragment`.`manuscript_id`)) join `manuscript_to_text_fragment_owner` on(`manuscript_to_text_fragment`.`manuscript_to_text_fragment_id` = `manuscript_to_text_fragment_owner`.`manuscript_to_text_fragment_id`)) join `text_fragment_to_line` on(`manuscript_to_text_fragment`.`text_fragment_id` = `text_fragment_to_line`.`text_fragment_id`)) join `text_fragment_to_line_owner` on(`text_fragment_to_line_owner`.`text_fragment_to_line_id` = `text_fragment_to_line`.`text_fragment_to_line_id` and `text_fragment_to_line_owner`.`edition_id` = `manuscript_to_text_fragment_owner`.`edition_id`)) join `line_to_sign` on(`text_fragment_to_line`.`line_id` = `line_to_sign`.`line_id`)) join `line_to_sign_owner` on(`line_to_sign_owner`.`line_to_sign_id` = `line_to_sign`.`line_to_sign_id` and `line_to_sign_owner`.`edition_id` = `manuscript_to_text_fragment_owner`.`edition_id`)) */;
@@ -3419,9 +3712,9 @@ DELIMITER ;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8 */;
-/*!50001 SET character_set_results     = utf8 */;
-/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
 /*!50001 VIEW `manuscript_view` AS select `manuscript_data_owner`.`edition_id` AS `edition_id`,`manuscript`.`manuscript_id` AS `manuscript_id`,`manuscript_data`.`name` AS `name`,`manuscript_data`.`creator_id` AS `data_creator_id`,`manuscript_data_owner`.`edition_editor_id` AS `data_editor_id`,`manuscript_metrics`.`x_origin` AS `x_origin`,`manuscript_metrics`.`y_origin` AS `y_origin`,`manuscript_metrics`.`width` AS `width`,`manuscript_metrics`.`height` AS `height`,`manuscript_metrics`.`pixels_per_inch` AS `pixels_per_inch`,`manuscript_metrics`.`scribal_font_id` AS `scribal_font_id`,`manuscript_metrics`.`creator_id` AS `metrics_creator_id`,`manuscript_metrics_owner`.`edition_editor_id` AS `metrics_editor_id` from ((((`manuscript` join `manuscript_data` on(`manuscript`.`manuscript_id` = `manuscript_data`.`manuscript_id`)) join `manuscript_data_owner` on(`manuscript_data`.`manuscript_data_id` = `manuscript_data_owner`.`manuscript_data_id`)) join `manuscript_metrics` on(`manuscript`.`manuscript_id` = `manuscript_metrics`.`manuscript_id`)) join `manuscript_metrics_owner` on(`manuscript_metrics_owner`.`manuscript_metrics_id` = `manuscript_metrics`.`manuscript_metrics_id` and `manuscript_metrics_owner`.`edition_id` = `manuscript_data_owner`.`edition_id`)) */;
@@ -3457,12 +3750,31 @@ DELIMITER ;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8 */;
-/*!50001 SET character_set_results     = utf8 */;
-/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
-/*!50001 VIEW `sign_interpretation_view` AS select `SQE`.`sign_interpretation`.`sign_id` AS `sign_id`,`SQE`.`sign_interpretation`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_attribute_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_attribute`.`attribute_value_id` AS `attribute_value_id`,`SQE`.`sign_interpretation_attribute`.`sequence` AS `sequence`,`SQE`.`sign_interpretation_attribute`.`creator_id` AS `attribute_creator_id`,`SQE`.`sign_interpretation_attribute_owner`.`edition_editor_id` AS `attribute_editor_id`,`sic`.`character` AS `character`,`sic`.`priority` AS `priority`,`sic`.`creator_id` AS `character_creator_id`,`sic`.`edition_editor_id` AS `character_editor_id`,`sico`.`commentary` AS `commentary`,`sico`.`attribute_id` AS `commentary_attribute_id`,`sico`.`creator_id` AS `commentary_creator_id`,`sico`.`edition_editor_id` AS `commentary_editor_id`,`sir`.`exceptional` AS `exceptional`,`sir`.`values_set` AS `values_set`,`sir`.`artefact_id` AS `artefact_id`,`sir`.`translate_x` AS `translate_x`,`sir`.`translate_y` AS `translate_y`,`sir`.`stance_rotation` AS `stance_rotation`,`sir`.`path` AS `path`,`sir`.`creator_id` AS `roi_creator_id`,`sir`.`edition_editor_id` AS `roi_editor_id` from (((((`SQE`.`sign_interpretation` join `SQE`.`sign_interpretation_attribute` on(`SQE`.`sign_interpretation`.`sign_interpretation_id` = `SQE`.`sign_interpretation_attribute`.`sign_interpretation_id`)) join `SQE`.`sign_interpretation_attribute_owner` on(`SQE`.`sign_interpretation_attribute`.`sign_interpretation_attribute_id` = `SQE`.`sign_interpretation_attribute_owner`.`sign_interpretation_attribute_id`)) left join (select `SQE`.`sign_interpretation_character`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_character`.`character` AS `character`,`SQE`.`sign_interpretation_character`.`creator_id` AS `creator_id`,`SQE`.`sign_interpretation_character_owner`.`priority` AS `priority`,`SQE`.`sign_interpretation_character_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_character_owner`.`edition_editor_id` AS `edition_editor_id` from (`SQE`.`sign_interpretation_character` join `SQE`.`sign_interpretation_character_owner` on(`SQE`.`sign_interpretation_character`.`sign_interpretation_character_id` = `SQE`.`sign_interpretation_character_owner`.`sign_interpretation_character_id`))) `sic` on(`sic`.`sign_interpretation_id` = `SQE`.`sign_interpretation`.`sign_interpretation_id` and `sic`.`edition_id` = `SQE`.`sign_interpretation_attribute_owner`.`edition_id`)) left join (select `SQE`.`sign_interpretation_commentary`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_commentary`.`attribute_id` AS `attribute_id`,`SQE`.`sign_interpretation_commentary`.`commentary` AS `commentary`,`SQE`.`sign_interpretation_commentary`.`creator_id` AS `creator_id`,`SQE`.`sign_interpretation_commentary_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_commentary_owner`.`edition_editor_id` AS `edition_editor_id` from (`SQE`.`sign_interpretation_commentary` join `SQE`.`sign_interpretation_commentary_owner` on(`SQE`.`sign_interpretation_commentary`.`sign_interpretation_commentary_id` = `SQE`.`sign_interpretation_commentary_owner`.`sign_interpretation_commentary_id`))) `sico` on(`sico`.`sign_interpretation_id` = `SQE`.`sign_interpretation`.`sign_interpretation_id` and `sico`.`edition_id` = `SQE`.`sign_interpretation_attribute_owner`.`edition_id`)) left join (select `SQE`.`sign_interpretation_roi`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_roi`.`values_set` AS `values_set`,`SQE`.`sign_interpretation_roi`.`exceptional` AS `exceptional`,`SQE`.`sign_interpretation_roi`.`creator_id` AS `creator_id`,`SQE`.`roi_position`.`artefact_id` AS `artefact_id`,`SQE`.`roi_position`.`translate_x` AS `translate_x`,`SQE`.`roi_position`.`translate_y` AS `translate_y`,`SQE`.`roi_position`.`stance_rotation` AS `stance_rotation`,`SQE`.`roi_shape`.`path` AS `path`,`SQE`.`sign_interpretation_roi_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_roi_owner`.`edition_editor_id` AS `edition_editor_id` from (((`SQE`.`sign_interpretation_roi` join `SQE`.`sign_interpretation_roi_owner` on(`SQE`.`sign_interpretation_roi`.`sign_interpretation_roi_id` = `SQE`.`sign_interpretation_roi_owner`.`sign_interpretation_roi_id`)) join `SQE`.`roi_position` on(`SQE`.`sign_interpretation_roi`.`roi_position_id` = `SQE`.`roi_position`.`roi_position_id`)) join `SQE`.`roi_shape` on(`SQE`.`sign_interpretation_roi`.`roi_shape_id` = `SQE`.`roi_shape`.`roi_shape_id`))) `sir` on(`sir`.`sign_interpretation_id` = `SQE`.`sign_interpretation`.`sign_interpretation_id` and `sir`.`edition_id` = `SQE`.`sign_interpretation_attribute_owner`.`edition_id`)) */;
+/*!50001 VIEW `sign_interpretation_view` AS select `SQE`.`sign_interpretation`.`sign_id` AS `sign_id`,`SQE`.`sign_interpretation`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_attribute_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_attribute`.`attribute_value_id` AS `attribute_value_id`,`SQE`.`sign_interpretation_attribute`.`sign_interpretation_attribute_id` AS `sign_interpretation_attribute_id`,`SQE`.`sign_interpretation_attribute`.`sequence` AS `sequence`,`SQE`.`sign_interpretation_attribute`.`creator_id` AS `attribute_creator_id`,`SQE`.`sign_interpretation_attribute_owner`.`edition_editor_id` AS `attribute_editor_id`,`sic`.`character` AS `character`,`sic`.`priority` AS `priority`,`sic`.`creator_id` AS `character_creator_id`,`sic`.`edition_editor_id` AS `character_editor_id`,`sico`.`commentary` AS `commentary`,`sico`.`attribute_id` AS `commentary_attribute_id`,`sico`.`creator_id` AS `commentary_creator_id`,`sico`.`edition_editor_id` AS `commentary_editor_id`,`sir`.`sign_interpretation_roi_id` AS `sign_interpretation_roi_id`,`sir`.`exceptional` AS `exceptional`,`sir`.`values_set` AS `values_set`,`sir`.`artefact_id` AS `artefact_id`,`sir`.`translate_x` AS `translate_x`,`sir`.`translate_y` AS `translate_y`,`sir`.`stance_rotation` AS `stance_rotation`,`sir`.`path` AS `path`,`sir`.`creator_id` AS `roi_creator_id`,`sir`.`edition_editor_id` AS `roi_editor_id` from (((((`SQE`.`sign_interpretation` join `SQE`.`sign_interpretation_attribute` on(`SQE`.`sign_interpretation`.`sign_interpretation_id` = `SQE`.`sign_interpretation_attribute`.`sign_interpretation_id`)) join `SQE`.`sign_interpretation_attribute_owner` on(`SQE`.`sign_interpretation_attribute`.`sign_interpretation_attribute_id` = `SQE`.`sign_interpretation_attribute_owner`.`sign_interpretation_attribute_id`)) left join (select `SQE`.`sign_interpretation_character`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_character`.`character` AS `character`,`SQE`.`sign_interpretation_character`.`creator_id` AS `creator_id`,`SQE`.`sign_interpretation_character_owner`.`priority` AS `priority`,`SQE`.`sign_interpretation_character_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_character_owner`.`edition_editor_id` AS `edition_editor_id` from (`SQE`.`sign_interpretation_character` join `SQE`.`sign_interpretation_character_owner` on(`SQE`.`sign_interpretation_character`.`sign_interpretation_character_id` = `SQE`.`sign_interpretation_character_owner`.`sign_interpretation_character_id`))) `sic` on(`sic`.`sign_interpretation_id` = `SQE`.`sign_interpretation`.`sign_interpretation_id` and `sic`.`edition_id` = `SQE`.`sign_interpretation_attribute_owner`.`edition_id`)) left join (select `SQE`.`sign_interpretation_commentary`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_commentary`.`attribute_id` AS `attribute_id`,`SQE`.`sign_interpretation_commentary`.`commentary` AS `commentary`,`SQE`.`sign_interpretation_commentary`.`creator_id` AS `creator_id`,`SQE`.`sign_interpretation_commentary_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_commentary_owner`.`edition_editor_id` AS `edition_editor_id` from (`SQE`.`sign_interpretation_commentary` join `SQE`.`sign_interpretation_commentary_owner` on(`SQE`.`sign_interpretation_commentary`.`sign_interpretation_commentary_id` = `SQE`.`sign_interpretation_commentary_owner`.`sign_interpretation_commentary_id`))) `sico` on(`sico`.`sign_interpretation_id` = `SQE`.`sign_interpretation`.`sign_interpretation_id` and `sico`.`edition_id` = `SQE`.`sign_interpretation_attribute_owner`.`edition_id`)) left join (select `SQE`.`sign_interpretation_roi`.`sign_interpretation_id` AS `sign_interpretation_id`,`SQE`.`sign_interpretation_roi`.`sign_interpretation_roi_id` AS `sign_interpretation_roi_id`,`SQE`.`sign_interpretation_roi`.`values_set` AS `values_set`,`SQE`.`sign_interpretation_roi`.`exceptional` AS `exceptional`,`SQE`.`sign_interpretation_roi`.`creator_id` AS `creator_id`,`SQE`.`roi_position`.`artefact_id` AS `artefact_id`,`SQE`.`roi_position`.`translate_x` AS `translate_x`,`SQE`.`roi_position`.`translate_y` AS `translate_y`,`SQE`.`roi_position`.`stance_rotation` AS `stance_rotation`,`SQE`.`roi_shape`.`path` AS `path`,`SQE`.`sign_interpretation_roi_owner`.`edition_id` AS `edition_id`,`SQE`.`sign_interpretation_roi_owner`.`edition_editor_id` AS `edition_editor_id` from (((`SQE`.`sign_interpretation_roi` join `SQE`.`sign_interpretation_roi_owner` on(`SQE`.`sign_interpretation_roi`.`sign_interpretation_roi_id` = `SQE`.`sign_interpretation_roi_owner`.`sign_interpretation_roi_id`)) join `SQE`.`roi_position` on(`SQE`.`sign_interpretation_roi`.`roi_position_id` = `SQE`.`roi_position`.`roi_position_id`)) join `SQE`.`roi_shape` on(`SQE`.`sign_interpretation_roi`.`roi_shape_id` = `SQE`.`roi_shape`.`roi_shape_id`))) `sir` on(`sir`.`sign_interpretation_id` = `SQE`.`sign_interpretation`.`sign_interpretation_id` and `sir`.`edition_id` = `SQE`.`sign_interpretation_attribute_owner`.`edition_id`)) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `sqe_image_iaa_metadata`
+--
+
+/*!50001 DROP TABLE IF EXISTS `sqe_image_iaa_metadata`*/;
+/*!50001 DROP VIEW IF EXISTS `sqe_image_iaa_metadata`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
+/*!50001 VIEW `sqe_image_iaa_metadata` AS select `sqe_image_to_iaa_metadata`.`iaa_metadata_id` AS `iaa_metadata_id`,`sqe_image_to_iaa_metadata`.`sqe_image_id` AS `sqe_image_id`,`sqe_image_to_iaa_metadata`.`old_iaa_filename` AS `old_iaa_filename`,`SQE_image`.`image_urls_id` AS `image_urls_id`,`SQE_image`.`filename` AS `filename`,`SQE_image`.`native_width` AS `native_width`,`SQE_image`.`native_height` AS `native_height`,`SQE_image`.`dpi` AS `dpi`,`SQE_image`.`type` AS `type`,`SQE_image`.`wavelength_start` AS `wavelength_start`,`SQE_image`.`wavelength_end` AS `wavelength_end`,`SQE_image`.`is_master` AS `is_master`,`SQE_image`.`image_catalog_id` AS `image_catalog_id`,`SQE_image`.`is_recto` AS `is_recto`,`SQE_image`.`manifest` AS `manifest`,`iaa_metadata`.`material` AS `material`,`iaa_metadata`.`publication_number` AS `publication_number`,`iaa_metadata`.`plate` AS `plate`,`iaa_metadata`.`frag` AS `frag`,`iaa_metadata`.`site` AS `site`,`iaa_metadata`.`period` AS `period`,`iaa_metadata`.`composition` AS `composition`,`iaa_metadata`.`copy` AS `copy`,`iaa_metadata`.`manuscript` AS `manuscript`,`iaa_metadata`.`other_identifications` AS `other_identifications`,`iaa_metadata`.`abbreviation` AS `abbreviation`,`iaa_metadata`.`manuscript_type` AS `manuscript_type`,`iaa_metadata`.`composition_type` AS `composition_type`,`iaa_metadata`.`language` AS `language`,`iaa_metadata`.`script` AS `script`,`iaa_metadata`.`publication` AS `publication`,`iaa_metadata`.`extra` AS `extra` from ((`sqe_image_to_iaa_metadata` join `SQE_image` on(`sqe_image_to_iaa_metadata`.`sqe_image_id` = `SQE_image`.`sqe_image_id`)) join `iaa_metadata` on(`sqe_image_to_iaa_metadata`.`iaa_metadata_id` = `iaa_metadata`.`iaa_metadata_id`)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -3476,9 +3788,9 @@ DELIMITER ;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8 */;
-/*!50001 SET character_set_results     = utf8 */;
-/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY INVOKER */
 /*!50001 VIEW `text_fragment_view` AS select `text_fragment_data_owner`.`edition_id` AS `edition_id`,`text_fragment`.`text_fragment_id` AS `text_fragment_id`,`text_fragment_data`.`name` AS `name`,`text_fragment_data`.`creator_id` AS `data_creator_id`,`text_fragment_data_owner`.`edition_editor_id` AS `data_editor_id` from ((`text_fragment` join `text_fragment_data` on(`text_fragment`.`text_fragment_id` = `text_fragment_data`.`text_fragment_id`)) join `text_fragment_data_owner` on(`text_fragment_data`.`text_fragment_data_id` = `text_fragment_data_owner`.`text_fragment_data_id`)) */;
