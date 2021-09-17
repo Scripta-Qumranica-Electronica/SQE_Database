@@ -1,0 +1,3 @@
+This update simplifies many of the artefact cutouts in preparation for a more aggressive segmentation program.
+It adds some new artefacts for some of the new larger images.
+Beware that this update is not deterministic and it should not be run more than once.

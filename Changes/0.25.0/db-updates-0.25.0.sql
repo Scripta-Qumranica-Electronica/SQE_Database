@@ -1,7 +1,7 @@
 START TRANSACTION;
 
 -- Set the version of this update (CURRENT_DATABASE_VERSION)
-SELECT @VER := "0.23.2";
+SELECT @VER := "0.25.0";
 
 INSERT INTO `db_version` (version)
 VALUES (@VER);
