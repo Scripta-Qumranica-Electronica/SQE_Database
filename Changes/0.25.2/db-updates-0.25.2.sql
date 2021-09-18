@@ -1,7 +1,7 @@
 START TRANSACTION;
 
 -- Set the version of this update (CURRENT_DATABASE_VERSION)
-SELECT @VER := "0.25.0";
+SELECT @VER := "0.25.2";
 
 INSERT INTO `db_version` (version)
 VALUES (@VER);
@@ -13,7 +13,7 @@ from artefact_shape
 join artefact_data USING(artefact_id)
 join artefact_data_owner using(artefact_data_id)
 left join artefact_shape_owner using(artefact_shape_id)
-where artefact_shape_owner.edition_id is null and artefact_data_owner.edition_id < 1646
+where artefact_shape_owner.edition_id is null and artefact_data_owner.edition_id < 1646;
 
 
 -- Record the completion of the update
