@@ -156,11 +156,7 @@ CREATE TABLE `artefact_data` (
   KEY `fk_artefact_data_to_creator_id` (`creator_id`),
   CONSTRAINT `fk_artefact_data_to_artefact` FOREIGN KEY (`artefact_id`) REFERENCES `artefact` (`artefact_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_artefact_data_to_creator_id` FOREIGN KEY (`creator_id`) REFERENCES `user` (`user_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=41889 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='This stores metadata about the artefact.';
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `artefact_data_owner`
 --
 
 DROP TABLE IF EXISTS `artefact_data_owner`;
@@ -390,11 +386,7 @@ CREATE TABLE `artefact_shape` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `artefact_shape_owner`
 --
-
-DROP TABLE IF EXISTS `artefact_shape_owner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `artefact_shape_owner` (
   `artefact_shape_id` int(11) unsigned NOT NULL DEFAULT 0,
