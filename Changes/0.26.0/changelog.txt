@@ -1,0 +1,1 @@
+This update contains the IAA image manifests, as well as the corresponding view.
