@@ -4,7 +4,6 @@
 const args = require('minimist')(process.argv.slice(2), { boolean: true })
 const chalk = require('chalk')
 const fs   = require('fs')
-const gzip = require('gzip-js');
 
 const filename = __dirname + '/../package.json'
 if (!args.t) {
