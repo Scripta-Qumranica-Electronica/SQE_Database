@@ -52,7 +52,8 @@ const deploy = async () => {
 
         // Build the Docker image and push it to Docker Hub
         if (!args.n) await runCMD(`\nTagging the docker image as ${tag}.\n`, 'docker', ['tag', 'qumranica/sqe-database:latest', `qumranica/sqe-database:${tag}`])
-        if (!args.n) await runCMD('\nPushing the docker image to docker hub.\n', 'docker', ['push', 'qumranica/sqe-database'])
+        if (!args.n) await runCMD('\nPushing the docker image to docker hub.\n', 'docker', ['push', 'qumranica/sqe-database:latest'])
+        if (!args.n) await runCMD('\nPushing the docker image to docker hub.\n', 'docker', ['push', `qumranica/sqe-database:${tag}`])
 
         // Done
         console.log(chalk.green(`\n✓ Successfully pushed version ${tag} to ${!args.n ? 'docker hub and to ' : ''}github.\n`))
