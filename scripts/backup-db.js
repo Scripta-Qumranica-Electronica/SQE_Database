@@ -40,7 +40,7 @@ const backupTable = async (table) => {
 const backupSchema = async () => {
     return new Promise( (resolve, reject) => {
         console.log(chalk.blue(`Backing up schema to schema.sql.`))
-        const cmd = spawn('docker', ['exec', '-i', 'SQE_Database', '/usr/bin/mysqldump', '--no-data', '--skip-dump-date', '--routines', '--events', '-u', 'root', '-pnone', 'SQE'], { encoding : 'utf8', cwd: projectBaseDir })
+        const cmd = spawn('docker', ['exec', '-i', 'SQE_Database', '/usr/bin/mysqldump', '--no-data', '--skip-dump-date', '--routines', '--events', '-u', 'root', '-pnone', 'SQE'], { encoding : 'utf8', cwd: projectBaseDir, shell: true })
         cmd.stdout.pipe(fs.createWriteStream(`${dataDir}/1-schema.sql`))
         cmd.on('exit', async (code/*, signal*/) => {
             if (code !== 0) reject(new Error(chalk.red(`✗ Failed backing up schema.`)))
