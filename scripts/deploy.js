@@ -1,11 +1,14 @@
 const spawn = require('child_process').spawn
 const chalk = require('chalk')
 const args = require('minimist')(process.argv.slice(2))
+const check = require('./check.js');
 
 if (args.h) {
     console.log(`
 Please provide a version name with the -t switch
 and a commit message with the -m switch.
+
+Use -s switch to skip sanity checks.
 
 You may avoid the database sanitizing with the -n switch.
 (This will basically just copy the last database version through.)
@@ -18,7 +21,15 @@ if (!args.t || !args.m) {
     process.exit(1)
 }
 
-const deploy = async () => {
+const deploy = async () => {	
+	if (!args.s) {		
+		const result = await check.main(args.t);	
+			
+		if (!result) {
+			console.log('Sanity check failed.');
+			process.exit(1);
+		}	
+	}
 
     // Use the following if we need some os specific accomodations.
     // const os = require('os')

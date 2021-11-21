@@ -1,0 +1,1 @@
+Added artefacts to 4225 images of which 303 are missing shape information which needs to be fixed (manually?)
