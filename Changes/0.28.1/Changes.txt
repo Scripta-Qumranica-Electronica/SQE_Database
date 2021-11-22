@@ -1,0 +1,1 @@
+Altered docker build process to wrap the database restore into a single stage.

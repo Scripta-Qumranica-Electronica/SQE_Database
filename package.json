@@ -1,7 +1,7 @@
 {
   "name": "database",
   "description": "Scripta Qumranica Electronica - Database",
-  "version": "0.28.0",
+  "version": "0.28.1",
   "scripts": {
     "backup": "node ./scripts/backup-db.js",
     "clean": "node ./scripts/sanitize-db.js",
@@ -13,6 +13,7 @@
     "fs-extra": "^7.0.1",
     "mariadb": "^2.0.1-beta",
     "md5-file": "^4.0.0",
-    "minimist": "^1.2.3"
+    "minimist": "^1.2.3",
+    "username": "^6.0.0"
   }
 }

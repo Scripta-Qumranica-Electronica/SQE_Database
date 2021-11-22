@@ -38,9 +38,9 @@ const deploy = async () => {
     try {
         // Backup the database
         if (!args.n) await runCMD('\nSanitizing database.\n', 'node', ['scripts/sanitize-db.js'])
-        if (!args.n) await runCMD('\nCleaning any previous data files.\n', 'node', ['scripts/clear-data-dir.js'])
-        if (!args.n) await runCMD('\nBacking database up\n.','node', ['scripts/backup-db.js'])
+        if (!args.n) await runCMD('\nBacking database up\n.','node', ['scripts/backup-db.mjs'])
         if (!args.n) await runCMD('\nBuilding the docker image.\n', 'docker', ['build', '--no-cache', '-t', 'qumranica/sqe-database:latest', '.'])
+        if (!args.n) await runCMD('\nDeleting post-build data dir.\n', 'docker', ['exec', 'SQE_Database', '/bin/bash', '-c', 'rm -rf /backup/*'])
 
         // Update version and push up to GitHub
         await runCMD('\nCleaning unneeded data files.\n', 'node', ['scripts/clear-data-dir.js'])

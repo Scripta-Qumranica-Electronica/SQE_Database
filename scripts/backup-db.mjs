@@ -1,10 +1,16 @@
+import { username } from 'username'
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
 const spawn = require('child_process').spawn
 const chalk = require('chalk')
 
 const backup = async () => {
     try {
+        const current_user = await username()
+        await runCMD('\nDeleting existing data dir.\n', 'docker', ['exec', 'SQE_Database', '/bin/bash', '-c', 'rm -rf /backup/*'])
         await runCMD('\nBacking up the new database.\n', 'docker', ['exec', 'SQE_Database', 'mariabackup', '--backup', '--target-dir=/backup/', '--user=root', '--password=none'])
-        // await runCMD('\nPreparing the new database backup.\n', 'docker', ['exec', 'SQE_Database', 'mariabackup', '--prepare', '--target-dir=/backup/'])
+        // TODO: we need to run a different command to do this on Windows
+        await runCMD(`\nMaking the backups accessible to ${current_user}.\n`, 'sudo', ['chown', '-R', `${current_user}:${current_user}`, './data'])
     } catch (err) {
         console.error(chalk.red('\n✗ Failed to backup the new database.\n'))
         console.error(err)

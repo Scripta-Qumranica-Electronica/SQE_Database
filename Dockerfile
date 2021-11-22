@@ -8,7 +8,8 @@ RUN apt-get update \
 COPY data /backup
 RUN mariabackup --prepare --target-dir=/backup \
     && mariabackup --copy-back --target-dir=/backup \
-    && chown -R mysql:mysql /var/lib/mysql
+    && chown -R mysql:mysql /var/lib/mysql \
+    && rm -rf /backup
 
 ## Copy a new entrypoint script
 COPY ./scripts/startup.sh /startup.sh
