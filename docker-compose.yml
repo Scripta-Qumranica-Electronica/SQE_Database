@@ -11,3 +11,5 @@ services:
       - "3306"
     ports:
       - "3307:3306"
+    volumes:
+      - ./data:/backup

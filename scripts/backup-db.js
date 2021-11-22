@@ -1,78 +1,31 @@
-const { spawn } = require('child_process')
-const fs = require('fs')
-const mariadb = require('mariadb')
+const spawn = require('child_process').spawn
 const chalk = require('chalk')
 
-const projectBaseDir = __dirname + '/..'
-const dataDir = `${projectBaseDir}/data`
-
-const getTables = async (pool) => {
-    console.log(chalk.blue('\nAnalyzing tables:'))
-    return new Promise(async (resolve, reject) => {
-        try {
-            const rows = await pool.query(`
-                SELECT table_name AS Tables_in_SQE
-                FROM information_schema.tables
-                WHERE table_type = 'BASE TABLE' AND table_schema='SQE'
-                ORDER BY table_name ASC`)
-            resolve(rows.map(x => x['Tables_in_SQE']))
-        } catch(err) {
-            console.log(chalk.red(`✗ The backup has failed while trying to save individual tables.`))
-            reject(chalk.red('✗ Database connection error.'))
-        }
-    })
-}
-
-const backupTable = async (table) => {
-    return new Promise(async (resolve, reject) => {
-        console.log(chalk.blue(`Backing up ${table} to ${table}.sql.`))
-        const cmd = spawn('docker', ['exec', '-i', 'SQE_Database', '/usr/bin/mysqldump', '--skip-dump-date', '-u', 'root', '-pnone', '-h', '127.0.0.1', '-P', '3306', 'SQE', table], { encoding : 'utf8', cwd: projectBaseDir })
-        cmd.stdout.pipe(fs.createWriteStream(`${dataDir}/${table}.sql`))
-        cmd.on('exit', async (code/*, signal*/) => {
-            if (code !== 0) reject(new Error(chalk.red(`✗ Failed while backing up ${table}.`)))
-            else {
-                resolve(chalk.green(`✓ The table ${table} has been copied.`))
-            }
-        })
-    })
-}
-
-const backupSchema = async () => {
-    return new Promise( (resolve, reject) => {
-        console.log(chalk.blue(`Backing up schema to schema.sql.`))
-        const cmd = spawn('docker', ['exec', '-i', 'SQE_Database', '/usr/bin/mysqldump', '--no-data', '--skip-dump-date', '--routines', '--events', '-u', 'root', '-pnone', 'SQE'], { encoding : 'utf8', cwd: projectBaseDir, shell: true })
-        cmd.stdout.pipe(fs.createWriteStream(`${dataDir}/1-schema.sql`))
-        cmd.on('exit', async (code/*, signal*/) => {
-            if (code !== 0) reject(new Error(chalk.red(`✗ Failed backing up schema.`)))
-            else {
-                resolve(chalk.green(`✓ The schema has been copied.`))
-            }
-        })
-    })
-}
-
-const backupDB = async () => {
-    console.log(chalk.blue('Attempting to backup the default data from SQE_Database Docker...'))
-    console.log(chalk.blue('\tConnecting to DB.  This may take a moment.'))
-    const pool = mariadb.createPool({
-        host: 'localhost',
-        port: 3307,
-        user:'root',
-        password: 'none',
-        database: 'SQE',
-        connectionLimit: 60
-    })
-
+const backup = async () => {
     try {
-        console.log(await backupSchema())
-        for (table of await getTables(pool)) {
-            console.log(await backupTable(table))
-        }
-        process.exit(0)
-    } catch(err) {
+        await runCMD('\nBacking up the new database.\n', 'docker', ['exec', 'SQE_Database', 'mariabackup', '--backup', '--target-dir=/backup/', '--user=root', '--password=none'])
+        // await runCMD('\nPreparing the new database backup.\n', 'docker', ['exec', 'SQE_Database', 'mariabackup', '--prepare', '--target-dir=/backup/'])
+    } catch (err) {
+        console.error(chalk.red('\n✗ Failed to backup the new database.\n'))
         console.error(err)
         process.exit(1)
     }
 }
 
-backupDB()
+// A handy Promise based wrapper for child_process.spawn
+const runCMD = async (title, cmd, args) => {
+    return new Promise((resolve, reject) => {
+        console.log(chalk.blue(`${title}.`))
+        try {
+            const proc = spawn(cmd, args, { stdio: [null, process.stdout, process.stderr], cwd: './' })
+            proc.on('exit', (code/*, signal*/) => {
+                if (code === 0) resolve(proc)
+                else throw new Error(code)
+            })
+        } catch (err) {
+            reject(err)
+        }
+    })
+}
+
+backup()
