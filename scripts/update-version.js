@@ -6,6 +6,19 @@ const chalk = require('chalk')
 const fs   = require('fs')
 const { runMain } = require('module')
 
+const run = (shellCmd, params) => {         // shellCmd:String, params:String > { status:String, msg:String }
+    return new Promise((resolve, reject) => {
+        exec(shellCmd + ' ' + params, (error, stdout, stderr) => {
+            if (error) {
+                return reject({ status:'ERR', msg:error.message, stderr });                
+            }            
+            resolve({ status:'ok', msg:stdout.toString(), stderr });
+        });
+    }).catch(e => {
+        log(e);
+    });
+}
+
 const filename = __dirname + '/../package.json'
 if (!args.t) {
     console.error(chalk.red('✗ You must supply a version tag with the -t switch.'))
