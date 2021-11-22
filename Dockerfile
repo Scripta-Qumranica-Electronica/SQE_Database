@@ -6,12 +6,11 @@ RUN apt-get update \
 
 ## Copy in the saved SQE data
 COPY data /backup
-RUN mariabackup --prepare --target-dir=/backup
-RUN mariabackup --copy-back --target-dir=/backup
-RUN chown -R mysql:mysql /var/lib/mysql
+RUN mariabackup --prepare --target-dir=/backup \
+    && mariabackup --copy-back --target-dir=/backup \
+    && chown -R mysql:mysql /var/lib/mysql
 
 ## Copy a new entrypoint script
-# COPY ./scripts/1-install-oqgraph.sql /docker-entrypoint-initdb.d/
 COPY ./scripts/startup.sh /startup.sh
 
 ## Just inject the necessary event scheduler here (no need for a complete custom my.cnf)
