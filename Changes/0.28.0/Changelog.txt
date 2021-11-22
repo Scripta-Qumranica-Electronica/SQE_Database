@@ -1,1 +1,1 @@
-This is a tooling fix, mainly to update the Docker image creation approach to be more reliable and fast using mariabackup instead of the older custom backup and restore steps.
+This is a tooling fix to the SQE_Database build system, mainly to update the Docker image creation approach to be more reliable and fast using mariabackup instead of the older custom backup and restore steps.
