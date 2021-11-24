@@ -2,11 +2,11 @@
     This script runs some basic sanity checks before attempting to run the deploy.js script, just in case the state of affairs is not exactly as it "should" be.
     Running the deploy.js script without these checks might cause things to go horribly wrong. Following checks are performed:
 
-    1. Script is NOT run on a Windows platform
+    1. Make sure script is NOT run on a Windows platform
     2. Check if you're logged on to Github
-    3. Latest version of SQE_Database from Docker Hub
-    4. The tag version is greater than the latest on Docker Hub    
-    5. SQE_Database Docker container is running and its using port 3307
+    3. Get latest version of SQE_Database from Docker Hub
+    4. Verify that the tag version is greater than the latest on Docker Hub    
+    5. Make sure SQE_Database Docker container is running and its using port 3307
     6. If a container with id "qumranica/sqe_database" is found but the name is not "SQE_Database", rename it (Docker Desktop for Windows gives the containers random names!)
     
     Author: Hannu Kalavainen
