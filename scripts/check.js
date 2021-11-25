@@ -98,16 +98,19 @@ const checkDockerStatus = _ => {
 const main = async (versionTag) => {
     log();
     log('Checking preconditions for running SQE_Database deploy.');
+
+    const checks = 6;       // total checks
+    let   c = 1;            // current check number
     
     // 1. check platform:
-    log('1/6 Check platform:', process.platform);
+    log(`[${c++}/${checks}] Check platform:`, process.platform);
     if (process.platform == 'win32') {
         log('This script cannot be run on win32 platform!');
         return null;    
     }
 
     // check if the correct sql script file exists
-    log('Check if SQL script file is found...');
+    log(`[${c++}/${checks}] Check if SQL script file is found...`);
     const sqlUpdateFile = `Changes/${versionTag}/db-updates-${versionTag}.sql`;
     if (!fs.existsSync(sqlUpdateFile)) {
         log('SQL file not found:' + sqlUpdateFile);
@@ -115,7 +118,7 @@ const main = async (versionTag) => {
     }
 
     // 2. check if logged on to Git
-    log('2/6 Check if logged on to GitHub...');
+    log(`[${c++}/${checks}] Check if logged on to GitHub...`);
     const result = await run('gh', 'auth status');    
     if (!(result && result.status == 'ok' && result.stderr.startsWith('github.com'))) {
         log('Not logged on to GitHub!');
@@ -123,13 +126,13 @@ const main = async (versionTag) => {
     } 
     
     // 3. check latest docker hub version:        
-    log('3/6 Check latest docker hub version...');
+    log(`[${c++}/${checks}] Check latest docker hub version...`);
     const dockerVersion = await checkLatestDockerHubVersion();    
     if (dockerVersion == null) return null;
     log('Latest qumranica/sqe-database container version in Docker hub:', dockerVersion.join('.'));    
 
     // 4. check that tag given in argument -t is greater than the version in docker hub
-    log('4/6 Check that the current version tag is greater than Docker hub version...');
+    log(`[${c++}/${checks}] Check that the current version tag is greater than Docker hub version...`);
     if (compareVersions(convertVersionStringToArray(versionTag), dockerVersion) != -1) {
         log('Given tag is equal or less than the current version on Docker Hub!');
         return null;
@@ -137,11 +140,11 @@ const main = async (versionTag) => {
     log('Given tag is greater than the current version on Docker Hub, good!');
     
     // 5. and 6. check that the Docker container is up and running, port and name are correct
-    log('5/6 Check that Docker is up and running...');
+    log(`[${c++}/${checks}] Check that Docker is up and running...`);
     const dockerStatus = await checkDockerStatus(); 
     
     if (dockerStatus == 'OK') {
-        log('6/6 All checks passed!');
+        log(`[${c++}/${checks}] All checks passed!`);
         log('')
         return true;
     }    
