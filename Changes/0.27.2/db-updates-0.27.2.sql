@@ -33,6 +33,7 @@ WHERE artefact_id = @artefact_id AND region_in_sqe_image_hash IS NULL;
 -- Record the completion of the update
 UPDATE `db_version`
 SET completed = current_timestamp()
-WHERE version = @VER;
+WHERE version = @VER
+COLLATE utf8mb4_general_ci;
 
 COMMIT;
