@@ -47,10 +47,10 @@ const run = (shellCmd, params) => {         // shellCmd:String, params:String > 
 
 const checkLatestDockerHubVersion = async _ => {
     return new Promise(async (resolve, reject) => {
-        const result = await run('wget', '-O- -q https://registry.hub.docker.com/v1/repositories/qumranica/sqe-database/tags');
+        const result = await run('wget', '-O- -q https://registry.hub.docker.com/v2/repositories/qumranica/sqe-database/tags');
         if (result.status == 'ok') {
             const json = JSON.parse(result.msg);            
-            const sortedVersions = json.map(e => convertVersionStringToArray(e.name)).filter(e => e.length == 3).sort(compareVersions);            
+            const sortedVersions = json['results'].map(e => convertVersionStringToArray(e.name)).filter(e => e.length == 3).sort(compareVersions);            
             resolve(sortedVersions[0]);
         }
     }).catch(e => {
