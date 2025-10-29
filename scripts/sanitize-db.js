@@ -156,7 +156,12 @@ const sanitizeDB = async () => {
 
         DELETE user
         FROM user
-        WHERE email != "sqe_api" AND email != "test@1.com" AND email != "test@2.com";
+        WHERE email != 'sqe_api' 
+            AND email != 'test@1.com' 
+            AND email != 'test@2.com' 
+            AND user_id NOT IN (SELECT DISTINCT user_id
+                FROM users_system_roles
+                WHERE system_roles_id IN (2,3,4));
 
         SELECT @max := MAX(user_id) + 1 FROM user;
         PREPARE stmt FROM CONCAT('ALTER TABLE user AUTO_INCREMENT = ', @max OR 1);
