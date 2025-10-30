@@ -140,15 +140,14 @@ const main = async (versionTag) => {
     log('Given tag is greater than the current version on Docker Hub, good!');
     
     // 5. and 6. check that the Docker container is up and running, port and name are correct
-    //log(`[${c++}/${checks}] Check that Docker is up and running...`);
-    //const dockerStatus = await checkDockerStatus(); 
+    log(`[${c++}/${checks}] Check that Docker is up and running...`);
+    const dockerStatus = await checkDockerStatus(); 
     
-    //if (dockerStatus == 'OK') {
-    //    log(`[${c++}/${checks}] All checks passed!`);
-    //    log('')
-    //    return true;
-    //}
-    return true;    
+    if (dockerStatus == 'OK') {
+        log(`[${c++}/${checks}] All checks passed!`);
+        log('')
+        return true;
+    }
 }
 
 module.exports = { main };
