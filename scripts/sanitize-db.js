@@ -156,7 +156,8 @@ const sanitizeDB = async () => {
 
         DELETE user
         FROM user
-        WHERE email != 'sqe_api' 
+        WHERE user_id != 1
+            AND email != 'sqe_api' 
             AND email != 'test@1.com' 
             AND email != 'test@2.com' 
             AND user_id NOT IN (SELECT DISTINCT user_id

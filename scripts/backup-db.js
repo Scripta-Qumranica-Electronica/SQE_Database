@@ -26,7 +26,7 @@ const getTables = async (pool) => {
 const backupTable = async (table) => {
     return new Promise(async (resolve, reject) => {
         console.log(chalk.blue(`Backing up ${table} to ${table}.sql.`))
-        const cmd = spawn('docker', ['exec', '-i', 'SQE_Database', '/usr/bin/mysqldump', '--skip-dump-date', '-u', 'root', '-pnone', '-h', '127.0.0.1', '-P', '3306', 'SQE', table], { encoding : 'utf8', cwd: projectBaseDir })
+        const cmd = spawn('docker', ['exec', '-i', 'SQE_Database', '/usr/bin/mysqldump', '--skip-dump-date', '--hex-blob', '--default-character-set=utf8mb4', '-u', 'root', '-pnone', '-h', '127.0.0.1', '-P', '3306', 'SQE', table], { encoding : 'utf8', cwd: projectBaseDir })
         cmd.stdout.pipe(fs.createWriteStream(`${dataDir}/${table}.sql`))
         cmd.on('exit', async (code/*, signal*/) => {
             if (code !== 0) reject(new Error(chalk.red(`✗ Failed while backing up ${table}.`)))
