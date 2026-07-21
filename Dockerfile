@@ -1,4 +1,4 @@
-FROM mariadb:10.3 as builder
+FROM mariadb:10.3.39 as builder
 
 ## Hijack docker-entrypoint.sh so we can do a custom install
 RUN ["sed", "-i", "s/exec \"$@\"/echo \"not running $@\"/", "/usr/local/bin/docker-entrypoint.sh"]
@@ -28,7 +28,7 @@ RUN ["/usr/local/bin/docker-entrypoint.sh", "mysqld", "--datadir", "/initialized
 
 
 ## Second build stage
-FROM mariadb:10.3
+FROM mariadb:10.3.39
 
 # Install OQGraph
 RUN apt-get update \
